@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { RECITERS } from './types';
-import type { SurahMeta, SurahDetail, Verse, ScriptType, TranslationChoice, Reciter, LastRead } from './types';
+import type { SurahMeta, SurahDetail, Verse, ScriptType, TranslationChoice, Reciter, LastRead, CloudSyncData, SyncConflict } from './types';
 import { Header } from './components/Header';
 import { SurahListModal } from './components/SurahListModal';
 import { SettingsModal } from './components/SettingsModal';
 import { TafsirModal } from './components/TafsirModal';
 import { AudioPlayer } from './components/AudioPlayer';
+import { SyncModal } from './components/SyncModal';
+import { SyncConflictModal } from './components/SyncConflictModal';
 import { Play, Pause, Bookmark, BookOpen, Copy, Check, ChevronLeft, ChevronRight, BookmarkCheck } from 'lucide-react';
 
 export default function App() {
@@ -117,6 +119,187 @@ export default function App() {
     }
   };
 
+  // Cloud Sync State (Neon DB)
+  const [syncEmail, setSyncEmail] = useState<string | null>(() => {
+    return localStorage.getItem('quran_sync_email') || null;
+  });
+  const [isSyncModalOpen, setIsSyncModalOpen] = useState<boolean>(false);
+  const [syncConflict, setSyncConflict] = useState<SyncConflict | null>(null);
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
+  const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
+  const autoSyncTimerRef = useRef<any>(null);
+
+  const buildLocalSyncData = (): CloudSyncData => {
+    return {
+      email: syncEmail || '',
+      lastRead: lastRead,
+      bookmarks: bookmarks,
+      settings: {
+        script,
+        translation,
+        showWBW,
+        showTransliteration,
+        arabicFontSize,
+        darkMode,
+        reciterId: currentReciter.id,
+        autoScroll,
+      },
+    };
+  };
+
+  const applyCloudData = (data: CloudSyncData) => {
+    if (data.lastRead) {
+      setLastRead(data.lastRead);
+      localStorage.setItem('quran_last_read', JSON.stringify(data.lastRead));
+      if (data.lastRead.surah !== currentSurahNumber) {
+        setTargetScrollAya(data.lastRead.aya);
+        setCurrentSurahNumber(data.lastRead.surah);
+      } else {
+        setTimeout(() => {
+          handleJumpToAya(data.lastRead!.aya);
+        }, 300);
+      }
+    }
+    if (Array.isArray(data.bookmarks)) {
+      setBookmarks(data.bookmarks);
+      localStorage.setItem('quran_bookmarks', JSON.stringify(data.bookmarks));
+    }
+    if (data.settings) {
+      const s = data.settings;
+      if (s.script) setScript(s.script);
+      if (s.translation) setTranslation(s.translation);
+      if (typeof s.showWBW === 'boolean') setShowWBW(s.showWBW);
+      if (typeof s.showTransliteration === 'boolean') setShowTransliteration(s.showTransliteration);
+      if (typeof s.arabicFontSize === 'number') setArabicFontSize(s.arabicFontSize);
+      if (typeof s.darkMode === 'boolean') setDarkMode(s.darkMode);
+      if (s.reciterId) {
+        const found = RECITERS.find((r) => r.id === s.reciterId);
+        if (found) setCurrentReciter(found);
+      }
+      if (typeof s.autoScroll === 'boolean') setAutoScroll(s.autoScroll);
+    }
+    setLastSyncedAt(new Date());
+  };
+
+  const handleConnectEmail = async (email: string) => {
+    setIsSyncing(true);
+    try {
+      const res = await fetch(`/api/sync?email=${encodeURIComponent(email)}`);
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Failed to connect to Neon sync.');
+
+      if (json.exists && json.data) {
+        const cloudData: CloudSyncData = json.data;
+        const localData = buildLocalSyncData();
+
+        // Check for progress conflict
+        const hasConflict =
+          cloudData.lastRead &&
+          localData.lastRead &&
+          (cloudData.lastRead.surah !== localData.lastRead.surah ||
+            cloudData.lastRead.aya !== localData.lastRead.aya);
+
+        if (hasConflict) {
+          setSyncEmail(email);
+          localStorage.setItem('quran_sync_email', email);
+          setSyncConflict({ cloud: cloudData, local: { ...localData, email } });
+          setIsSyncModalOpen(false);
+          return;
+        }
+
+        applyCloudData(cloudData);
+        setSyncEmail(email);
+        localStorage.setItem('quran_sync_email', email);
+      } else {
+        // First time email registered: push current local state to Neon
+        const localData = buildLocalSyncData();
+        const saveRes = await fetch('/api/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email,
+            lastRead: localData.lastRead || { surah: 1, surahName: 'Al-Faatiha', aya: 1, timestamp: Date.now() },
+            bookmarks: localData.bookmarks,
+            settings: localData.settings,
+          }),
+        });
+        const saveJson = await saveRes.json();
+        if (!saveRes.ok) throw new Error(saveJson.error || 'Failed to initialize Neon save.');
+
+        setSyncEmail(email);
+        localStorage.setItem('quran_sync_email', email);
+        setLastSyncedAt(new Date());
+      }
+      setIsSyncModalOpen(false);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const handleResumeFromCloud = () => {
+    if (!syncConflict) return;
+    applyCloudData(syncConflict.cloud);
+    setSyncConflict(null);
+  };
+
+  const handleOverrideCloud = async () => {
+    if (!syncConflict) return;
+    setIsSyncing(true);
+    try {
+      const localData = buildLocalSyncData();
+      const res = await fetch('/api/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: syncConflict.cloud.email,
+          lastRead: localData.lastRead || { surah: 1, surahName: 'Al-Faatiha', aya: 1, timestamp: Date.now() },
+          bookmarks: localData.bookmarks,
+          settings: localData.settings,
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Failed to override cloud save.');
+      setLastSyncedAt(new Date());
+      setSyncConflict(null);
+    } catch (e: any) {
+      alert(`Error overriding cloud: ${e.message}`);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const handleManualSyncNow = async () => {
+    if (!syncEmail) return;
+    setIsSyncing(true);
+    try {
+      const localData = buildLocalSyncData();
+      const res = await fetch('/api/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: syncEmail,
+          lastRead: localData.lastRead || { surah: 1, surahName: 'Al-Faatiha', aya: 1, timestamp: Date.now() },
+          bookmarks: localData.bookmarks,
+          settings: localData.settings,
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Failed to sync with Neon.');
+      setLastSyncedAt(new Date());
+    } catch (e: any) {
+      alert(`Sync failed: ${e.message}`);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const handleDisconnectSync = () => {
+    setSyncEmail(null);
+    localStorage.removeItem('quran_sync_email');
+    setLastSyncedAt(null);
+    setIsSyncModalOpen(false);
+  };
+
   // Apply dark mode class
   useEffect(() => {
     if (darkMode) {
@@ -169,6 +352,90 @@ export default function App() {
       // ignore
     }
   }, [currentSurahNumber]);
+
+  // Initial cloud check on mount if an email is linked
+  useEffect(() => {
+    if (!syncEmail) return;
+    const fetchOnLoad = async () => {
+      try {
+        const res = await fetch(`/api/sync?email=${encodeURIComponent(syncEmail)}`);
+        if (!res.ok) return;
+        const json = await res.json();
+        if (json.exists && json.data) {
+          const cloudData: CloudSyncData = json.data;
+          const localData = buildLocalSyncData();
+
+          const cloudTime = cloudData.updatedAt ? new Date(cloudData.updatedAt).getTime() : 0;
+          const localTime = localData.lastRead?.timestamp || 0;
+
+          // If cloud has a different reading progress
+          if (
+            cloudData.lastRead &&
+            (!localData.lastRead ||
+              cloudData.lastRead.surah !== localData.lastRead.surah ||
+              cloudData.lastRead.aya !== localData.lastRead.aya)
+          ) {
+            // Guard: If this local device was also actively modified, open Conflict Guard Modal
+            if (localTime > 0 && Math.abs(cloudTime - localTime) > 60000) {
+              setSyncConflict({ cloud: cloudData, local: localData });
+            } else {
+              // Otherwise seamlessly resume from cloud
+              applyCloudData(cloudData);
+            }
+          }
+        }
+      } catch {
+        // silent fail on network error / offline
+      }
+    };
+    fetchOnLoad();
+  }, [syncEmail]);
+
+  // Debounced auto-sync to Neon when reading progress or settings change
+  useEffect(() => {
+    if (!syncEmail) return;
+    if (autoSyncTimerRef.current) clearTimeout(autoSyncTimerRef.current);
+
+    autoSyncTimerRef.current = setTimeout(async () => {
+      try {
+        const localData = buildLocalSyncData();
+        await fetch('/api/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: syncEmail,
+            lastRead: localData.lastRead || {
+              surah: currentSurahNumber,
+              surahName: surahData?.name || '',
+              aya: 1,
+              timestamp: Date.now(),
+            },
+            bookmarks: localData.bookmarks,
+            settings: localData.settings,
+          }),
+        });
+        setLastSyncedAt(new Date());
+      } catch {
+        // offline
+      }
+    }, 2500);
+
+    return () => {
+      if (autoSyncTimerRef.current) clearTimeout(autoSyncTimerRef.current);
+    };
+  }, [
+    syncEmail,
+    lastRead,
+    bookmarks,
+    script,
+    translation,
+    showWBW,
+    showTransliteration,
+    arabicFontSize,
+    darkMode,
+    currentReciter,
+    autoScroll,
+  ]);
 
   // Handle browser back/forward buttons
   useEffect(() => {
@@ -334,6 +601,9 @@ export default function App() {
         isPlaying={isPlaying}
         lastRead={lastRead}
         onResumeLastRead={handleResumeLastRead}
+        syncEmail={syncEmail}
+        onOpenSync={() => setIsSyncModalOpen(true)}
+        isSyncing={isSyncing}
       />
 
       {/* Main Container */}
@@ -765,6 +1035,28 @@ export default function App() {
         onChangeArabicFontSize={setArabicFontSize}
         currentReciter={currentReciter}
         onChangeReciter={setCurrentReciter}
+        syncEmail={syncEmail}
+        onOpenSync={() => setIsSyncModalOpen(true)}
+      />
+
+      <SyncModal
+        isOpen={isSyncModalOpen}
+        onClose={() => setIsSyncModalOpen(false)}
+        syncEmail={syncEmail}
+        onConnectEmail={handleConnectEmail}
+        onSyncNow={handleManualSyncNow}
+        onDisconnect={handleDisconnectSync}
+        isSyncing={isSyncing}
+        lastSyncedAt={lastSyncedAt}
+        lastRead={lastRead}
+        bookmarksCount={bookmarks.length}
+      />
+
+      <SyncConflictModal
+        conflict={syncConflict}
+        onClose={() => setSyncConflict(null)}
+        onResumeFromCloud={handleResumeFromCloud}
+        onOverrideCloud={handleOverrideCloud}
       />
 
       <TafsirModal

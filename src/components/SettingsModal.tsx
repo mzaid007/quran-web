@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Type, Globe, Check, Sliders, Volume2 } from 'lucide-react';
+import { X, Type, Globe, Check, Sliders, Volume2, Cloud } from 'lucide-react';
 import { RECITERS } from '../types';
 import type { ScriptType, TranslationChoice, Reciter } from '../types';
 
@@ -18,6 +18,8 @@ interface SettingsModalProps {
   onChangeArabicFontSize: (size: number) => void;
   currentReciter: Reciter;
   onChangeReciter: (r: Reciter) => void;
+  syncEmail?: string | null;
+  onOpenSync?: () => void;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -35,6 +37,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onChangeArabicFontSize,
   currentReciter,
   onChangeReciter,
+  syncEmail,
+  onOpenSync,
 }) => {
   if (!isOpen) return null;
 
@@ -316,6 +320,46 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               ))}
             </div>
           </div>
+
+          {/* 6. Multi-Device Cloud Sync */}
+          {onOpenSync && (
+            <div className="pt-2 border-t border-gray-100 dark:border-brand-borderDark">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-bold text-gray-800 dark:text-gray-200 flex items-center gap-1.5">
+                  <Cloud className="w-4 h-4 text-brand-teal" />
+                  Multi-Device Cloud Sync
+                </span>
+                {syncEmail ? (
+                  <span className="px-2 py-0.5 text-[10px] font-bold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center gap-1">
+                    <Check className="w-3 h-3" /> Connected
+                  </span>
+                ) : (
+                  <span className="px-2 py-0.5 text-[10px] font-bold bg-gray-100 dark:bg-brand-cardDark text-gray-500 rounded-full">
+                    Not connected
+                  </span>
+                )}
+              </div>
+              <button
+                onClick={() => {
+                  onClose();
+                  onOpenSync();
+                }}
+                className="w-full p-3 rounded-xl border border-gray-200 dark:border-brand-borderDark hover:bg-gray-50 dark:hover:bg-brand-cardDark text-left transition flex items-center justify-between"
+              >
+                <div>
+                  <div className="text-xs font-bold text-gray-800 dark:text-gray-200">
+                    {syncEmail ? syncEmail : 'Sync across Phone, Tablet & Laptop'}
+                  </div>
+                  <div className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
+                    {syncEmail
+                      ? 'Progress, bookmarks & settings are automatically synced'
+                      : 'Enter your email to resume your reading anywhere'}
+                  </div>
+                </div>
+                <Cloud className="w-4 h-4 text-brand-teal ml-2 flex-shrink-0" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

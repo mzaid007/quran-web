@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, Search, Settings, Moon, Sun, Volume2, List, BookmarkCheck } from 'lucide-react';
+import { BookOpen, Search, Settings, Moon, Sun, Volume2, List, BookmarkCheck, Cloud } from 'lucide-react';
 import type { SurahMeta, LastRead } from '../types';
 
 interface HeaderProps {
@@ -15,6 +15,9 @@ interface HeaderProps {
   isPlaying: boolean;
   lastRead: LastRead | null;
   onResumeLastRead: () => void;
+  syncEmail: string | null;
+  onOpenSync: () => void;
+  isSyncing: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -30,6 +33,9 @@ export const Header: React.FC<HeaderProps> = ({
   isPlaying,
   lastRead,
   onResumeLastRead,
+  syncEmail,
+  onOpenSync,
+  isSyncing,
 }) => {
   return (
     <header className="sticky top-0 z-40 bg-white/95 dark:bg-brand-surfaceDark/95 backdrop-blur-md border-b border-gray-200 dark:border-brand-borderDark transition-colors">
@@ -129,6 +135,26 @@ export const Header: React.FC<HeaderProps> = ({
             title="Search Surahs"
           >
             <Search className="w-5 h-5" />
+          </button>
+
+          {/* Cloud Sync Button */}
+          <button
+            onClick={onOpenSync}
+            className={`p-2 rounded-lg transition relative ${
+              syncEmail
+                ? 'text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/20'
+                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-brand-cardDark'
+            }`}
+            title={
+              syncEmail
+                ? `Cloud Synced (${syncEmail})`
+                : 'Connect Multi-Device Cloud Sync'
+            }
+          >
+            <Cloud className={`w-5 h-5 ${isSyncing ? 'animate-pulse' : ''}`} />
+            {syncEmail && (
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-500 border border-white dark:border-brand-surfaceDark" />
+            )}
           </button>
 
           <button

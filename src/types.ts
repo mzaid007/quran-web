@@ -51,3 +51,27 @@ export const RECITERS: Reciter[] = [
   { id: 'sudais', name: 'Abdur-Rahman As-Sudais', subfolder: 'Abdurrahmaan_As-Sudais_192kbps' },
   { id: 'husary', name: 'Mahmoud Khalil Al-Husary', subfolder: 'Husary_128kbps' }
 ];
+
+export interface SyncedSettings {
+  script: ScriptType;
+  translation: TranslationChoice;
+  showWBW: boolean;
+  showTransliteration: boolean;
+  arabicFontSize: number;
+  darkMode: boolean;
+  reciterId: string;
+  autoScroll: boolean;
+}
+
+export interface CloudSyncData {
+  email: string;
+  lastRead: LastRead | null;
+  bookmarks: { surah: number; aya: number }[];
+  settings: SyncedSettings;
+  updatedAt?: string;
+}
+
+export interface SyncConflict {
+  cloud: CloudSyncData;
+  local: CloudSyncData;
+}
