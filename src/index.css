@@ -58,6 +58,15 @@
   padding-bottom: 0.25em;
 }
 
+.urdu-nastaliq {
+  font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', 'Urdu Typesetting', 'Nafees Web Naskh', serif;
+  direction: rtl;
+  text-align: right;
+  line-height: 2.4;
+  letter-spacing: 0;
+  word-spacing: 1px;
+}
+
 /* WBW specific word text to prevent clipping and overlap */
 .wbw-arabic {
   line-height: 1.8 !important;
