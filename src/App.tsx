@@ -10,25 +10,71 @@ import { Play, Pause, Bookmark, BookOpen, Copy, Check, ChevronLeft, ChevronRight
 
 export default function App() {
   const [surahs, setSurahs] = useState<SurahMeta[]>([]);
-  const [currentSurahNumber, setCurrentSurahNumber] = useState<number>(1);
+  const [currentSurahNumber, setCurrentSurahNumber] = useState<number>(() => {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const surahParam = urlParams.get('surah');
+      if (surahParam) {
+        const num = parseInt(surahParam, 10);
+        if (!isNaN(num) && num >= 1 && num <= 114) return num;
+      }
+      const saved = localStorage.getItem('quran_current_surah');
+      if (saved) {
+        const num = parseInt(saved, 10);
+        if (!isNaN(num) && num >= 1 && num <= 114) return num;
+      }
+    } catch {
+      // fallback
+    }
+    return 1;
+  });
   const [surahData, setSurahData] = useState<SurahDetail | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Settings
-  const [script, setScript] = useState<ScriptType>('uthmani');
-  const [translation, setTranslation] = useState<TranslationChoice>('khattab');
-  const [showWBW, setShowWBW] = useState<boolean>(true);
-  const [showTransliteration, setShowTransliteration] = useState<boolean>(true);
-  const [arabicFontSize, setArabicFontSize] = useState<number>(28);
+  // Settings with LocalStorage Persistence
+  const [script, setScript] = useState<ScriptType>(() => {
+    const saved = localStorage.getItem('quran_script');
+    return saved === 'uthmani' || saved === 'indopak' ? saved : 'uthmani';
+  });
+  const [translation, setTranslation] = useState<TranslationChoice>(() => {
+    const saved = localStorage.getItem('quran_translation');
+    if (saved === 'khattab' || saved === 'saheeh' || saved === 'jalalayn' || saved === 'none') {
+      return saved;
+    }
+    return 'khattab';
+  });
+  const [showWBW, setShowWBW] = useState<boolean>(() => {
+    const saved = localStorage.getItem('quran_show_wbw');
+    return saved !== null ? saved === 'true' : true;
+  });
+  const [showTransliteration, setShowTransliteration] = useState<boolean>(() => {
+    const saved = localStorage.getItem('quran_show_translit');
+    return saved !== null ? saved === 'true' : true;
+  });
+  const [arabicFontSize, setArabicFontSize] = useState<number>(() => {
+    const saved = localStorage.getItem('quran_font_size');
+    const parsed = saved ? parseInt(saved, 10) : 28;
+    return !isNaN(parsed) && parsed >= 18 && parsed <= 60 ? parsed : 28;
+  });
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     return localStorage.getItem('quran_theme') === 'dark';
   });
 
-  // Audio State
-  const [currentReciter, setCurrentReciter] = useState<Reciter>(RECITERS[0]);
+  // Audio State with LocalStorage Persistence
+  const [currentReciter, setCurrentReciter] = useState<Reciter>(() => {
+    const savedId = localStorage.getItem('quran_reciter_id');
+    if (savedId) {
+      const match = RECITERS.find((r) => r.id === savedId);
+      if (match) return match;
+    }
+    return RECITERS[0];
+  });
   const [playingAya, setPlayingAya] = useState<number | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [autoScroll, setAutoScroll] = useState<boolean>(true);
+  const [autoScroll, setAutoScroll] = useState<boolean>(() => {
+    const saved = localStorage.getItem('quran_auto_scroll');
+    return saved !== null ? saved === 'true' : true;
+  });
 
   // Modals
   const [isSurahListOpen, setIsSurahListOpen] = useState<boolean>(false);
@@ -69,6 +115,68 @@ export default function App() {
       localStorage.setItem('quran_theme', 'light');
     }
   }, [darkMode]);
+
+  // Persist settings changes
+  useEffect(() => {
+    localStorage.setItem('quran_script', script);
+  }, [script]);
+
+  useEffect(() => {
+    localStorage.setItem('quran_translation', translation);
+  }, [translation]);
+
+  useEffect(() => {
+    localStorage.setItem('quran_show_wbw', String(showWBW));
+  }, [showWBW]);
+
+  useEffect(() => {
+    localStorage.setItem('quran_show_translit', String(showTransliteration));
+  }, [showTransliteration]);
+
+  useEffect(() => {
+    localStorage.setItem('quran_font_size', String(arabicFontSize));
+  }, [arabicFontSize]);
+
+  useEffect(() => {
+    localStorage.setItem('quran_reciter_id', currentReciter.id);
+  }, [currentReciter]);
+
+  useEffect(() => {
+    localStorage.setItem('quran_auto_scroll', String(autoScroll));
+  }, [autoScroll]);
+
+  useEffect(() => {
+    localStorage.setItem('quran_current_surah', String(currentSurahNumber));
+    try {
+      const url = new URL(window.location.href);
+      if (url.searchParams.get('surah') !== String(currentSurahNumber)) {
+        url.searchParams.set('surah', String(currentSurahNumber));
+        window.history.replaceState(null, '', url.toString());
+      }
+    } catch {
+      // ignore
+    }
+  }, [currentSurahNumber]);
+
+  // Handle browser back/forward buttons
+  useEffect(() => {
+    const handlePopState = () => {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const surahParam = urlParams.get('surah');
+        if (surahParam) {
+          const num = parseInt(surahParam, 10);
+          if (!isNaN(num) && num >= 1 && num <= 114 && num !== currentSurahNumber) {
+            setCurrentSurahNumber(num);
+          }
+        }
+      } catch {
+        // ignore
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [currentSurahNumber]);
 
   // Load master surahs index
   useEffect(() => {
