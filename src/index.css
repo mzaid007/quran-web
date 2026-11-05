@@ -79,6 +79,17 @@
   font-family: 'bismillah', serif;
 }
 
+/* Bismillah Surah Header Ornament */
+.quran-bismillah {
+  text-align: center !important;
+  line-height: 2.3 !important;
+  display: block;
+  padding-top: 0.2em;
+  padding-bottom: 0.5em;
+  word-spacing: 4px;
+  overflow: visible;
+}
+
 /* Transliteration phonetic styling */
 .select-text u {
   text-decoration: underline;

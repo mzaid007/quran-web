@@ -631,7 +631,7 @@ export default function App() {
           </div>
         ) : surahData ? (
           <div>
-            {/* Surah Header Card matching original app */}
+            {/* Surah Header Card */}
             <div className="relative overflow-hidden bg-white dark:bg-brand-cardDark rounded-3xl p-6 sm:p-8 mb-8 border border-gray-200/80 dark:border-brand-borderDark shadow-sm text-center">
               {/* Subtle background arabesque glow */}
               <div className="absolute inset-0 bg-gradient-to-b from-brand-teal/5 to-transparent pointer-events-none" />
@@ -741,18 +741,22 @@ export default function App() {
 
             {/* Bismillah Ornament (for all Surahs except At-Tawbah) */}
             {surahData.bismillah && (
-              <div className="text-center my-6 py-4">
+              <div className="text-center my-6 sm:my-8 py-4 sm:py-6 px-4 select-text">
                 <div
                   className={`${
                     script === 'uthmani' ? 'quran-uthmani' : 'quran-indopak'
-                  } text-3xl sm:text-4xl text-gray-800 dark:text-gray-200 leading-relaxed`}
-                  style={{ fontSize: `${arabicFontSize + 6}px` }}
+                  } quran-bismillah text-gray-800 dark:text-gray-200 select-text`}
+                  style={{
+                    fontSize: `${arabicFontSize + 6}px`,
+                    lineHeight: 2.3,
+                  }}
+                  dir="rtl"
                 >
                   {script === 'uthmani'
                     ? 'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ'
                     : 'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ'}
                 </div>
-                <div className="text-xs text-gray-400 dark:text-gray-500 italic mt-1 font-sans">
+                <div className="text-xs sm:text-sm text-gray-400 dark:text-gray-500 italic mt-3 sm:mt-4 font-sans select-text tracking-wide">
                   In the Name of Allah—the Most Compassionate, Most Merciful
                 </div>
               </div>

@@ -471,7 +471,7 @@ export const ShareVerseModal: React.FC<ShareVerseModalProps> = ({
                 {/* Watermark Footer */}
                 <div className={`mt-6 pt-4 border-t flex items-center justify-between text-[10px] tracking-wide ${themeStyles.footer}`}>
                   <div className="flex items-center gap-1.5 font-medium">
-                    <span>📖 Al Quran (Tafsir & By Word)</span>
+                    <span>📖 The Holy Qur'an</span>
                   </div>
                   <span className="opacity-80">
                     quran.zaid.im

@@ -284,7 +284,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 />
               </label>
               <p className="text-[11px] text-amber-800/80 dark:text-amber-300/80 bg-white/70 dark:bg-brand-surfaceDark/70 p-2.5 rounded-lg border border-amber-200/40 dark:border-amber-900/30 leading-relaxed">
-                <strong className="font-semibold text-amber-900 dark:text-amber-200">Learning Aid Notice:</strong> Word-by-word translation is in beta (retained from the original Al Quran dataset). It is intended as a vocabulary aid for Arabic learners. Because Arabic grammatical particles fuse directly with root words, please always refer to the complete sentence translations below for authoritative theological meaning and full context.
+                <strong className="font-semibold text-amber-900 dark:text-amber-200">Learning Aid Notice:</strong> Word-by-word translation is in beta. It is intended as a vocabulary aid for Arabic learners. Because Arabic grammatical particles fuse directly with root words, please always refer to the complete sentence translations below for authoritative theological meaning and full context.
               </p>
             </div>
 
