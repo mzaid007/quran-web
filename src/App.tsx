@@ -277,12 +277,16 @@ export default function App() {
             {surahData.bismillah && (
               <div className="text-center my-6 py-4">
                 <div
-                  className="quran-uthmani text-3xl sm:text-4xl text-gray-800 dark:text-gray-200 font-serif leading-relaxed"
+                  className={`${
+                    script === 'uthmani' ? 'quran-uthmani' : 'quran-indopak'
+                  } text-3xl sm:text-4xl text-gray-800 dark:text-gray-200 leading-relaxed`}
                   style={{ fontSize: `${arabicFontSize + 6}px` }}
                 >
-                  بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
+                  {script === 'uthmani'
+                    ? 'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ'
+                    : 'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ'}
                 </div>
-                <div className="text-xs text-gray-400 dark:text-gray-500 italic mt-1">
+                <div className="text-xs text-gray-400 dark:text-gray-500 italic mt-1 font-sans">
                   In the Name of Allah—the Most Compassionate, Most Merciful
                 </div>
               </div>
