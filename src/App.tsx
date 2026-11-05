@@ -38,7 +38,7 @@ export default function App() {
   });
   const [translation, setTranslation] = useState<TranslationChoice>(() => {
     const saved = localStorage.getItem('quran_translation');
-    if (saved === 'khattab' || saved === 'saheeh' || saved === 'jalalayn' || saved === 'none') {
+    if (saved === 'khattab' || saved === 'saheeh' || saved === 'jalalayn' || saved === 'romanUrdu' || saved === 'none') {
       return saved;
     }
     return 'khattab';
@@ -90,6 +90,8 @@ export default function App() {
     }
   });
   const [copiedAya, setCopiedAya] = useState<number | null>(null);
+  const [highlightedAya, setHighlightedAya] = useState<number | null>(null);
+  const [jumpInputVal, setJumpInputVal] = useState<string>('');
 
   // Last Read state
   const [lastRead, setLastRead] = useState<LastRead | null>(() => {
@@ -104,6 +106,16 @@ export default function App() {
 
   // Verse refs for auto-scrolling
   const verseRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
+
+  const handleJumpToAya = (ayaNum: number) => {
+    if (!surahData || ayaNum < 1 || ayaNum > surahData.totalVerses) return;
+    const el = verseRefs.current[ayaNum];
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setHighlightedAya(ayaNum);
+      setTimeout(() => setHighlightedAya(null), 2500);
+    }
+  };
 
   // Apply dark mode class
   useEffect(() => {
@@ -292,6 +304,8 @@ export default function App() {
     const transText =
       translation === 'khattab'
         ? verse.khattab
+        : translation === 'romanUrdu'
+        ? (verse.romanUrdu || verse.khattab)
         : translation === 'saheeh'
         ? verse.saheeh
         : verse.jalalayn;
@@ -309,6 +323,8 @@ export default function App() {
       {/* Top App Header */}
       <Header
         currentSurah={currentSurahMeta}
+        totalVerses={surahData?.totalVerses}
+        onJumpToAya={handleJumpToAya}
         onOpenSurahList={() => setIsSurahListOpen(true)}
         onOpenSearch={() => setIsSurahListOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
@@ -365,6 +381,8 @@ export default function App() {
                   <span className="font-bold text-brand-teal dark:text-emerald-400">
                     {translation === 'khattab'
                       ? 'The Clear Quran (Dr. Mustafa Khattab)'
+                      : translation === 'romanUrdu'
+                      ? 'Roman Urdu (Maududi)'
                       : translation === 'saheeh'
                       ? 'Saheeh International'
                       : translation === 'jalalayn'
@@ -377,6 +395,60 @@ export default function App() {
                   >
                     Change
                   </button>
+                </div>
+
+                {/* Jump to Verse Bar */}
+                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-brand-borderDark/60 w-full max-w-md flex flex-wrap items-center justify-center gap-2">
+                  <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">
+                    Go to Verse:
+                  </span>
+
+                  <select
+                    value=""
+                    onChange={(e) => {
+                      const num = parseInt(e.target.value, 10);
+                      if (!isNaN(num)) handleJumpToAya(num);
+                    }}
+                    className="text-xs bg-gray-50 dark:bg-brand-surfaceDark border border-gray-200 dark:border-brand-borderDark rounded-lg px-2.5 py-1.5 font-medium text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-brand-teal cursor-pointer"
+                  >
+                    <option value="" disabled>Select Ayah (1 - {surahData.totalVerses})</option>
+                    {Array.from({ length: surahData.totalVerses }, (_, i) => i + 1).map((num) => (
+                      <option key={num} value={num}>
+                        Ayah {num}
+                      </option>
+                    ))}
+                  </select>
+
+                  <span className="text-xs text-gray-400">or</span>
+
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const num = parseInt(jumpInputVal, 10);
+                      if (!isNaN(num)) {
+                        handleJumpToAya(num);
+                        setJumpInputVal('');
+                      }
+                    }}
+                    className="flex items-center gap-1"
+                  >
+                    <input
+                      type="number"
+                      min={1}
+                      max={surahData.totalVerses}
+                      placeholder={`1-${surahData.totalVerses}`}
+                      value={jumpInputVal}
+                      onChange={(e) => setJumpInputVal(e.target.value)}
+                      className="w-20 text-xs px-2.5 py-1.5 bg-gray-50 dark:bg-brand-surfaceDark border border-gray-200 dark:border-brand-borderDark rounded-lg text-center text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-brand-teal"
+                    />
+                    <button
+                      type="submit"
+                      disabled={!jumpInputVal}
+                      className="px-2.5 py-1.5 bg-brand-teal hover:bg-brand-teal/90 disabled:opacity-40 text-white text-xs font-bold rounded-lg transition"
+                    >
+                      Go
+                    </button>
+                  </form>
                 </div>
               </div>
             </div>
@@ -417,7 +489,9 @@ export default function App() {
                       verseRefs.current[verse.aya] = el;
                     }}
                     className={`rounded-2xl p-5 sm:p-7 transition-all duration-300 border ${
-                      isCurrentPlaying
+                      highlightedAya === verse.aya
+                        ? 'ring-2 ring-brand-teal bg-brand-teal/10 dark:bg-brand-teal/20 border-brand-teal shadow-lg scale-[1.005]'
+                        : isCurrentPlaying
                         ? 'bg-brand-teal/5 dark:bg-brand-teal/15 border-brand-teal/40 shadow-md ring-1 ring-brand-teal/30'
                         : isLastRead
                         ? 'bg-amber-500/[0.03] dark:bg-amber-500/[0.07] border-amber-500/40 shadow-sm'
@@ -519,7 +593,7 @@ export default function App() {
 
                     {/* Word-by-Word View */}
                     {showWBW && verse.wbw && verse.wbw.length > 0 ? (
-                      <div className="mb-6">
+                      <div className="mb-6 pb-2">
                         <div
                           className="flex flex-wrap flex-row-reverse gap-2.5 sm:gap-3 py-2 items-start justify-start"
                           dir="rtl"
@@ -527,20 +601,20 @@ export default function App() {
                           {verse.wbw.map((w, idx) => (
                             <div
                               key={idx}
-                              className="group flex flex-col items-center bg-gray-50/70 dark:bg-brand-cardDark/80 hover:bg-brand-teal/10 dark:hover:bg-brand-teal/20 px-2.5 py-1.5 rounded-xl border border-gray-100 dark:border-brand-borderDark transition-all duration-200"
+                              className="group flex flex-col items-center justify-between min-w-[50px] bg-gray-50/80 dark:bg-brand-surfaceDark/80 hover:bg-brand-teal/10 dark:hover:bg-brand-teal/20 px-3 py-2 rounded-xl border border-gray-100 dark:border-brand-borderDark transition-all duration-200"
                             >
                               {/* Word Arabic Text */}
                               <span
                                 className={`${
                                   script === 'uthmani' ? 'quran-uthmani' : 'quran-indopak'
-                                } text-gray-900 dark:text-gray-100 leading-tight select-text`}
+                                } wbw-arabic text-gray-900 dark:text-gray-100 select-text`}
                                 style={{ fontSize: `${arabicFontSize}px` }}
                               >
                                 {w.arabic}
                               </span>
                               {/* Word Translation */}
                               <span
-                                className="text-[11px] sm:text-xs text-gray-600 dark:text-gray-400 group-hover:text-brand-teal font-sans mt-1 text-center font-normal"
+                                className="text-[11px] sm:text-xs text-gray-600 dark:text-gray-400 group-hover:text-brand-teal font-sans mt-2 text-center font-normal leading-tight"
                                 dir="ltr"
                               >
                                 {w.translation}
@@ -551,7 +625,7 @@ export default function App() {
                       </div>
                     ) : (
                       /* Classic Flowing Calligraphy Verse */
-                      <div className="mb-6 text-right select-text">
+                      <div className="mb-6 pb-2 text-right select-text">
                         <p
                           className={`${
                             script === 'uthmani' ? 'quran-uthmani' : 'quran-indopak'
@@ -559,7 +633,7 @@ export default function App() {
                           style={{ fontSize: `${arabicFontSize}px` }}
                         >
                           {arabicText}
-                          <span className="inline-flex items-center justify-center w-7 h-7 mx-1.5 text-xs text-brand-teal border border-brand-teal/40 rounded-full font-sans select-none align-middle font-bold">
+                          <span className="inline-flex items-center justify-center w-7 h-7 mx-2 text-xs text-brand-teal border border-brand-teal/40 rounded-full font-sans select-none align-middle font-bold shrink-0">
                             {verse.aya}
                           </span>
                         </p>
@@ -569,19 +643,29 @@ export default function App() {
                     {/* Transliteration */}
                     {showTransliteration && verse.transliteration && (
                       <div
-                        className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 italic mb-3 font-serif select-text tracking-wide"
+                        className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 italic mb-4 font-serif select-text tracking-wide"
                         dangerouslySetInnerHTML={{ __html: verse.transliteration }}
                       />
                     )}
 
                     {/* Translation */}
                     {translation !== 'none' && (
-                      <div className="pt-2 text-sm sm:text-base text-gray-800 dark:text-gray-200 leading-relaxed font-sans select-text border-t border-gray-100/70 dark:border-brand-borderDark/50">
+                      <div className="pt-4 sm:pt-5 text-sm sm:text-base text-gray-800 dark:text-gray-200 leading-relaxed font-sans select-text border-t border-gray-100 dark:border-brand-borderDark/60">
                         {translation === 'khattab' && (
                           <div>
                             <span>{verse.khattab || verse.saheeh}</span>
                             <span className="block text-[10px] text-brand-teal dark:text-emerald-400 font-semibold mt-1">
                               — The Clear Quran (Dr. Mustafa Khattab)
+                            </span>
+                          </div>
+                        )}
+                        {translation === 'romanUrdu' && (
+                          <div>
+                            <span className="text-gray-900 dark:text-gray-100 font-medium">
+                              {verse.romanUrdu || verse.khattab}
+                            </span>
+                            <span className="block text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-1">
+                              — Roman Urdu (Syed Abul A'la Maududi - Tafheem-ul-Quran)
                             </span>
                           </div>
                         )}

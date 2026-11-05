@@ -20,6 +20,7 @@ export interface Verse {
   saheeh: string;
   khattab: string;
   jalalayn: string;
+  romanUrdu?: string;
   wbw: WBWWord[];
 }
 
@@ -29,7 +30,7 @@ export interface SurahDetail extends SurahMeta {
 }
 
 export type ScriptType = 'uthmani' | 'indopak';
-export type TranslationChoice = 'khattab' | 'saheeh' | 'jalalayn' | 'none';
+export type TranslationChoice = 'khattab' | 'saheeh' | 'jalalayn' | 'romanUrdu' | 'none';
 
 export interface LastRead {
   surah: number;

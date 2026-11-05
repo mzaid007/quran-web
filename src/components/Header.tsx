@@ -4,6 +4,8 @@ import type { SurahMeta, LastRead } from '../types';
 
 interface HeaderProps {
   currentSurah: SurahMeta | null;
+  totalVerses?: number;
+  onJumpToAya?: (aya: number) => void;
   onOpenSurahList: () => void;
   onOpenSearch: () => void;
   onOpenSettings: () => void;
@@ -17,6 +19,8 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({
   currentSurah,
+  totalVerses,
+  onJumpToAya,
   onOpenSurahList,
   onOpenSearch,
   onOpenSettings,
@@ -68,6 +72,31 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Right: Quick actions */}
         <div className="flex items-center space-x-1 sm:space-x-2">
+          {/* Quick Go-To Ayah Dropdown */}
+          {totalVerses && onJumpToAya && (
+            <div className="flex items-center mr-1">
+              <select
+                aria-label="Go to Ayah"
+                onChange={(e) => {
+                  const val = parseInt(e.target.value, 10);
+                  if (!isNaN(val)) {
+                    onJumpToAya(val);
+                    e.target.value = '';
+                  }
+                }}
+                defaultValue=""
+                className="text-xs bg-gray-100 hover:bg-gray-200/80 dark:bg-brand-cardDark dark:hover:bg-gray-800 border border-gray-200 dark:border-brand-borderDark rounded-lg px-2 py-1.5 font-medium text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-brand-teal cursor-pointer transition"
+              >
+                <option value="" disabled>Ayah ▾</option>
+                {Array.from({ length: totalVerses }, (_, i) => i + 1).map((num) => (
+                  <option key={num} value={num}>
+                    Ayah {num}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           {lastRead && (
             <button
               onClick={onResumeLastRead}

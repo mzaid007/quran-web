@@ -133,7 +133,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <div className="flex items-center justify-between mb-2.5">
               <span className="text-sm font-bold text-gray-800 dark:text-gray-200 flex items-center gap-1.5">
                 <Globe className="w-4 h-4 text-brand-teal" />
-                English Translation Option
+                Translation Option
               </span>
             </div>
             <div className="space-y-2">
@@ -156,10 +156,35 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     </span>
                   </div>
                   <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                    Clear, contemporary, thematic translation
+                    Clear, contemporary, thematic English translation
                   </div>
                 </div>
                 {translation === 'khattab' && <Check className="w-4 h-4 text-brand-teal flex-shrink-0" />}
+              </button>
+
+              {/* Roman Urdu - Syed Abul A'la Maududi */}
+              <button
+                onClick={() => onChangeTranslation('romanUrdu')}
+                className={`w-full p-3 rounded-xl border text-left transition flex items-center justify-between ${
+                  translation === 'romanUrdu'
+                    ? 'border-brand-teal bg-brand-teal/10 dark:bg-brand-teal/20'
+                    : 'border-gray-200 dark:border-brand-borderDark hover:bg-gray-50 dark:hover:bg-brand-cardDark'
+                }`}
+              >
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
+                      Roman Urdu (Tafheem-ul-Quran)
+                    </span>
+                    <span className="px-1.5 py-0.5 text-[10px] font-bold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded">
+                      Syed Abul A'la Maududi
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                    Urdu translation in Roman/Latin script for Urdu learners
+                  </div>
+                </div>
+                {translation === 'romanUrdu' && <Check className="w-4 h-4 text-brand-teal flex-shrink-0" />}
               </button>
 
               {/* Saheeh International */}
@@ -222,22 +247,32 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           {/* 4. Reading Mode Toggles */}
           <div className="space-y-3 pt-2 border-t border-gray-100 dark:border-brand-borderDark">
             {/* Word-by-Word Switch */}
-            <label className="flex items-center justify-between cursor-pointer p-1">
-              <div>
-                <div className="text-sm font-bold text-gray-900 dark:text-gray-100">
-                  Word-by-Word Breakdown
+            <div className="p-3.5 rounded-xl border border-amber-200/60 dark:border-amber-900/40 bg-amber-500/[0.04] dark:bg-amber-500/[0.08] space-y-2">
+              <label className="flex items-center justify-between cursor-pointer">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
+                      Word-by-Word Breakdown
+                    </span>
+                    <span className="px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-600 dark:text-amber-400 rounded">
+                      Beta
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                    Enable word-by-word Qur'an translation (this feature is still in beta)
+                  </div>
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
-                  Show translation card underneath every single Arabic word
-                </div>
-              </div>
-              <input
-                type="checkbox"
-                checked={showWBW}
-                onChange={onToggleWBW}
-                className="w-5 h-5 rounded text-brand-teal focus:ring-brand-teal accent-brand-teal cursor-pointer"
-              />
-            </label>
+                <input
+                  type="checkbox"
+                  checked={showWBW}
+                  onChange={onToggleWBW}
+                  className="w-5 h-5 rounded text-brand-teal focus:ring-brand-teal accent-brand-teal cursor-pointer shrink-0"
+                />
+              </label>
+              <p className="text-[11px] text-amber-800/80 dark:text-amber-300/80 bg-white/70 dark:bg-brand-surfaceDark/70 p-2.5 rounded-lg border border-amber-200/40 dark:border-amber-900/30 leading-relaxed">
+                <strong className="font-semibold text-amber-900 dark:text-amber-200">Learning Aid Notice:</strong> Word-by-word translation is in beta (retained from the original Al Quran dataset). It is intended as a vocabulary aid for Arabic learners. Because Arabic grammatical particles fuse directly with root words, please always refer to the complete sentence translations below for authoritative theological meaning and full context.
+              </p>
+            </div>
 
             {/* Transliteration Switch */}
             <label className="flex items-center justify-between cursor-pointer p-1">
