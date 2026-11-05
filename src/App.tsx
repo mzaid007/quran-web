@@ -8,6 +8,9 @@ import { TafsirModal } from './components/TafsirModal';
 import { AudioPlayer } from './components/AudioPlayer';
 import { SyncModal } from './components/SyncModal';
 import { SyncConflictModal } from './components/SyncConflictModal';
+import { DemoSwitcher } from './components/DemoSwitcher';
+import type { UiOption } from './components/DemoSwitcher';
+import { BottomDock } from './components/BottomDock';
 import { Play, Pause, Bookmark, BookOpen, Copy, Check, ChevronLeft, ChevronRight, BookmarkCheck } from 'lucide-react';
 
 export default function App() {
@@ -60,6 +63,12 @@ export default function App() {
   });
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     return localStorage.getItem('quran_theme') === 'dark';
+  });
+
+  // UI Demo Mode Variant (option1 = Responsive Hierarchy, option2 = Minimal Nav, option3 = Bottom Dock)
+  const [uiVariant, setUiVariant] = useState<UiOption>(() => {
+    const saved = localStorage.getItem('quran_ui_demo_variant') as UiOption;
+    return saved === 'option1' || saved === 'option2' || saved === 'option3' ? saved : 'option1';
   });
 
   // Audio State with LocalStorage Persistence
@@ -604,6 +613,7 @@ export default function App() {
         syncEmail={syncEmail}
         onOpenSync={() => setIsSyncModalOpen(true)}
         isSyncing={isSyncing}
+        uiVariant={uiVariant}
       />
 
       {/* Main Container */}
@@ -1065,6 +1075,30 @@ export default function App() {
         surahNumber={currentSurahNumber}
         surahName={surahData?.name || ''}
         verse={tafsirVerse}
+      />
+
+      {/* Option 3 Mobile Bottom Dock */}
+      {uiVariant === 'option3' && (
+        <BottomDock
+          isPlaying={isPlaying}
+          onPlaySurah={handleTogglePlaySurah}
+          totalVerses={surahData?.totalVerses}
+          onJumpToAya={handleJumpToAya}
+          syncEmail={syncEmail}
+          onOpenSync={() => setIsSyncModalOpen(true)}
+          onOpenSettings={() => setIsSettingsOpen(true)}
+          lastRead={lastRead}
+          onResumeLastRead={handleResumeLastRead}
+        />
+      )}
+
+      {/* Floating Interactive Demo Mode Switcher */}
+      <DemoSwitcher
+        currentOption={uiVariant}
+        onChangeOption={(opt) => {
+          setUiVariant(opt);
+          localStorage.setItem('quran_ui_demo_variant', opt);
+        }}
       />
     </div>
   );
