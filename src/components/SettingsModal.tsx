@@ -73,6 +73,31 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <span className="text-xs text-brand-teal dark:text-emerald-400 font-medium">Authentic App Fonts</span>
             </div>
             <div className="grid grid-cols-2 gap-2.5">
+              {/* IndoPak (Asian) - Default */}
+              <button
+                onClick={() => onChangeScript('indopak')}
+                className={`p-3 rounded-xl border text-left transition flex flex-col justify-between ${
+                  script === 'indopak'
+                    ? 'border-brand-teal bg-brand-teal/10 dark:bg-brand-teal/20'
+                    : 'border-gray-200 dark:border-brand-borderDark hover:bg-gray-50 dark:hover:bg-brand-cardDark'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-bold text-gray-800 dark:text-gray-200">IndoPak (Asian)</span>
+                    <span className="px-1.5 py-0.5 text-[9px] font-bold bg-brand-teal/20 text-brand-teal dark:text-emerald-400 rounded">
+                      Default
+                    </span>
+                  </div>
+                  {script === 'indopak' && <Check className="w-4 h-4 text-brand-teal shrink-0" />}
+                </div>
+                <div className="quran-indopak text-xl mt-2 text-right">
+                  بِسْمِ اللّٰهِ
+                </div>
+                <span className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">Qalam Majeed 3 Font</span>
+              </button>
+
+              {/* Uthmani (Hafs) */}
               <button
                 onClick={() => onChangeScript('uthmani')}
                 className={`p-3 rounded-xl border text-left transition flex flex-col justify-between ${
@@ -83,30 +108,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-gray-800 dark:text-gray-200">Uthmani (Hafs)</span>
-                  {script === 'uthmani' && <Check className="w-4 h-4 text-brand-teal" />}
+                  {script === 'uthmani' && <Check className="w-4 h-4 text-brand-teal shrink-0" />}
                 </div>
                 <div className="quran-uthmani text-xl mt-2 text-right">
                   بِسۡمِ ٱللَّهِ
                 </div>
                 <span className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">Madani Quran Font</span>
-              </button>
-
-              <button
-                onClick={() => onChangeScript('indopak')}
-                className={`p-3 rounded-xl border text-left transition flex flex-col justify-between ${
-                  script === 'indopak'
-                    ? 'border-brand-teal bg-brand-teal/10 dark:bg-brand-teal/20'
-                    : 'border-gray-200 dark:border-brand-borderDark hover:bg-gray-50 dark:hover:bg-brand-cardDark'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-gray-800 dark:text-gray-200">IndoPak (Asian)</span>
-                  {script === 'indopak' && <Check className="w-4 h-4 text-brand-teal" />}
-                </div>
-                <div className="quran-indopak text-xl mt-2 text-right">
-                  بِسْمِ اللّٰهِ
-                </div>
-                <span className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">Qalam Majeed 3 Font</span>
               </button>
             </div>
           </div>
@@ -141,6 +148,34 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </span>
             </div>
             <div className="space-y-2">
+              {/* Roman Urdu - Syed Abul A'la Maududi (Default) */}
+              <button
+                onClick={() => onChangeTranslation('romanUrdu')}
+                className={`w-full p-3 rounded-xl border text-left transition flex items-center justify-between ${
+                  translation === 'romanUrdu'
+                    ? 'border-brand-teal bg-brand-teal/10 dark:bg-brand-teal/20'
+                    : 'border-gray-200 dark:border-brand-borderDark hover:bg-gray-50 dark:hover:bg-brand-cardDark'
+                }`}
+              >
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
+                      Roman Urdu (Tafheem-ul-Quran)
+                    </span>
+                    <span className="px-1.5 py-0.5 text-[10px] font-bold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded">
+                      Default
+                    </span>
+                    <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                      Syed Abul A'la Maududi
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                    Urdu translation in English/Latin script for Urdu learners
+                  </div>
+                </div>
+                {translation === 'romanUrdu' && <Check className="w-4 h-4 text-brand-teal flex-shrink-0" />}
+              </button>
+
               {/* The Clear Quran - Dr. Mustafa Khattab */}
               <button
                 onClick={() => onChangeTranslation('khattab')}
@@ -164,31 +199,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   </div>
                 </div>
                 {translation === 'khattab' && <Check className="w-4 h-4 text-brand-teal flex-shrink-0" />}
-              </button>
-
-              {/* Roman Urdu - Syed Abul A'la Maududi */}
-              <button
-                onClick={() => onChangeTranslation('romanUrdu')}
-                className={`w-full p-3 rounded-xl border text-left transition flex items-center justify-between ${
-                  translation === 'romanUrdu'
-                    ? 'border-brand-teal bg-brand-teal/10 dark:bg-brand-teal/20'
-                    : 'border-gray-200 dark:border-brand-borderDark hover:bg-gray-50 dark:hover:bg-brand-cardDark'
-                }`}
-              >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
-                      Roman Urdu (Tafheem-ul-Quran)
-                    </span>
-                    <span className="px-1.5 py-0.5 text-[10px] font-bold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded">
-                      Syed Abul A'la Maududi
-                    </span>
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                    Urdu translation in Roman/Latin script for Urdu learners
-                  </div>
-                </div>
-                {translation === 'romanUrdu' && <Check className="w-4 h-4 text-brand-teal flex-shrink-0" />}
               </button>
 
               {/* Saheeh International */}

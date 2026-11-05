@@ -33,17 +33,28 @@ export default function App() {
   const [surahData, setSurahData] = useState<SurahDetail | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Settings with LocalStorage Persistence
+  // Settings with LocalStorage Persistence (IndoPak script & Roman Urdu translation as defaults)
   const [script, setScript] = useState<ScriptType>(() => {
+    const migrated = localStorage.getItem('quran_defaults_migrated_v3');
+    if (!migrated) {
+      localStorage.setItem('quran_defaults_migrated_v3', 'true');
+      localStorage.setItem('quran_script', 'indopak');
+      localStorage.setItem('quran_translation', 'romanUrdu');
+      return 'indopak';
+    }
     const saved = localStorage.getItem('quran_script');
-    return saved === 'uthmani' || saved === 'indopak' ? saved : 'uthmani';
+    return saved === 'uthmani' || saved === 'indopak' ? saved : 'indopak';
   });
   const [translation, setTranslation] = useState<TranslationChoice>(() => {
+    const migrated = localStorage.getItem('quran_defaults_migrated_v3');
+    if (!migrated) {
+      return 'romanUrdu';
+    }
     const saved = localStorage.getItem('quran_translation');
     if (saved === 'khattab' || saved === 'saheeh' || saved === 'jalalayn' || saved === 'romanUrdu' || saved === 'none') {
       return saved;
     }
-    return 'khattab';
+    return 'romanUrdu';
   });
   const [showWBW, setShowWBW] = useState<boolean>(() => {
     const saved = localStorage.getItem('quran_show_wbw');
