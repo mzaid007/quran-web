@@ -1,0 +1,800 @@
+[
+  {
+    "number": 1,
+    "name": "Al-Faatiha",
+    "revelationType": "Meccan",
+    "image": "sname_1.png",
+    "totalVerses": 7
+  },
+  {
+    "number": 2,
+    "name": "Al-Baqara",
+    "revelationType": "Medinan",
+    "image": "sname_2.png",
+    "totalVerses": 286
+  },
+  {
+    "number": 3,
+    "name": "Aal-i-Imraan",
+    "revelationType": "Medinan",
+    "image": "sname_3.png",
+    "totalVerses": 200
+  },
+  {
+    "number": 4,
+    "name": "An-Nisaa",
+    "revelationType": "Medinan",
+    "image": "sname_4.png",
+    "totalVerses": 176
+  },
+  {
+    "number": 5,
+    "name": "Al-Maaida",
+    "revelationType": "Medinan",
+    "image": "sname_5.png",
+    "totalVerses": 120
+  },
+  {
+    "number": 6,
+    "name": "Al-An'aam",
+    "revelationType": "Meccan",
+    "image": "sname_6.png",
+    "totalVerses": 165
+  },
+  {
+    "number": 7,
+    "name": "Al-A'raaf",
+    "revelationType": "Meccan",
+    "image": "sname_7.png",
+    "totalVerses": 206
+  },
+  {
+    "number": 8,
+    "name": "Al-Anfaal",
+    "revelationType": "Medinan",
+    "image": "sname_8.png",
+    "totalVerses": 75
+  },
+  {
+    "number": 9,
+    "name": "At-Tawba",
+    "revelationType": "Medinan",
+    "image": "sname_9.png",
+    "totalVerses": 129
+  },
+  {
+    "number": 10,
+    "name": "Yunus",
+    "revelationType": "Meccan",
+    "image": "sname_10.png",
+    "totalVerses": 109
+  },
+  {
+    "number": 11,
+    "name": "Hud",
+    "revelationType": "Meccan",
+    "image": "sname_11.png",
+    "totalVerses": 123
+  },
+  {
+    "number": 12,
+    "name": "Yusuf",
+    "revelationType": "Meccan",
+    "image": "sname_12.png",
+    "totalVerses": 111
+  },
+  {
+    "number": 13,
+    "name": "Ar-Ra'd",
+    "revelationType": "Medinan",
+    "image": "sname_13.png",
+    "totalVerses": 43
+  },
+  {
+    "number": 14,
+    "name": "Ibrahim",
+    "revelationType": "Meccan",
+    "image": "sname_14.png",
+    "totalVerses": 52
+  },
+  {
+    "number": 15,
+    "name": "Al-Hijr",
+    "revelationType": "Meccan",
+    "image": "sname_15.png",
+    "totalVerses": 99
+  },
+  {
+    "number": 16,
+    "name": "An-Nahl",
+    "revelationType": "Meccan",
+    "image": "sname_16.png",
+    "totalVerses": 128
+  },
+  {
+    "number": 17,
+    "name": "Al-Israa",
+    "revelationType": "Meccan",
+    "image": "sname_17.png",
+    "totalVerses": 111
+  },
+  {
+    "number": 18,
+    "name": "Al-Kahf",
+    "revelationType": "Meccan",
+    "image": "sname_18.png",
+    "totalVerses": 110
+  },
+  {
+    "number": 19,
+    "name": "Maryam",
+    "revelationType": "Meccan",
+    "image": "sname_19.png",
+    "totalVerses": 98
+  },
+  {
+    "number": 20,
+    "name": "Taa-Haa",
+    "revelationType": "Meccan",
+    "image": "sname_20.png",
+    "totalVerses": 135
+  },
+  {
+    "number": 21,
+    "name": "Al-Anbiyaa",
+    "revelationType": "Meccan",
+    "image": "sname_21.png",
+    "totalVerses": 112
+  },
+  {
+    "number": 22,
+    "name": "Al-Hajj",
+    "revelationType": "Medinan",
+    "image": "sname_22.png",
+    "totalVerses": 78
+  },
+  {
+    "number": 23,
+    "name": "Al-Muminoon",
+    "revelationType": "Meccan",
+    "image": "sname_23.png",
+    "totalVerses": 118
+  },
+  {
+    "number": 24,
+    "name": "An-Noor",
+    "revelationType": "Medinan",
+    "image": "sname_24.png",
+    "totalVerses": 64
+  },
+  {
+    "number": 25,
+    "name": "Al-Furqaan",
+    "revelationType": "Meccan",
+    "image": "sname_25.png",
+    "totalVerses": 77
+  },
+  {
+    "number": 26,
+    "name": "Ash-Shu'araa",
+    "revelationType": "Meccan",
+    "image": "sname_26.png",
+    "totalVerses": 227
+  },
+  {
+    "number": 27,
+    "name": "An-Naml",
+    "revelationType": "Meccan",
+    "image": "sname_27.png",
+    "totalVerses": 93
+  },
+  {
+    "number": 28,
+    "name": "Al-Qasas",
+    "revelationType": "Meccan",
+    "image": "sname_28.png",
+    "totalVerses": 88
+  },
+  {
+    "number": 29,
+    "name": "Al-Ankaboot",
+    "revelationType": "Meccan",
+    "image": "sname_29.png",
+    "totalVerses": 69
+  },
+  {
+    "number": 30,
+    "name": "Ar-Room",
+    "revelationType": "Meccan",
+    "image": "sname_30.png",
+    "totalVerses": 60
+  },
+  {
+    "number": 31,
+    "name": "Luqman",
+    "revelationType": "Meccan",
+    "image": "sname_31.png",
+    "totalVerses": 34
+  },
+  {
+    "number": 32,
+    "name": "As-Sajda",
+    "revelationType": "Meccan",
+    "image": "sname_32.png",
+    "totalVerses": 30
+  },
+  {
+    "number": 33,
+    "name": "Al-Ahzaab",
+    "revelationType": "Medinan",
+    "image": "sname_33.png",
+    "totalVerses": 73
+  },
+  {
+    "number": 34,
+    "name": "Saba",
+    "revelationType": "Meccan",
+    "image": "sname_34.png",
+    "totalVerses": 54
+  },
+  {
+    "number": 35,
+    "name": "Faatir",
+    "revelationType": "Meccan",
+    "image": "sname_35.png",
+    "totalVerses": 45
+  },
+  {
+    "number": 36,
+    "name": "Yaseen",
+    "revelationType": "Meccan",
+    "image": "sname_36.png",
+    "totalVerses": 83
+  },
+  {
+    "number": 37,
+    "name": "As-Saaffaat",
+    "revelationType": "Meccan",
+    "image": "sname_37.png",
+    "totalVerses": 182
+  },
+  {
+    "number": 38,
+    "name": "Saad",
+    "revelationType": "Meccan",
+    "image": "sname_38.png",
+    "totalVerses": 88
+  },
+  {
+    "number": 39,
+    "name": "Az-Zumar",
+    "revelationType": "Meccan",
+    "image": "sname_39.png",
+    "totalVerses": 75
+  },
+  {
+    "number": 40,
+    "name": "Ghafir",
+    "revelationType": "Meccan",
+    "image": "sname_40.png",
+    "totalVerses": 85
+  },
+  {
+    "number": 41,
+    "name": "Fussilat",
+    "revelationType": "Meccan",
+    "image": "sname_41.png",
+    "totalVerses": 54
+  },
+  {
+    "number": 42,
+    "name": "Ash-Shura",
+    "revelationType": "Meccan",
+    "image": "sname_42.png",
+    "totalVerses": 53
+  },
+  {
+    "number": 43,
+    "name": "Az-Zukhruf",
+    "revelationType": "Meccan",
+    "image": "sname_43.png",
+    "totalVerses": 89
+  },
+  {
+    "number": 44,
+    "name": "Ad-Dukhaan",
+    "revelationType": "Meccan",
+    "image": "sname_44.png",
+    "totalVerses": 59
+  },
+  {
+    "number": 45,
+    "name": "Al-Jaathiya",
+    "revelationType": "Meccan",
+    "image": "sname_45.png",
+    "totalVerses": 37
+  },
+  {
+    "number": 46,
+    "name": "Al-Ahqaf",
+    "revelationType": "Meccan",
+    "image": "sname_46.png",
+    "totalVerses": 35
+  },
+  {
+    "number": 47,
+    "name": "Muhammad",
+    "revelationType": "Medinan",
+    "image": "sname_47.png",
+    "totalVerses": 38
+  },
+  {
+    "number": 48,
+    "name": "Al-Fath",
+    "revelationType": "Medinan",
+    "image": "sname_48.png",
+    "totalVerses": 29
+  },
+  {
+    "number": 49,
+    "name": "Al-Hujuraat",
+    "revelationType": "Medinan",
+    "image": "sname_49.png",
+    "totalVerses": 18
+  },
+  {
+    "number": 50,
+    "name": "Qaaf",
+    "revelationType": "Meccan",
+    "image": "sname_50.png",
+    "totalVerses": 45
+  },
+  {
+    "number": 51,
+    "name": "Adh-Dhaariyat",
+    "revelationType": "Meccan",
+    "image": "sname_51.png",
+    "totalVerses": 60
+  },
+  {
+    "number": 52,
+    "name": "At-Tur",
+    "revelationType": "Meccan",
+    "image": "sname_52.png",
+    "totalVerses": 49
+  },
+  {
+    "number": 53,
+    "name": "An-Najm",
+    "revelationType": "Meccan",
+    "image": "sname_53.png",
+    "totalVerses": 62
+  },
+  {
+    "number": 54,
+    "name": "Al-Qamar",
+    "revelationType": "Meccan",
+    "image": "sname_54.png",
+    "totalVerses": 55
+  },
+  {
+    "number": 55,
+    "name": "Ar-Rahmaan",
+    "revelationType": "Meccan",
+    "image": "sname_55.png",
+    "totalVerses": 78
+  },
+  {
+    "number": 56,
+    "name": "Al-Waaqia",
+    "revelationType": "Meccan",
+    "image": "sname_56.png",
+    "totalVerses": 96
+  },
+  {
+    "number": 57,
+    "name": "Al-Hadid",
+    "revelationType": "Medinan",
+    "image": "sname_57.png",
+    "totalVerses": 29
+  },
+  {
+    "number": 58,
+    "name": "Al-Mujaadila",
+    "revelationType": "Medinan",
+    "image": "sname_58.png",
+    "totalVerses": 22
+  },
+  {
+    "number": 59,
+    "name": "Al-Hashr",
+    "revelationType": "Medinan",
+    "image": "sname_59.png",
+    "totalVerses": 24
+  },
+  {
+    "number": 60,
+    "name": "Al-Mumtahana",
+    "revelationType": "Medinan",
+    "image": "sname_60.png",
+    "totalVerses": 13
+  },
+  {
+    "number": 61,
+    "name": "As-Saff",
+    "revelationType": "Medinan",
+    "image": "sname_61.png",
+    "totalVerses": 14
+  },
+  {
+    "number": 62,
+    "name": "Al-Jumu'a",
+    "revelationType": "Medinan",
+    "image": "sname_62.png",
+    "totalVerses": 11
+  },
+  {
+    "number": 63,
+    "name": "Al-Munaafiqoon",
+    "revelationType": "Medinan",
+    "image": "sname_63.png",
+    "totalVerses": 11
+  },
+  {
+    "number": 64,
+    "name": "At-Taghaabun",
+    "revelationType": "Medinan",
+    "image": "sname_64.png",
+    "totalVerses": 18
+  },
+  {
+    "number": 65,
+    "name": "At-Talaaq",
+    "revelationType": "Medinan",
+    "image": "sname_65.png",
+    "totalVerses": 12
+  },
+  {
+    "number": 66,
+    "name": "At-Tahrim",
+    "revelationType": "Medinan",
+    "image": "sname_66.png",
+    "totalVerses": 12
+  },
+  {
+    "number": 67,
+    "name": "Al-Mulk",
+    "revelationType": "Meccan",
+    "image": "sname_67.png",
+    "totalVerses": 30
+  },
+  {
+    "number": 68,
+    "name": "Al-Qalam",
+    "revelationType": "Meccan",
+    "image": "sname_68.png",
+    "totalVerses": 52
+  },
+  {
+    "number": 69,
+    "name": "Al-Haaqqa",
+    "revelationType": "Meccan",
+    "image": "sname_69.png",
+    "totalVerses": 52
+  },
+  {
+    "number": 70,
+    "name": "Al-Ma'aarij",
+    "revelationType": "Meccan",
+    "image": "sname_70.png",
+    "totalVerses": 44
+  },
+  {
+    "number": 71,
+    "name": "Nooh",
+    "revelationType": "Meccan",
+    "image": "sname_71.png",
+    "totalVerses": 28
+  },
+  {
+    "number": 72,
+    "name": "Al-Jinn",
+    "revelationType": "Meccan",
+    "image": "sname_72.png",
+    "totalVerses": 28
+  },
+  {
+    "number": 73,
+    "name": "Al-Muzzammil",
+    "revelationType": "Meccan",
+    "image": "sname_73.png",
+    "totalVerses": 20
+  },
+  {
+    "number": 74,
+    "name": "Al-Muddaththir",
+    "revelationType": "Meccan",
+    "image": "sname_74.png",
+    "totalVerses": 56
+  },
+  {
+    "number": 75,
+    "name": "Al-Qiyaama",
+    "revelationType": "Meccan",
+    "image": "sname_75.png",
+    "totalVerses": 40
+  },
+  {
+    "number": 76,
+    "name": "Al-Insaan",
+    "revelationType": "Medinan",
+    "image": "sname_76.png",
+    "totalVerses": 31
+  },
+  {
+    "number": 77,
+    "name": "Al-Mursalaat",
+    "revelationType": "Meccan",
+    "image": "sname_77.png",
+    "totalVerses": 50
+  },
+  {
+    "number": 78,
+    "name": "An-Naba",
+    "revelationType": "Meccan",
+    "image": "sname_78.png",
+    "totalVerses": 40
+  },
+  {
+    "number": 79,
+    "name": "An-Naazi'aat",
+    "revelationType": "Meccan",
+    "image": "sname_79.png",
+    "totalVerses": 46
+  },
+  {
+    "number": 80,
+    "name": "Abasa",
+    "revelationType": "Meccan",
+    "image": "sname_80.png",
+    "totalVerses": 42
+  },
+  {
+    "number": 81,
+    "name": "At-Takwir",
+    "revelationType": "Meccan",
+    "image": "sname_81.png",
+    "totalVerses": 29
+  },
+  {
+    "number": 82,
+    "name": "Al-Infitaar",
+    "revelationType": "Meccan",
+    "image": "sname_82.png",
+    "totalVerses": 19
+  },
+  {
+    "number": 83,
+    "name": "Al-Mutaffifin",
+    "revelationType": "Meccan",
+    "image": "sname_83.png",
+    "totalVerses": 36
+  },
+  {
+    "number": 84,
+    "name": "Al-Inshiqaaq",
+    "revelationType": "Meccan",
+    "image": "sname_84.png",
+    "totalVerses": 25
+  },
+  {
+    "number": 85,
+    "name": "Al-Burooj",
+    "revelationType": "Meccan",
+    "image": "sname_85.png",
+    "totalVerses": 22
+  },
+  {
+    "number": 86,
+    "name": "At-Taariq",
+    "revelationType": "Meccan",
+    "image": "sname_86.png",
+    "totalVerses": 17
+  },
+  {
+    "number": 87,
+    "name": "Al-A'laa",
+    "revelationType": "Meccan",
+    "image": "sname_87.png",
+    "totalVerses": 19
+  },
+  {
+    "number": 88,
+    "name": "Al-Ghaashiya",
+    "revelationType": "Meccan",
+    "image": "sname_88.png",
+    "totalVerses": 26
+  },
+  {
+    "number": 89,
+    "name": "Al-Fajr",
+    "revelationType": "Meccan",
+    "image": "sname_89.png",
+    "totalVerses": 30
+  },
+  {
+    "number": 90,
+    "name": "Al-Balad",
+    "revelationType": "Meccan",
+    "image": "sname_90.png",
+    "totalVerses": 20
+  },
+  {
+    "number": 91,
+    "name": "Ash-Shams",
+    "revelationType": "Meccan",
+    "image": "sname_91.png",
+    "totalVerses": 15
+  },
+  {
+    "number": 92,
+    "name": "Al-Lail",
+    "revelationType": "Meccan",
+    "image": "sname_92.png",
+    "totalVerses": 21
+  },
+  {
+    "number": 93,
+    "name": "Ad-Dhuhaa",
+    "revelationType": "Meccan",
+    "image": "sname_93.png",
+    "totalVerses": 11
+  },
+  {
+    "number": 94,
+    "name": "Ash-Sharh",
+    "revelationType": "Meccan",
+    "image": "sname_94.png",
+    "totalVerses": 8
+  },
+  {
+    "number": 95,
+    "name": "At-Tin",
+    "revelationType": "Meccan",
+    "image": "sname_95.png",
+    "totalVerses": 8
+  },
+  {
+    "number": 96,
+    "name": "Al-Alaq",
+    "revelationType": "Meccan",
+    "image": "sname_96.png",
+    "totalVerses": 19
+  },
+  {
+    "number": 97,
+    "name": "Al-Qadr",
+    "revelationType": "Meccan",
+    "image": "sname_97.png",
+    "totalVerses": 5
+  },
+  {
+    "number": 98,
+    "name": "Al-Bayyina",
+    "revelationType": "Medinan",
+    "image": "sname_98.png",
+    "totalVerses": 8
+  },
+  {
+    "number": 99,
+    "name": "Az-Zalzala",
+    "revelationType": "Meccan",
+    "image": "sname_99.png",
+    "totalVerses": 8
+  },
+  {
+    "number": 100,
+    "name": "Al-Aadiyaat",
+    "revelationType": "Meccan",
+    "image": "sname_100.png",
+    "totalVerses": 11
+  },
+  {
+    "number": 101,
+    "name": "Al-Qaari'a",
+    "revelationType": "Meccan",
+    "image": "sname_101.png",
+    "totalVerses": 11
+  },
+  {
+    "number": 102,
+    "name": "At-Takaathur",
+    "revelationType": "Meccan",
+    "image": "sname_102.png",
+    "totalVerses": 8
+  },
+  {
+    "number": 103,
+    "name": "Al-Asr",
+    "revelationType": "Meccan",
+    "image": "sname_103.png",
+    "totalVerses": 3
+  },
+  {
+    "number": 104,
+    "name": "Al-Humaza",
+    "revelationType": "Meccan",
+    "image": "sname_104.png",
+    "totalVerses": 9
+  },
+  {
+    "number": 105,
+    "name": "Al-Fil",
+    "revelationType": "Meccan",
+    "image": "sname_105.png",
+    "totalVerses": 5
+  },
+  {
+    "number": 106,
+    "name": "Quraish",
+    "revelationType": "Meccan",
+    "image": "sname_106.png",
+    "totalVerses": 4
+  },
+  {
+    "number": 107,
+    "name": "Al-Maa'un",
+    "revelationType": "Meccan",
+    "image": "sname_107.png",
+    "totalVerses": 7
+  },
+  {
+    "number": 108,
+    "name": "Al-Kawthar",
+    "revelationType": "Meccan",
+    "image": "sname_108.png",
+    "totalVerses": 3
+  },
+  {
+    "number": 109,
+    "name": "Al-Kaafiroon",
+    "revelationType": "Meccan",
+    "image": "sname_109.png",
+    "totalVerses": 6
+  },
+  {
+    "number": 110,
+    "name": "An-Nasr",
+    "revelationType": "Medinan",
+    "image": "sname_110.png",
+    "totalVerses": 3
+  },
+  {
+    "number": 111,
+    "name": "Al-Masad",
+    "revelationType": "Meccan",
+    "image": "sname_111.png",
+    "totalVerses": 5
+  },
+  {
+    "number": 112,
+    "name": "Al-Ikhlaas",
+    "revelationType": "Meccan",
+    "image": "sname_112.png",
+    "totalVerses": 4
+  },
+  {
+    "number": 113,
+    "name": "Al-Falaq",
+    "revelationType": "Meccan",
+    "image": "sname_113.png",
+    "totalVerses": 5
+  },
+  {
+    "number": 114,
+    "name": "An-Naas",
+    "revelationType": "Meccan",
+    "image": "sname_114.png",
+    "totalVerses": 6
+  }
+]

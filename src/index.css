@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'KFGQPC HAFS Uthmanic Script';
+  src: url('/fonts/hafs-android.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Qalam Majeed 3 (AndiUnpam)';
+  src: url('/fonts/qalammajeed3-android.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'bismillah';
+  src: url('/fonts/bismillah.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Transliteration';
+  src: url('/fonts/times.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Custom Quran Calligraphy Text Enhancements */
+.quran-uthmani {
+  font-family: 'KFGQPC HAFS Uthmanic Script', 'hafs', serif;
+  direction: rtl;
+  text-align: right;
+  line-height: 2.3;
+  letter-spacing: 0;
+  word-spacing: 2px;
+}
+
+.quran-indopak {
+  font-family: 'Qalam Majeed 3 (AndiUnpam)', 'qalammajeed3', serif;
+  direction: rtl;
+  text-align: right;
+  line-height: 2.5;
+  letter-spacing: 0;
+}
+
+.bismillah-glyph {
+  font-family: 'bismillah', serif;
+}
+
+/* Transliteration phonetic styling */
+.select-text u {
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+.select-text b {
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+/* Scrollbar polish */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
