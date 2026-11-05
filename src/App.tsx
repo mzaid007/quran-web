@@ -5,10 +5,11 @@ import { Header } from './components/Header';
 import { SurahListModal } from './components/SurahListModal';
 import { SettingsModal } from './components/SettingsModal';
 import { TafsirModal } from './components/TafsirModal';
+import { ShareVerseModal } from './components/ShareVerseModal';
 import { AudioPlayer } from './components/AudioPlayer';
 import { SyncModal } from './components/SyncModal';
 import { SyncConflictModal } from './components/SyncConflictModal';
-import { Play, Pause, Bookmark, BookOpen, Copy, Check, ChevronLeft, ChevronRight, BookmarkCheck } from 'lucide-react';
+import { Play, Pause, Bookmark, BookOpen, Copy, Check, ChevronLeft, ChevronRight, BookmarkCheck, Share2 } from 'lucide-react';
 
 export default function App() {
   const [surahs, setSurahs] = useState<SurahMeta[]>([]);
@@ -98,6 +99,7 @@ export default function App() {
   const [isSurahListOpen, setIsSurahListOpen] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [tafsirVerse, setTafsirVerse] = useState<Verse | null>(null);
+  const [sharingVerse, setSharingVerse] = useState<Verse | null>(null);
 
   // Bookmarks & Copy state
   const [bookmarks, setBookmarks] = useState<{ surah: number; aya: number }[]>(() => {
@@ -786,7 +788,7 @@ export default function App() {
                     <div className="flex items-center justify-between pb-4 mb-4 border-b border-gray-100 dark:border-brand-borderDark/60">
                       {/* Left: Ayah Badge */}
                       <div className="flex items-center space-x-2.5">
-                        <div className="w-8 h-8 rounded-lg bg-brand-teal/10 dark:bg-brand-teal/20 text-brand-teal dark:text-emerald-400 font-bold text-xs flex items-center justify-center border border-brand-teal/20">
+                        <div className="min-w-8 h-8 px-2 rounded-lg bg-brand-teal/10 dark:bg-brand-teal/20 text-brand-teal dark:text-emerald-400 font-bold text-xs flex items-center justify-center border border-brand-teal/20 shrink-0 whitespace-nowrap shadow-xs">
                           {currentSurahNumber}:{verse.aya}
                         </div>
                         {isLastRead && (
@@ -872,6 +874,15 @@ export default function App() {
                             <Copy className="w-4 h-4" />
                           )}
                         </button>
+
+                        {/* Share as Image */}
+                        <button
+                          onClick={() => setSharingVerse(verse)}
+                          className="p-1.5 text-gray-400 hover:text-brand-teal dark:hover:text-emerald-400 hover:bg-gray-100 dark:hover:bg-brand-cardDark rounded-lg transition"
+                          title="Share Verse as Image"
+                        >
+                          <Share2 className="w-4 h-4" />
+                        </button>
                       </div>
                     </div>
 
@@ -917,7 +928,7 @@ export default function App() {
                           style={{ fontSize: `${arabicFontSize}px` }}
                         >
                           {arabicText}
-                          <span className="inline-flex items-center justify-center w-7 h-7 mx-2 text-xs text-brand-teal border border-brand-teal/40 rounded-full font-sans select-none align-middle font-bold shrink-0">
+                          <span className="inline-flex items-center justify-center min-w-[1.75rem] h-7 px-1.5 mx-2 text-xs text-brand-teal border border-brand-teal/40 rounded-full font-sans select-none align-middle font-bold shrink-0">
                             {verse.aya}
                           </span>
                         </p>
@@ -1079,6 +1090,16 @@ export default function App() {
         surahNumber={currentSurahNumber}
         surahName={surahData?.name || ''}
         verse={tafsirVerse}
+      />
+
+      <ShareVerseModal
+        isOpen={!!sharingVerse}
+        onClose={() => setSharingVerse(null)}
+        surahNumber={currentSurahNumber}
+        surahName={surahData?.name || ''}
+        verse={sharingVerse}
+        script={script}
+        translation={translation}
       />
     </div>
   );
