@@ -134,7 +134,7 @@ export const TafsirModal: React.FC<TafsirModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
       <div className="bg-white dark:bg-brand-surfaceDark w-full max-w-3xl max-h-[90vh] rounded-2xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 dark:border-brand-borderDark">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-gray-100 dark:border-brand-borderDark flex items-center justify-between bg-gray-50/60 dark:bg-brand-cardDark/60">
+        <div className="p-4 sm:p-5 border-b border-gray-100 dark:border-brand-borderDark flex items-center justify-between bg-gray-50/60 dark:bg-brand-cardDark/60 shrink-0">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-xl bg-brand-teal/10 dark:bg-brand-teal/20 text-brand-teal dark:text-emerald-400 flex items-center justify-center">
               <BookOpen className="w-5 h-5" />
@@ -171,49 +171,54 @@ export const TafsirModal: React.FC<TafsirModalProps> = ({
           </div>
         </div>
 
-        {/* Tafsir Source Switcher Tabs */}
-        <div className="flex border-b border-gray-200 dark:border-brand-borderDark px-2 sm:px-4 bg-gray-50/30 dark:bg-brand-cardDark/30 overflow-x-auto">
-          <button
-            onClick={() => handleSelectTafsir('kathir_en')}
-            className={`py-3 px-3 sm:px-4 text-xs sm:text-sm font-bold tracking-wide transition border-b-2 flex items-center gap-2 whitespace-nowrap ${
-              selectedTafsir === 'kathir_en'
-                ? 'border-brand-teal text-brand-teal dark:text-emerald-400 bg-white/60 dark:bg-brand-surfaceDark/60'
-                : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400'
-            }`}
-          >
-            <span>Ibn Kathir (English)</span>
-            <span className="text-[10px] px-1.5 py-0.2 rounded bg-brand-teal/10 text-brand-teal font-normal hidden sm:inline">
-              Comprehensive
-            </span>
-          </button>
+        {/* Tafsir Source Switcher (Responsive Segmented Control) */}
+        <div className="p-3 sm:px-5 bg-gray-50/70 dark:bg-brand-cardDark/70 border-b border-gray-200/80 dark:border-brand-borderDark shrink-0">
+          <div className="grid grid-cols-3 gap-1.5 p-1 bg-gray-200/60 dark:bg-black/30 rounded-xl">
+            <button
+              type="button"
+              onClick={() => handleSelectTafsir('kathir_en')}
+              className={`py-2 px-1.5 sm:px-3 text-xs sm:text-sm font-semibold rounded-lg transition-all text-center flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 ${
+                selectedTafsir === 'kathir_en'
+                  ? 'bg-white dark:bg-brand-surfaceDark text-brand-teal dark:text-emerald-400 shadow-sm font-bold'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+              }`}
+            >
+              <span className="truncate">Ibn Kathir</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-brand-teal/10 text-brand-teal dark:text-emerald-400 font-medium">
+                English
+              </span>
+            </button>
 
-          <button
-            onClick={() => handleSelectTafsir('kathir_ur')}
-            className={`py-3 px-3 sm:px-4 text-xs sm:text-sm font-bold tracking-wide transition border-b-2 flex items-center gap-2 whitespace-nowrap ${
-              selectedTafsir === 'kathir_ur'
-                ? 'border-brand-teal text-brand-teal dark:text-emerald-400 bg-white/60 dark:bg-brand-surfaceDark/60'
-                : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400'
-            }`}
-          >
-            <span className="urdu-nastaliq text-sm sm:text-base leading-none">تفسیر ابن کثیر (اردو)</span>
-            <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-normal">
-              اردو
-            </span>
-          </button>
+            <button
+              type="button"
+              onClick={() => handleSelectTafsir('kathir_ur')}
+              className={`py-2 px-1.5 sm:px-3 text-xs sm:text-sm font-semibold rounded-lg transition-all text-center flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 ${
+                selectedTafsir === 'kathir_ur'
+                  ? 'bg-white dark:bg-brand-surfaceDark text-brand-teal dark:text-emerald-400 shadow-sm font-bold'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+              }`}
+            >
+              <span className="truncate">ابن کثیر</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium">
+                اردو
+              </span>
+            </button>
 
-          <button
-            onClick={() => handleSelectTafsir('jalalayn')}
-            className={`py-3 px-3 sm:px-4 text-xs sm:text-sm font-bold tracking-wide transition border-b-2 flex items-center gap-2 whitespace-nowrap ${
-              selectedTafsir === 'jalalayn'
-                ? 'border-brand-teal text-brand-teal dark:text-emerald-400 bg-white/60 dark:bg-brand-surfaceDark/60'
-                : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400'
-            }`}
-          >
-            <span>Al-Jalalayn</span>
-            <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 font-normal hidden sm:inline">
-              Concise
-            </span>
-          </button>
+            <button
+              type="button"
+              onClick={() => handleSelectTafsir('jalalayn')}
+              className={`py-2 px-1.5 sm:px-3 text-xs sm:text-sm font-semibold rounded-lg transition-all text-center flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 ${
+                selectedTafsir === 'jalalayn'
+                  ? 'bg-white dark:bg-brand-surfaceDark text-brand-teal dark:text-emerald-400 shadow-sm font-bold'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+              }`}
+            >
+              <span className="truncate">Al-Jalalayn</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 font-medium">
+                Concise
+              </span>
+            </button>
+          </div>
         </div>
 
         {/* Modal Scroll Body */}
