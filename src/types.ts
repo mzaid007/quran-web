@@ -29,7 +29,7 @@ export interface SurahDetail extends SurahMeta {
   verses: Verse[];
 }
 
-export type ScriptType = 'uthmani' | 'indopak' | 'indopak-saleem';
+export type ScriptType = 'uthmani' | 'indopak' | 'indopak-saleem' | 'indopak-majeed';
 
 export function getScriptFontClass(script: ScriptType): string {
   switch (script) {
@@ -39,8 +39,10 @@ export function getScriptFontClass(script: ScriptType): string {
       return 'quran-indopak';
     case 'indopak-saleem':
       return 'quran-indopak-saleem';
+    case 'indopak-majeed':
+      return 'quran-indopak-majeed';
     default:
-      return 'quran-indopak-saleem';
+      return 'quran-indopak-majeed';
   }
 }
 

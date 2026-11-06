@@ -31,6 +31,16 @@
 }
 
 @font-face {
+  font-family: 'Al Qalam Quran Majeed';
+  src: url('/fonts/alqalam_majeed.woff2') format('woff2'),
+       url('/fonts/alqalam_majeed.woff') format('woff'),
+       url('/fonts/alqalam_majeed.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'bismillah';
   src: url('/fonts/bismillah.ttf') format('truetype');
   font-weight: normal;
@@ -81,6 +91,18 @@
   overflow-wrap: break-word;
   word-break: break-word;
   padding-bottom: 0.3em;
+}
+
+.quran-indopak-majeed {
+  font-family: 'Al Qalam Quran Majeed', 'Al Qalam Quran Majeed 2', serif;
+  direction: rtl;
+  text-align: right;
+  line-height: 2.5;
+  letter-spacing: 0;
+  word-spacing: 4px;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  padding-bottom: 0.35em;
 }
 
 .urdu-nastaliq {

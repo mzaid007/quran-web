@@ -46,7 +46,7 @@ export default function App() {
       return 'indopak-saleem';
     }
     const saved = localStorage.getItem('quran_script');
-    return saved === 'uthmani' || saved === 'indopak' || saved === 'indopak-saleem' ? saved : 'indopak-saleem';
+    return saved === 'uthmani' || saved === 'indopak' || saved === 'indopak-saleem' || saved === 'indopak-majeed' ? saved : 'indopak-majeed';
   });
   const [translation, setTranslation] = useState<TranslationChoice>(() => {
     const migrated = localStorage.getItem('quran_defaults_migrated_v4');

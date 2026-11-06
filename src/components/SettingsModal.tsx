@@ -72,8 +72,32 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </span>
               <span className="text-xs text-brand-teal dark:text-emerald-400 font-medium">Authentic App Fonts</span>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-              {/* IndoPak (Saleem / Noorani) - Classic 15-Line */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {/* Al Qalam Majeed - Authentic Bold Taj Calligraphy */}
+              <button
+                onClick={() => onChangeScript('indopak-majeed')}
+                className={`p-3 rounded-xl border text-left transition flex flex-col justify-between ${
+                  script === 'indopak-majeed'
+                    ? 'border-brand-teal bg-brand-teal/10 dark:bg-brand-teal/20 ring-1 ring-brand-teal'
+                    : 'border-gray-200 dark:border-brand-borderDark hover:bg-gray-50 dark:hover:bg-brand-cardDark'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-xs font-bold text-gray-800 dark:text-gray-200">Al Qalam Majeed</span>
+                    <span className="px-1.5 py-0.5 text-[9px] font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 rounded">
+                      Printed Mushaf Match
+                    </span>
+                  </div>
+                  {script === 'indopak-majeed' && <Check className="w-4 h-4 text-brand-teal shrink-0" />}
+                </div>
+                <div className="quran-indopak-majeed text-xl mt-2 text-right">
+                  بِسْمِ اللّٰهِ
+                </div>
+                <span className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">Bold traditional Taj script • Wide letters</span>
+              </button>
+
+              {/* IndoPak (Saleem) - Classic 15-Line */}
               <button
                 onClick={() => onChangeScript('indopak-saleem')}
                 className={`p-3 rounded-xl border text-left transition flex flex-col justify-between ${
@@ -84,9 +108,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="text-xs font-bold text-gray-800 dark:text-gray-200">IndoPak Saleem</span>
-                    <span className="px-1.5 py-0.5 text-[9px] font-bold bg-brand-teal/20 text-brand-teal dark:text-emerald-400 rounded">
-                      Classic 15-Line
+                    <span className="text-xs font-bold text-gray-800 dark:text-gray-200">PDMS Saleem</span>
+                    <span className="px-1.5 py-0.5 text-[9px] font-semibold bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
+                      15-Line
                     </span>
                   </div>
                   {script === 'indopak-saleem' && <Check className="w-4 h-4 text-brand-teal shrink-0" />}
@@ -94,10 +118,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <div className="quran-indopak-saleem text-xl mt-2 text-right">
                   بِسْمِ اللّٰهِ
                 </div>
-                <span className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">Taj Company • Well-Spaced</span>
+                <span className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">Lighter stroke weight • Clean pauses</span>
               </button>
 
-              {/* IndoPak (Qalam Majeed) - Compact */}
+              {/* IndoPak (Qalam Majeed 3) - Compact */}
               <button
                 onClick={() => onChangeScript('indopak')}
                 className={`p-3 rounded-xl border text-left transition flex flex-col justify-between ${
@@ -118,7 +142,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <div className="quran-indopak text-xl mt-2 text-right">
                   بِسْمِ اللّٰهِ
                 </div>
-                <span className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">Qalam Majeed 3 Font</span>
+                <span className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">Qalam Majeed 3 • Dense Asian script</span>
               </button>
 
               {/* Uthmani (Hafs) */}
@@ -142,7 +166,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <div className="quran-uthmani text-xl mt-2 text-right">
                   بِسۡمِ ٱللَّهِ
                 </div>
-                <span className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">Madani Quran Font</span>
+                <span className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">Madani Quran Font • Spaced pauses</span>
               </button>
             </div>
           </div>
