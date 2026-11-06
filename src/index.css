@@ -12,7 +12,9 @@
 
 @font-face {
   font-family: 'Qalam Majeed 3 (AndiUnpam)';
-  src: url('/fonts/qalammajeed3-android.ttf') format('truetype');
+  src: url('/fonts/qalammajeed3-android.woff2') format('woff2'),
+       url('/fonts/qalammajeed3-android.woff') format('woff'),
+       url('/fonts/qalammajeed3-android.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
