@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { RECITERS } from './types';
 import type { SurahMeta, SurahDetail, Verse, ScriptType, TranslationChoice, Reciter, LastRead, CloudSyncData, SyncConflict } from './types';
+import { getScriptFontClass, getScriptArabicText, getScriptBismillah } from './types';
 import { Header } from './components/Header';
 import { SurahListModal } from './components/SurahListModal';
 import { SettingsModal } from './components/SettingsModal';
@@ -39,13 +40,13 @@ export default function App() {
     const migrated = localStorage.getItem('quran_defaults_migrated_v4');
     if (!migrated) {
       localStorage.setItem('quran_defaults_migrated_v4', 'true');
-      localStorage.setItem('quran_script', 'indopak');
+      localStorage.setItem('quran_script', 'indopak-saleem');
       localStorage.setItem('quran_translation', 'romanUrdu');
       localStorage.setItem('quran_show_wbw', 'false');
-      return 'indopak';
+      return 'indopak-saleem';
     }
     const saved = localStorage.getItem('quran_script');
-    return saved === 'uthmani' || saved === 'indopak' ? saved : 'indopak';
+    return saved === 'uthmani' || saved === 'indopak' || saved === 'indopak-saleem' ? saved : 'indopak-saleem';
   });
   const [translation, setTranslation] = useState<TranslationChoice>(() => {
     const migrated = localStorage.getItem('quran_defaults_migrated_v4');
@@ -585,7 +586,7 @@ export default function App() {
   };
 
   const handleCopyVerse = (verse: Verse) => {
-    const arabicText = script === 'uthmani' ? verse.uthmani : verse.indopak;
+    const arabicText = getScriptArabicText(verse, script);
     const transText =
       translation === 'khattab'
         ? verse.khattab
@@ -743,18 +744,14 @@ export default function App() {
             {surahData.bismillah && (
               <div className="text-center my-6 sm:my-8 py-4 sm:py-6 px-4 select-text">
                 <div
-                  className={`${
-                    script === 'uthmani' ? 'quran-uthmani' : 'quran-indopak'
-                  } quran-bismillah text-gray-800 dark:text-gray-200 select-text`}
+                  className={`${getScriptFontClass(script)} quran-bismillah text-gray-800 dark:text-gray-200 select-text`}
                   style={{
                     fontSize: `${arabicFontSize + 6}px`,
                     lineHeight: 2.3,
                   }}
                   dir="rtl"
                 >
-                  {script === 'uthmani'
-                    ? 'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ'
-                    : 'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ'}
+                  {getScriptBismillah(script)}
                 </div>
                 <div className="text-xs sm:text-sm text-gray-400 dark:text-gray-500 italic mt-3 sm:mt-4 font-sans select-text tracking-wide">
                   In the Name of Allah—the Most Compassionate, Most Merciful
@@ -770,7 +767,7 @@ export default function App() {
                   (b) => b.surah === currentSurahNumber && b.aya === verse.aya
                 );
                 const isLastRead = lastRead?.surah === currentSurahNumber && lastRead?.aya === verse.aya;
-                const arabicText = script === 'uthmani' ? verse.uthmani : verse.indopak;
+                const arabicText = getScriptArabicText(verse, script);
 
                 return (
                   <div
@@ -904,9 +901,7 @@ export default function App() {
                             >
                               {/* Word Arabic Text */}
                               <span
-                                className={`${
-                                  script === 'uthmani' ? 'quran-uthmani' : 'quran-indopak'
-                                } wbw-arabic text-gray-900 dark:text-gray-100 select-text`}
+                                className={`${getScriptFontClass(script)} wbw-arabic text-gray-900 dark:text-gray-100 select-text`}
                                 style={{ fontSize: `${arabicFontSize}px` }}
                               >
                                 {w.arabic}
@@ -926,9 +921,7 @@ export default function App() {
                       /* Classic Flowing Calligraphy Verse */
                       <div className="mb-6 pb-2 text-right select-text">
                         <p
-                          className={`${
-                            script === 'uthmani' ? 'quran-uthmani' : 'quran-indopak'
-                          } text-gray-900 dark:text-gray-100`}
+                          className={`${getScriptFontClass(script)} text-gray-900 dark:text-gray-100`}
                           style={{ fontSize: `${arabicFontSize}px` }}
                         >
                           {arabicText}

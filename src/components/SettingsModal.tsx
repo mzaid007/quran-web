@@ -44,7 +44,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white dark:bg-brand-surfaceDark w-full max-w-lg rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 dark:border-brand-borderDark">
+      <div className="bg-white dark:bg-brand-surfaceDark w-full max-w-xl rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 dark:border-brand-borderDark">
         {/* Header */}
         <div className="p-4 border-b border-gray-100 dark:border-brand-borderDark flex items-center justify-between">
           <div className="flex items-center space-x-2">
@@ -72,21 +72,45 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </span>
               <span className="text-xs text-brand-teal dark:text-emerald-400 font-medium">Authentic App Fonts</span>
             </div>
-            <div className="grid grid-cols-2 gap-2.5">
-              {/* IndoPak (Asian) - Default */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              {/* IndoPak (Saleem / Noorani) - Classic 15-Line */}
               <button
-                onClick={() => onChangeScript('indopak')}
+                onClick={() => onChangeScript('indopak-saleem')}
                 className={`p-3 rounded-xl border text-left transition flex flex-col justify-between ${
-                  script === 'indopak'
-                    ? 'border-brand-teal bg-brand-teal/10 dark:bg-brand-teal/20'
+                  script === 'indopak-saleem'
+                    ? 'border-brand-teal bg-brand-teal/10 dark:bg-brand-teal/20 ring-1 ring-brand-teal'
                     : 'border-gray-200 dark:border-brand-borderDark hover:bg-gray-50 dark:hover:bg-brand-cardDark'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-bold text-gray-800 dark:text-gray-200">IndoPak (Asian)</span>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-xs font-bold text-gray-800 dark:text-gray-200">IndoPak Saleem</span>
                     <span className="px-1.5 py-0.5 text-[9px] font-bold bg-brand-teal/20 text-brand-teal dark:text-emerald-400 rounded">
-                      Default
+                      Classic 15-Line
+                    </span>
+                  </div>
+                  {script === 'indopak-saleem' && <Check className="w-4 h-4 text-brand-teal shrink-0" />}
+                </div>
+                <div className="quran-indopak-saleem text-xl mt-2 text-right">
+                  بِسْمِ اللّٰهِ
+                </div>
+                <span className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">Taj Company • Well-Spaced</span>
+              </button>
+
+              {/* IndoPak (Qalam Majeed) - Compact */}
+              <button
+                onClick={() => onChangeScript('indopak')}
+                className={`p-3 rounded-xl border text-left transition flex flex-col justify-between ${
+                  script === 'indopak'
+                    ? 'border-brand-teal bg-brand-teal/10 dark:bg-brand-teal/20 ring-1 ring-brand-teal'
+                    : 'border-gray-200 dark:border-brand-borderDark hover:bg-gray-50 dark:hover:bg-brand-cardDark'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-xs font-bold text-gray-800 dark:text-gray-200">IndoPak Compact</span>
+                    <span className="px-1.5 py-0.5 text-[9px] font-semibold bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
+                      Compact
                     </span>
                   </div>
                   {script === 'indopak' && <Check className="w-4 h-4 text-brand-teal shrink-0" />}
@@ -102,12 +126,17 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 onClick={() => onChangeScript('uthmani')}
                 className={`p-3 rounded-xl border text-left transition flex flex-col justify-between ${
                   script === 'uthmani'
-                    ? 'border-brand-teal bg-brand-teal/10 dark:bg-brand-teal/20'
+                    ? 'border-brand-teal bg-brand-teal/10 dark:bg-brand-teal/20 ring-1 ring-brand-teal'
                     : 'border-gray-200 dark:border-brand-borderDark hover:bg-gray-50 dark:hover:bg-brand-cardDark'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-gray-800 dark:text-gray-200">Uthmani (Hafs)</span>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-xs font-bold text-gray-800 dark:text-gray-200">Uthmani (Hafs)</span>
+                    <span className="px-1.5 py-0.5 text-[9px] font-semibold bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
+                      Madani
+                    </span>
+                  </div>
                   {script === 'uthmani' && <Check className="w-4 h-4 text-brand-teal shrink-0" />}
                 </div>
                 <div className="quran-uthmani text-xl mt-2 text-right">

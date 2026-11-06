@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { X, Share2, Download, Copy, Check, Loader2, Sparkles } from 'lucide-react';
 import { toBlob } from 'html-to-image';
 import type { Verse, ScriptType, TranslationChoice } from '../types';
+import { getScriptFontClass } from '../types';
 
 interface ShareVerseModalProps {
   isOpen: boolean;
@@ -435,9 +436,7 @@ export const ShareVerseModal: React.FC<ShareVerseModalProps> = ({
                 {/* Arabic Text */}
                 <div className="text-right my-5 select-none" dir="rtl">
                   <p
-                    className={`${
-                      script === 'uthmani' ? 'quran-uthmani' : 'quran-indopak'
-                    } ${themeStyles.arabic} text-2xl sm:text-3xl leading-loose font-normal`}
+                    className={`${getScriptFontClass(script)} ${themeStyles.arabic} text-2xl sm:text-3xl leading-loose font-normal`}
                   >
                     {arabicText}
                     <span

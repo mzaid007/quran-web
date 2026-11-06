@@ -29,7 +29,30 @@ export interface SurahDetail extends SurahMeta {
   verses: Verse[];
 }
 
-export type ScriptType = 'uthmani' | 'indopak';
+export type ScriptType = 'uthmani' | 'indopak' | 'indopak-saleem';
+
+export function getScriptFontClass(script: ScriptType): string {
+  switch (script) {
+    case 'uthmani':
+      return 'quran-uthmani';
+    case 'indopak':
+      return 'quran-indopak';
+    case 'indopak-saleem':
+      return 'quran-indopak-saleem';
+    default:
+      return 'quran-indopak-saleem';
+  }
+}
+
+export function getScriptArabicText(verse: Verse, script: ScriptType): string {
+  return script === 'uthmani' ? verse.uthmani : (verse.indopak || verse.uthmani);
+}
+
+export function getScriptBismillah(script: ScriptType): string {
+  return script === 'uthmani'
+    ? 'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ'
+    : 'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ';
+}
 export type TranslationChoice = 'khattab' | 'saheeh' | 'jalalayn' | 'romanUrdu' | 'none';
 
 export interface LastRead {

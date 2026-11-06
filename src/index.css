@@ -19,6 +19,16 @@
 }
 
 @font-face {
+  font-family: 'PDMS Saleem Quran';
+  src: url('/fonts/pdms_saleem.woff2') format('woff2'),
+       url('/fonts/pdms_saleem.woff') format('woff'),
+       url('/fonts/pdms_saleem.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'bismillah';
   src: url('/fonts/bismillah.ttf') format('truetype');
   font-weight: normal;
@@ -56,6 +66,18 @@
   overflow-wrap: break-word;
   word-break: break-word;
   padding-bottom: 0.25em;
+}
+
+.quran-indopak-saleem {
+  font-family: 'PDMS Saleem Quran', '_PDMS_Saleem_QuranFont', serif;
+  direction: rtl;
+  text-align: right;
+  line-height: 2.5;
+  letter-spacing: 0;
+  word-spacing: 1.5px;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  padding-bottom: 0.3em;
 }
 
 .urdu-nastaliq {
