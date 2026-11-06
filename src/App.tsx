@@ -35,15 +35,15 @@ export default function App() {
   const [surahData, setSurahData] = useState<SurahDetail | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Settings with LocalStorage Persistence (IndoPak script & Roman Urdu translation as defaults, WBW disabled by default)
+  // Settings with LocalStorage Persistence (IndoPak Majeed well-spaced script & Roman Urdu translation as defaults, WBW disabled by default)
   const [script, setScript] = useState<ScriptType>(() => {
-    const migrated = localStorage.getItem('quran_defaults_migrated_v4');
+    const migrated = localStorage.getItem('quran_defaults_migrated_v5');
     if (!migrated) {
-      localStorage.setItem('quran_defaults_migrated_v4', 'true');
-      localStorage.setItem('quran_script', 'indopak-saleem');
+      localStorage.setItem('quran_defaults_migrated_v5', 'true');
+      localStorage.setItem('quran_script', 'indopak-majeed');
       localStorage.setItem('quran_translation', 'romanUrdu');
       localStorage.setItem('quran_show_wbw', 'false');
-      return 'indopak-saleem';
+      return 'indopak-majeed';
     }
     const saved = localStorage.getItem('quran_script');
     return saved === 'uthmani' || saved === 'indopak' || saved === 'indopak-saleem' || saved === 'indopak-majeed' ? saved : 'indopak-majeed';

@@ -85,8 +85,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5 flex-wrap">
                     <span className="text-xs font-bold text-gray-800 dark:text-gray-200">IndoPak (Majeed)</span>
-                    <span className="px-1.5 py-0.5 text-[9px] font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 rounded">
-                      Well-Spaced Font
+                    <span className="px-1.5 py-0.5 text-[9px] font-bold bg-brand-teal/20 text-brand-teal dark:text-emerald-400 rounded">
+                      Default • Well-Spaced
                     </span>
                   </div>
                   {script === 'indopak-majeed' && <Check className="w-4 h-4 text-brand-teal shrink-0" />}
