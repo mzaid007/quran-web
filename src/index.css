@@ -49,9 +49,9 @@
   font-family: 'KFGQPC HAFS Uthmanic Script', 'hafs', serif;
   direction: rtl;
   text-align: right;
-  line-height: 2.2;
+  line-height: 2.3;
   letter-spacing: 0;
-  word-spacing: 2px;
+  word-spacing: 3.5px;
   overflow-wrap: break-word;
   word-break: break-word;
   padding-bottom: 0.25em;
@@ -63,6 +63,7 @@
   text-align: right;
   line-height: 2.4;
   letter-spacing: 0;
+  word-spacing: 3px;
   overflow-wrap: break-word;
   word-break: break-word;
   padding-bottom: 0.25em;
@@ -74,7 +75,7 @@
   text-align: right;
   line-height: 2.5;
   letter-spacing: 0;
-  word-spacing: 1.5px;
+  word-spacing: 3px;
   overflow-wrap: break-word;
   word-break: break-word;
   padding-bottom: 0.3em;

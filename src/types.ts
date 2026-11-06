@@ -44,8 +44,19 @@ export function getScriptFontClass(script: ScriptType): string {
   }
 }
 
+export function formatQuranText(text: string): string {
+  if (!text) return '';
+  return text
+    .replace(/\s*۞\s*/g, ' ۞ ')
+    .replace(/\s*۩\s*/g, ' ۩ ')
+    .replace(/\s*\u200c?([\u06d6-\u06dc\u0615])\s*/g, ' $1 ')
+    .replace(/ +/g, ' ')
+    .trim();
+}
+
 export function getScriptArabicText(verse: Verse, script: ScriptType): string {
-  return script === 'uthmani' ? verse.uthmani : (verse.indopak || verse.uthmani);
+  const raw = script === 'uthmani' ? verse.uthmani : (verse.indopak || verse.uthmani);
+  return formatQuranText(raw);
 }
 
 export function getScriptBismillah(script: ScriptType): string {

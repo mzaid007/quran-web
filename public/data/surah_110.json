@@ -1,1 +1,140 @@
-{"number": 110, "name": "An-Nasr", "revelationType": "Medinan", "totalVerses": 3, "bismillah": true, "verses": [{"aya": 1, "uthmani": "إِذَا جَآءَ نَصۡرُ ٱللَّهِ وَٱلۡفَتۡحُ", "indopak": "اِذَا جَاۤءَ نَصْرُ اللّٰهِ وَالْفَتْحُۙ", "transliteration": "﻿i<u>tha</u> j<u>a</u>a na<u>s</u>ru all<u>a</u>hi wa<b>a</b>lfat<u>h</u><b>u</b>", "saheeh": "When the victory of Allah has come and the conquest,", "khattab": "When Allah’s ˹ultimate˺ help comes and the victory ˹over Mecca is achieved˺", "jalalayn": "﻿When the help of God, for His Prophet (s), against his enemies, comes together with victory, the victory over Mecca,", "wbw": [{"word": 1, "arabic": "إِذَا", "translation": "When"}, {"word": 2, "arabic": "جَآءَ", "translation": "comes"}, {"word": 3, "arabic": "نَصْرُ", "translation": "(the) Help"}, {"word": 4, "arabic": "اللَّهِ", "translation": "(of) Allah"}, {"word": 5, "arabic": "وَالْفَتْحُ", "translation": "and the Victory,"}], "romanUrdu": "Jab Allah ki madad aa jaye aur fatah naseeb ho jaye"}, {"aya": 2, "uthmani": "وَرَأَيۡتَ ٱلنَّاسَ يَدۡخُلُونَ فِي دِينِ ٱللَّهِ أَفۡوَاجٗا", "indopak": "وَرَاَيْتَ النَّاسَ يَدْخُلُوْنَ فِىْ دِيْنِ اللّٰهِ اَفْوَاجًاۙ", "transliteration": "waraayta a<b>l</b>nn<u>a</u>sa yadkhuloona fee deeni all<u>a</u>hi afw<u>a</u>j<u>a</u><b>n</b>", "saheeh": "And you see the people entering into the religion of Allah in multitudes,", "khattab": "and you ˹O Prophet˺ see the people embracing Allah’s Way in crowds", "jalalayn": "﻿and you see people entering God’s religion, that is to say, Islam, in throngs, in large droves, after they had been entering one by one — this was after the conquest of Mecca, when the Arabs from all corners of the land came to him willingly [in obedience to his command] —", "wbw": [{"word": 1, "arabic": "وَرَأَيْتَ", "translation": "And you see"}, {"word": 2, "arabic": "النَّاسَ", "translation": "the people"}, {"word": 3, "arabic": "يَدْخُلُونَ", "translation": "entering"}, {"word": 4, "arabic": "فِى", "translation": "into"}, {"word": 5, "arabic": "دِينِ", "translation": "(the) religion"}, {"word": 6, "arabic": "اللَّهِ", "translation": "(of) Allah"}, {"word": 7, "arabic": "أَفْوَاجًا", "translation": "(in) multitudes."}], "romanUrdu": "Aur (aey Nabi s.a.s) tum dekh lo ke log fauj dar fauj Allah ke deen mein dakhil ho rahey hain"}, {"aya": 3, "uthmani": "فَسَبِّحۡ بِحَمۡدِ رَبِّكَ وَٱسۡتَغۡفِرۡهُۚإِنَّهُۥ كَانَ تَوَّابَۢا", "indopak": "فَسَبِّحْ بِحَمْدِ رَبِّكَ وَاسْتَغْفِرْهُۗاِنَّهٗ كَانَ تَوَّابًا٪", "transliteration": "fasabbi<u>h</u> bi<u>h</u>amdi rabbika wa<b>i</b>staghfirhu innahu k<u>a</u>na taww<u>a</u>b<u>a</u><b>n</b>", "saheeh": "Then exalt [Him] with praise of your Lord and ask forgiveness of Him. Indeed, He is ever Accepting of repentance.", "khattab": "then glorify the praises of your Lord and seek His forgiveness, for certainly He is ever Accepting of Repentance", "jalalayn": "﻿then glorify with praise of your Lord, that is, continuously praising Him, and seek forgiveness from Him; for verily He is ever ready to relent. The Prophet (s), after this sūra had been revealed, would frequently repeat the words subhāna’Llāhi wa bi-hamdihi, ‘Glory and praise be to God’, and astaghfiru’Llāha wa-atūbu ilayhi, ‘I seek forgiveness from God and I repent to Him’; with [the revelation of] this [final sūra] he realised that his end was near. The victory over Mecca was in Ramadān of year 8; the Prophet (s) passed away in Rabī‘ I of the year 10.", "wbw": [{"word": 1, "arabic": "فَسَبِّحْ", "translation": "Then glorify"}, {"word": 2, "arabic": "بِحَمْدِ", "translation": "(the) praises"}, {"word": 3, "arabic": "رَبِّكَ", "translation": "(of) your Lord"}, {"word": 4, "arabic": "وَاسْتَغْفِرْهُ", "translation": "and ask His forgiveness."}, {"word": 5, "arabic": "إِنَّهُۥ", "translation": "Indeed, He"}, {"word": 6, "arabic": "كَانَ", "translation": "is"}, {"word": 7, "arabic": "تَوَّابَا", "translation": "Oft-Returning."}], "romanUrdu": "To apne Rubb ki hamd ke saath uski tasbeeh karo Aur us se magfirat ki duaa maango. Beshak woh bada tauba qabool karne wala hai"}]}
+{
+  "number": 110,
+  "name": "An-Nasr",
+  "revelationType": "Medinan",
+  "totalVerses": 3,
+  "bismillah": true,
+  "verses": [
+    {
+      "aya": 1,
+      "uthmani": "إِذَا جَآءَ نَصۡرُ ٱللَّهِ وَٱلۡفَتۡحُ",
+      "indopak": "اِذَا جَاۤءَ نَصْرُ اللّٰهِ وَالْفَتْحُ ۙ",
+      "transliteration": "﻿i<u>tha</u> j<u>a</u>a na<u>s</u>ru all<u>a</u>hi wa<b>a</b>lfat<u>h</u><b>u</b>",
+      "saheeh": "When the victory of Allah has come and the conquest,",
+      "khattab": "When Allah’s ˹ultimate˺ help comes and the victory ˹over Mecca is achieved˺",
+      "jalalayn": "﻿When the help of God, for His Prophet (s), against his enemies, comes together with victory, the victory over Mecca,",
+      "wbw": [
+        {
+          "word": 1,
+          "arabic": "إِذَا",
+          "translation": "When"
+        },
+        {
+          "word": 2,
+          "arabic": "جَآءَ",
+          "translation": "comes"
+        },
+        {
+          "word": 3,
+          "arabic": "نَصْرُ",
+          "translation": "(the) Help"
+        },
+        {
+          "word": 4,
+          "arabic": "اللَّهِ",
+          "translation": "(of) Allah"
+        },
+        {
+          "word": 5,
+          "arabic": "وَالْفَتْحُ",
+          "translation": "and the Victory,"
+        }
+      ],
+      "romanUrdu": "Jab Allah ki madad aa jaye aur fatah naseeb ho jaye"
+    },
+    {
+      "aya": 2,
+      "uthmani": "وَرَأَيۡتَ ٱلنَّاسَ يَدۡخُلُونَ فِي دِينِ ٱللَّهِ أَفۡوَاجٗا",
+      "indopak": "وَرَاَيْتَ النَّاسَ يَدْخُلُوْنَ فِىْ دِيْنِ اللّٰهِ اَفْوَاجًا ۙ",
+      "transliteration": "waraayta a<b>l</b>nn<u>a</u>sa yadkhuloona fee deeni all<u>a</u>hi afw<u>a</u>j<u>a</u><b>n</b>",
+      "saheeh": "And you see the people entering into the religion of Allah in multitudes,",
+      "khattab": "and you ˹O Prophet˺ see the people embracing Allah’s Way in crowds",
+      "jalalayn": "﻿and you see people entering God’s religion, that is to say, Islam, in throngs, in large droves, after they had been entering one by one — this was after the conquest of Mecca, when the Arabs from all corners of the land came to him willingly [in obedience to his command] —",
+      "wbw": [
+        {
+          "word": 1,
+          "arabic": "وَرَأَيْتَ",
+          "translation": "And you see"
+        },
+        {
+          "word": 2,
+          "arabic": "النَّاسَ",
+          "translation": "the people"
+        },
+        {
+          "word": 3,
+          "arabic": "يَدْخُلُونَ",
+          "translation": "entering"
+        },
+        {
+          "word": 4,
+          "arabic": "فِى",
+          "translation": "into"
+        },
+        {
+          "word": 5,
+          "arabic": "دِينِ",
+          "translation": "(the) religion"
+        },
+        {
+          "word": 6,
+          "arabic": "اللَّهِ",
+          "translation": "(of) Allah"
+        },
+        {
+          "word": 7,
+          "arabic": "أَفْوَاجًا",
+          "translation": "(in) multitudes."
+        }
+      ],
+      "romanUrdu": "Aur (aey Nabi s.a.s) tum dekh lo ke log fauj dar fauj Allah ke deen mein dakhil ho rahey hain"
+    },
+    {
+      "aya": 3,
+      "uthmani": "فَسَبِّحۡ بِحَمۡدِ رَبِّكَ وَٱسۡتَغۡفِرۡهُ ۚ إِنَّهُۥ كَانَ تَوَّابَۢا",
+      "indopak": "فَسَبِّحْ بِحَمْدِ رَبِّكَ وَاسْتَغْفِرْهُ ۗ اِنَّهٗ كَانَ تَوَّابًا٪",
+      "transliteration": "fasabbi<u>h</u> bi<u>h</u>amdi rabbika wa<b>i</b>staghfirhu innahu k<u>a</u>na taww<u>a</u>b<u>a</u><b>n</b>",
+      "saheeh": "Then exalt [Him] with praise of your Lord and ask forgiveness of Him. Indeed, He is ever Accepting of repentance.",
+      "khattab": "then glorify the praises of your Lord and seek His forgiveness, for certainly He is ever Accepting of Repentance",
+      "jalalayn": "﻿then glorify with praise of your Lord, that is, continuously praising Him, and seek forgiveness from Him; for verily He is ever ready to relent. The Prophet (s), after this sūra had been revealed, would frequently repeat the words subhāna’Llāhi wa bi-hamdihi, ‘Glory and praise be to God’, and astaghfiru’Llāha wa-atūbu ilayhi, ‘I seek forgiveness from God and I repent to Him’; with [the revelation of] this [final sūra] he realised that his end was near. The victory over Mecca was in Ramadān of year 8; the Prophet (s) passed away in Rabī‘ I of the year 10.",
+      "wbw": [
+        {
+          "word": 1,
+          "arabic": "فَسَبِّحْ",
+          "translation": "Then glorify"
+        },
+        {
+          "word": 2,
+          "arabic": "بِحَمْدِ",
+          "translation": "(the) praises"
+        },
+        {
+          "word": 3,
+          "arabic": "رَبِّكَ",
+          "translation": "(of) your Lord"
+        },
+        {
+          "word": 4,
+          "arabic": "وَاسْتَغْفِرْهُ",
+          "translation": "and ask His forgiveness."
+        },
+        {
+          "word": 5,
+          "arabic": "إِنَّهُۥ",
+          "translation": "Indeed, He"
+        },
+        {
+          "word": 6,
+          "arabic": "كَانَ",
+          "translation": "is"
+        },
+        {
+          "word": 7,
+          "arabic": "تَوَّابَا",
+          "translation": "Oft-Returning."
+        }
+      ],
+      "romanUrdu": "To apne Rubb ki hamd ke saath uski tasbeeh karo Aur us se magfirat ki duaa maango. Beshak woh bada tauba qabool karne wala hai"
+    }
+  ]
+}

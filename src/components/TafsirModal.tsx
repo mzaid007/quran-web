@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, BookOpen, Copy, Check, Loader2 } from 'lucide-react';
 import type { Verse } from '../types';
+import { formatQuranText } from '../types';
 
 interface TafsirModalProps {
   isOpen: boolean;
@@ -119,9 +120,9 @@ export const TafsirModal: React.FC<TafsirModalProps> = ({
         ? `"${verse.romanUrdu}"`
         : `"${verse.khattab || verse.saheeh || ''}"`;
 
-    const textToCopy = `[${author} - Surah ${surahName} ${surahNumber}:${verse.aya}]\n\n${
+    const textToCopy = `[${author} - Surah ${surahName} ${surahNumber}:${verse.aya}]\n\n${formatQuranText(
       verse.indopak || verse.uthmani
-    }\n\n${translationLine}\n\n--- Commentary ---\n${currentText}`;
+    )}\n\n${translationLine}\n\n--- Commentary ---\n${currentText}`;
 
     navigator.clipboard.writeText(textToCopy);
     setCopied(true);
@@ -225,7 +226,7 @@ export const TafsirModal: React.FC<TafsirModalProps> = ({
         <div className="p-5 sm:p-7 overflow-y-auto space-y-6 leading-relaxed flex-1">
           {/* Arabic Verse Preview */}
           <div className="p-4 sm:p-5 bg-brand-teal/5 dark:bg-brand-cardDark rounded-2xl border border-brand-teal/15 text-right quran-indopak text-2xl sm:text-3xl text-gray-900 dark:text-gray-100 select-text leading-loose">
-            {verse.indopak || verse.uthmani}
+            {formatQuranText(verse.indopak || verse.uthmani)}
           </div>
 
           {/* Translation Preview */}
