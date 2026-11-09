@@ -10,6 +10,9 @@ import { ShareVerseModal } from './components/ShareVerseModal';
 import { AudioPlayer } from './components/AudioPlayer';
 import { SyncModal } from './components/SyncModal';
 import { SyncConflictModal } from './components/SyncConflictModal';
+import { WaqfSignsModal } from './components/WaqfSignsModal';
+import { WaqfSignMarker } from './components/WaqfSignMarker';
+import { getWaqfSignByChar } from './data/waqfSigns';
 import { Play, Pause, Bookmark, BookOpen, Copy, Check, ChevronLeft, ChevronRight, BookmarkCheck, Share2 } from 'lucide-react';
 
 export default function App() {
@@ -99,6 +102,7 @@ export default function App() {
   // Modals
   const [isSurahListOpen, setIsSurahListOpen] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+  const [isWaqfSignsModalOpen, setIsWaqfSignsModalOpen] = useState<boolean>(false);
   const [tafsirVerse, setTafsirVerse] = useState<Verse | null>(null);
   const [sharingVerse, setSharingVerse] = useState<Verse | null>(null);
   const [preferredTafsir, setPreferredTafsir] = useState<TafsirId>(() => {
@@ -148,6 +152,32 @@ export default function App() {
       setHighlightedAya(ayaNum);
       setTimeout(() => setHighlightedAya(null), 2500);
     }
+  };
+
+  const handleNavigateToAyah = (surahNum: number, ayaNum: number) => {
+    if (surahNum === currentSurahNumber) {
+      handleJumpToAya(ayaNum);
+    } else {
+      setTargetScrollAya(ayaNum);
+      setCurrentSurahNumber(surahNum);
+    }
+  };
+
+  const renderArabicWithWaqfHints = (text: string) => {
+    if (!text) return null;
+    const parts = text.split(/([\u06D6-\u06DC\u0615\u06DE\u06E9])/);
+    return parts.map((part, index) => {
+      if (getWaqfSignByChar(part)) {
+        return (
+          <WaqfSignMarker
+            key={index}
+            char={part}
+            onOpenModal={() => setIsWaqfSignsModalOpen(true)}
+          />
+        );
+      }
+      return <span key={index}>{part}</span>;
+    });
   };
 
   // Cloud Sync State (Neon DB)
@@ -624,6 +654,7 @@ export default function App() {
         onOpenSurahList={() => setIsSurahListOpen(true)}
         onOpenSearch={() => setIsSurahListOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenWaqfSigns={() => setIsWaqfSignsModalOpen(true)}
         darkMode={darkMode}
         onToggleDarkMode={() => setDarkMode(!darkMode)}
         onPlaySurah={handleTogglePlaySurah}
@@ -916,7 +947,7 @@ export default function App() {
                                 className={`${getScriptFontClass(script)} wbw-arabic text-gray-900 dark:text-gray-100 select-text`}
                                 style={{ fontSize: `${arabicFontSize}px` }}
                               >
-                                {w.arabic}
+                                {renderArabicWithWaqfHints(w.arabic)}
                               </span>
                               {/* Word Translation */}
                               <span
@@ -936,7 +967,7 @@ export default function App() {
                           className={`${getScriptFontClass(script)} text-gray-900 dark:text-gray-100`}
                           style={{ fontSize: `${arabicFontSize}px` }}
                         >
-                          {arabicText}
+                          {renderArabicWithWaqfHints(arabicText)}
                           <span className="inline-flex items-center justify-center min-w-[1.75rem] h-7 px-1.5 mx-2 text-xs text-brand-teal border border-brand-teal/40 rounded-full font-sans select-none align-middle font-bold shrink-0">
                             {verse.aya}
                           </span>
@@ -1112,6 +1143,12 @@ export default function App() {
         verse={sharingVerse}
         script={script}
         translation={translation}
+      />
+
+      <WaqfSignsModal
+        isOpen={isWaqfSignsModalOpen}
+        onClose={() => setIsWaqfSignsModalOpen(false)}
+        onNavigateToAyah={handleNavigateToAyah}
       />
     </div>
   );
