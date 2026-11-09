@@ -156,7 +156,7 @@ export const WaqfSignsModal: React.FC<WaqfSignsModalProps> = ({
         </div>
 
         {/* Content Body */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+        <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-6 sm:py-6 space-y-5">
           
           {/* Quick Notice Banner */}
           <div className="flex items-start gap-3 p-3.5 rounded-xl bg-brand-teal/5 dark:bg-brand-teal/10 border border-brand-teal/20 text-xs text-gray-700 dark:text-gray-300">
@@ -181,33 +181,34 @@ export const WaqfSignsModal: React.FC<WaqfSignsModalProps> = ({
               {filteredSigns.map((sign) => (
                 <div
                   key={sign.id}
-                  className="rounded-2xl p-4 sm:p-5 bg-white dark:bg-brand-cardDark border border-gray-200/80 dark:border-brand-borderDark shadow-sm hover:border-brand-teal/40 transition-all flex flex-col justify-between"
+                  className="rounded-2xl p-4 sm:p-5 bg-white dark:bg-brand-cardDark border border-gray-200/80 dark:border-brand-borderDark shadow-sm hover:border-brand-teal/40 transition-all flex flex-col justify-between overflow-hidden"
                 >
                   <div>
                     {/* Top Row: Arabic Glyph, Name & Action Badge */}
-                    <div className="flex items-start justify-between gap-3 mb-3">
-                      <div className="flex items-center gap-3">
+                    <div className="flex items-start justify-between gap-3 mb-3.5">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
                         {/* Calligraphic Glyph Box */}
-                        <div className="w-12 h-12 rounded-xl bg-gray-50 dark:bg-brand-surfaceDark border border-gray-200 dark:border-brand-borderDark flex items-center justify-center shrink-0 shadow-inner">
-                          <span className="font-serif text-2xl font-bold text-brand-teal dark:text-emerald-400">
+                        <div className="min-w-[3.25rem] h-13 px-2 rounded-xl bg-gray-50 dark:bg-brand-surfaceDark border border-gray-200 dark:border-brand-borderDark flex items-center justify-center shrink-0 shadow-inner overflow-hidden">
+                          <span
+                            className="font-serif text-2xl font-bold text-brand-teal dark:text-emerald-400 select-none text-center leading-normal"
+                            dir="rtl"
+                          >
                             {sign.displaySymbol}
                           </span>
                         </div>
 
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-bold text-sm sm:text-base text-gray-900 dark:text-gray-100">
-                              {sign.nameTranslit}
-                            </h3>
-                          </div>
-                          <div className="text-xs font-serif text-gray-500 dark:text-gray-400">
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-bold text-sm sm:text-base text-gray-900 dark:text-gray-100 leading-tight truncate">
+                            {sign.nameTranslit}
+                          </h3>
+                          <div className="text-xs font-serif text-gray-500 dark:text-gray-400 mt-0.5 truncate">
                             {sign.nameArabic}
                           </div>
                         </div>
                       </div>
 
                       <span
-                        className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full border shrink-0 ${sign.badgeClasses.bg} ${sign.badgeClasses.text} ${sign.badgeClasses.border}`}
+                        className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full border shrink-0 whitespace-nowrap ${sign.badgeClasses.bg} ${sign.badgeClasses.text} ${sign.badgeClasses.border}`}
                       >
                         {sign.actionBadge}
                       </span>
@@ -226,7 +227,7 @@ export const WaqfSignsModal: React.FC<WaqfSignsModalProps> = ({
 
                   {/* Quranic Example Box (if available) */}
                   {sign.example && (
-                    <div className="mt-3 pt-3 border-t border-gray-100 dark:border-brand-borderDark/60 bg-gray-50/70 dark:bg-brand-surfaceDark/50 rounded-xl p-3">
+                    <div className="mt-3.5 pt-3 border-t border-gray-100 dark:border-brand-borderDark/60 bg-gray-50/80 dark:bg-brand-surfaceDark/60 rounded-xl p-3 sm:p-3.5 overflow-hidden">
                       <div className="flex items-center justify-between text-[10px] font-bold text-gray-500 dark:text-gray-400 mb-1.5">
                         <span className="uppercase tracking-wider">Example:</span>
                         <span className="text-brand-teal dark:text-emerald-400">
@@ -236,7 +237,7 @@ export const WaqfSignsModal: React.FC<WaqfSignsModalProps> = ({
 
                       {/* Arabic Ayah Snippet */}
                       <div
-                        className="text-right font-serif text-sm text-gray-900 dark:text-gray-100 py-1"
+                        className="text-right font-hafs text-base sm:text-lg text-gray-900 dark:text-gray-100 py-1.5 leading-relaxed overflow-x-auto no-scrollbar"
                         dir="rtl"
                       >
                         {sign.example.snippetArabic}

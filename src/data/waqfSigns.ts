@@ -125,7 +125,7 @@ export const WAQF_SIGNS: WaqfSign[] = [
   {
     id: 'waqf_awla',
     symbol: '\u06D7', // ۗ (Renders as 'قلى' in Uthmani or superscript 'ق' in Indo-Pak scripts)
-    displaySymbol: 'قلى / ق',
+    displaySymbol: 'قلى',
     unicode: 'U+06D7',
     nameArabic: 'الوقف أولى (قلى / ق)',
     nameTranslit: 'Al-Waqf Awlā / Waqf Qaf (ق)',
@@ -179,9 +179,9 @@ export const WAQF_SIGNS: WaqfSign[] = [
   {
     id: 'muanaqah',
     symbol: '\u06DB', // ۛ
-    displaySymbol: 'ۛ ... ۛ (∴)',
+    displaySymbol: '∴',
     unicode: 'U+06DB',
-    nameArabic: 'وقف المعانقة / المراقبة',
+    nameArabic: 'وقف المعانقة / المراقبة (∴)',
     nameTranslit: 'Waqf al-Mu‘ānaqah / Murāqabah',
     category: 'both',
     urgency: 'special',
@@ -206,9 +206,9 @@ export const WAQF_SIGNS: WaqfSign[] = [
   {
     id: 'saktah',
     symbol: '\u06DC', // ۜ
-    displaySymbol: 'س / سكتة',
+    displaySymbol: 'س',
     unicode: 'U+06DC',
-    nameArabic: 'سكتة لطيفة',
+    nameArabic: 'سكتة لطيفة (س)',
     nameTranslit: 'Saktah Laṭīfah',
     category: 'both',
     urgency: 'silence',
@@ -317,7 +317,7 @@ export const WAQF_SIGNS: WaqfSign[] = [
   {
     id: 'kadhalik',
     symbol: 'ک',
-    displaySymbol: 'ک (كذلك)',
+    displaySymbol: 'ک',
     unicode: 'U+06A9',
     nameArabic: 'كذلك (ک)',
     nameTranslit: 'Kadhālik',
@@ -397,11 +397,19 @@ export const WAQF_SIGNS: WaqfSign[] = [
       border: 'border-amber-500/40',
       glow: 'shadow-amber-500/20',
     },
+    example: {
+      surah: 2,
+      surahName: 'Al-Baqarah',
+      aya: 26,
+      snippetArabic: '۞ إِنَّ ٱللَّهَ لَا يَسۡتَحۡيِۦٓ أَن يَضۡرِبَ مَثَلٗا مَّا بَعُوضَةٗ فَمَا فَوۡقَهَا',
+      snippetTranslation: 'Indeed, Allah is not timid to present an example of a mosquito or what is smaller...',
+      explanation: 'Marks the beginning of the 2nd Rub‘ (quarter) of the 1st Hizb in Juz 1.',
+    },
   },
   {
     id: 'ayah_marker',
     symbol: '\u06DD', // ۝
-    displaySymbol: '۝ (End of Ayah)',
+    displaySymbol: '۝',
     unicode: 'U+06DD',
     nameArabic: 'رأس الآية (نهاية الآية)',
     nameTranslit: 'Ra’s al-Āyah (Verse End)',
@@ -415,6 +423,14 @@ export const WAQF_SIGNS: WaqfSign[] = [
       text: 'text-brand-teal dark:text-emerald-400 font-bold',
       border: 'border-brand-teal/40',
       glow: 'shadow-brand-teal/20',
+    },
+    example: {
+      surah: 1,
+      surahName: 'Al-Fatiha',
+      aya: 1,
+      snippetArabic: 'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ ۝',
+      snippetTranslation: 'In the Name of Allah—the Most Compassionate, Most Merciful.',
+      explanation: 'Stopping upon completing an Ayah is Sunnah, providing a contemplative pause before starting the next verse.',
     },
   },
 ];
