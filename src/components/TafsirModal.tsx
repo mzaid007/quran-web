@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, BookOpen, Copy, Check, Loader2 } from 'lucide-react';
-import type { Verse } from '../types';
+import { X, BookOpen, Copy, Check, Loader2, ExternalLink, AlertTriangle } from 'lucide-react';
+import type { Verse, TranslationChoice } from '../types';
 import { formatQuranText } from '../types';
 
 interface TafsirModalProps {
@@ -9,11 +9,13 @@ interface TafsirModalProps {
   surahNumber: number;
   surahName: string;
   verse: Verse | null;
+  activeTranslation?: TranslationChoice;
 }
 
-export type TafsirId = 'kathir_en' | 'kathir_ur' | 'jalalayn';
+export type TafsirId = 'kathir_roman' | 'kathir_en' | 'kathir_ur' | 'jalalayn';
 
 // In-memory caches for Tafsir Surah files
+const ibnKathirCacheRoman: Record<number, Array<{ ayah: number; text: string; surah?: number }>> = {};
 const ibnKathirCacheEn: Record<number, Array<{ ayah: number; text: string; surah?: number }>> = {};
 const ibnKathirCacheUr: Record<number, Array<{ ayah: number; text: string; surah?: number }>> = {};
 
@@ -23,19 +25,65 @@ export const TafsirModal: React.FC<TafsirModalProps> = ({
   surahNumber,
   surahName,
   verse,
+  activeTranslation,
 }) => {
   const [selectedTafsir, setSelectedTafsir] = useState<TafsirId>(() => {
     const saved = localStorage.getItem('quran_preferred_tafsir');
-    if (saved === 'kathir_ur' || saved === 'jalalayn' || saved === 'kathir_en') {
+    if (saved === 'kathir_roman' || saved === 'kathir_ur' || saved === 'jalalayn' || saved === 'kathir_en') {
       return saved as TafsirId;
     }
-    return 'kathir_en';
+    if (activeTranslation === 'romanUrdu') {
+      return 'kathir_roman';
+    }
+    return 'kathir_roman';
   });
 
+  const [kathirRomanText, setKathirRomanText] = useState<string | null>(null);
   const [kathirEnText, setKathirEnText] = useState<string | null>(null);
   const [kathirUrText, setKathirUrText] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
+
+  // Sync preference or Roman Urdu default when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      const saved = localStorage.getItem('quran_preferred_tafsir');
+      if (saved === 'kathir_roman' || saved === 'kathir_ur' || saved === 'jalalayn' || saved === 'kathir_en') {
+        setSelectedTafsir(saved as TafsirId);
+      } else if (activeTranslation === 'romanUrdu') {
+        setSelectedTafsir('kathir_roman');
+      }
+    }
+  }, [isOpen, activeTranslation]);
+
+  // Fetch Tafsir Ibn Kathir (Roman Urdu)
+  useEffect(() => {
+    if (!isOpen || !verse || selectedTafsir !== 'kathir_roman') return;
+
+    if (ibnKathirCacheRoman[surahNumber]) {
+      const match = ibnKathirCacheRoman[surahNumber].find((item) => item.ayah === verse.aya);
+      setKathirRomanText(match ? match.text : null);
+      return;
+    }
+
+    setLoading(true);
+    fetch(`/tafsir/ibn_kathir_roman/${surahNumber}.json`)
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to load Roman Urdu Tafsir Ibn Kathir');
+        return res.json();
+      })
+      .then((data: Array<{ ayah: number; text: string; surah?: number }>) => {
+        ibnKathirCacheRoman[surahNumber] = data;
+        const match = data.find((item) => item.ayah === verse.aya);
+        setKathirRomanText(match ? match.text : null);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Error loading Roman Urdu Tafsir Ibn Kathir:', err);
+        setKathirRomanText(null);
+        setLoading(false);
+      });
+  }, [isOpen, surahNumber, verse, selectedTafsir]);
 
   // Fetch Tafsir Ibn Kathir (English)
   useEffect(() => {
@@ -104,7 +152,10 @@ export const TafsirModal: React.FC<TafsirModalProps> = ({
     if (!verse) return;
     let currentText = '';
     let author = '';
-    if (selectedTafsir === 'kathir_en') {
+    if (selectedTafsir === 'kathir_roman') {
+      currentText = kathirRomanText || '';
+      author = 'Tafsir Ibn Kathir (Roman Urdu)';
+    } else if (selectedTafsir === 'kathir_en') {
       currentText = kathirEnText || '';
       author = 'Tafsir Ibn Kathir (English)';
     } else if (selectedTafsir === 'kathir_ur') {
@@ -116,7 +167,7 @@ export const TafsirModal: React.FC<TafsirModalProps> = ({
     }
 
     const translationLine =
-      selectedTafsir === 'kathir_ur' && verse.romanUrdu
+      (selectedTafsir === 'kathir_roman' || selectedTafsir === 'kathir_ur') && verse.romanUrdu
         ? `"${verse.romanUrdu}"`
         : `"${verse.khattab || verse.saheeh || ''}"`;
 
@@ -156,7 +207,7 @@ export const TafsirModal: React.FC<TafsirModalProps> = ({
           <div className="flex items-center space-x-1 sm:space-x-2">
             <button
               onClick={handleCopyTafsir}
-              className="p-2 text-gray-500 hover:text-brand-teal dark:hover:text-emerald-400 rounded-lg hover:bg-gray-100 dark:hover:bg-brand-cardDark transition flex items-center gap-1.5 text-xs font-medium"
+              className="p-2 text-gray-500 hover:text-brand-teal dark:hover:text-emerald-400 rounded-lg hover:bg-gray-100 dark:hover:bg-brand-cardDark transition flex items-center gap-1.5 text-xs font-medium cursor-pointer"
               title="Copy Tafsir commentary"
             >
               {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
@@ -164,7 +215,7 @@ export const TafsirModal: React.FC<TafsirModalProps> = ({
             </button>
             <button
               onClick={onClose}
-              className="p-2 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-brand-cardDark transition"
+              className="p-2 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-brand-cardDark transition cursor-pointer"
               title="Close modal"
             >
               <X className="w-5 h-5" />
@@ -174,11 +225,44 @@ export const TafsirModal: React.FC<TafsirModalProps> = ({
 
         {/* Tafsir Source Switcher (Responsive Segmented Control) */}
         <div className="p-3 sm:px-5 bg-gray-50/70 dark:bg-brand-cardDark/70 border-b border-gray-200/80 dark:border-brand-borderDark shrink-0">
-          <div className="grid grid-cols-3 gap-1.5 p-1 bg-gray-200/60 dark:bg-black/30 rounded-xl">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 p-1 bg-gray-200/60 dark:bg-black/30 rounded-xl">
+            {/* Roman Urdu */}
+            <button
+              type="button"
+              onClick={() => handleSelectTafsir('kathir_roman')}
+              className={`py-2 px-1.5 sm:px-2.5 text-xs sm:text-sm font-semibold rounded-lg transition-all text-center flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 cursor-pointer ${
+                selectedTafsir === 'kathir_roman'
+                  ? 'bg-white dark:bg-brand-surfaceDark text-brand-teal dark:text-emerald-400 shadow-sm font-bold'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+              }`}
+            >
+              <span className="truncate">Ibn Kathir</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold">
+                Roman Urdu
+              </span>
+            </button>
+
+            {/* Urdu (Maulana Junagarhi) */}
+            <button
+              type="button"
+              onClick={() => handleSelectTafsir('kathir_ur')}
+              className={`py-2 px-1.5 sm:px-2.5 text-xs sm:text-sm font-semibold rounded-lg transition-all text-center flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 cursor-pointer ${
+                selectedTafsir === 'kathir_ur'
+                  ? 'bg-white dark:bg-brand-surfaceDark text-brand-teal dark:text-emerald-400 shadow-sm font-bold'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+              }`}
+            >
+              <span className="truncate urdu-nastaliq text-sm sm:text-base leading-none">ابن کثیر</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium">
+                اردو
+              </span>
+            </button>
+
+            {/* English */}
             <button
               type="button"
               onClick={() => handleSelectTafsir('kathir_en')}
-              className={`py-2 px-1.5 sm:px-3 text-xs sm:text-sm font-semibold rounded-lg transition-all text-center flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 ${
+              className={`py-2 px-1.5 sm:px-2.5 text-xs sm:text-sm font-semibold rounded-lg transition-all text-center flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 cursor-pointer ${
                 selectedTafsir === 'kathir_en'
                   ? 'bg-white dark:bg-brand-surfaceDark text-brand-teal dark:text-emerald-400 shadow-sm font-bold'
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
@@ -190,25 +274,11 @@ export const TafsirModal: React.FC<TafsirModalProps> = ({
               </span>
             </button>
 
-            <button
-              type="button"
-              onClick={() => handleSelectTafsir('kathir_ur')}
-              className={`py-2 px-1.5 sm:px-3 text-xs sm:text-sm font-semibold rounded-lg transition-all text-center flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 ${
-                selectedTafsir === 'kathir_ur'
-                  ? 'bg-white dark:bg-brand-surfaceDark text-brand-teal dark:text-emerald-400 shadow-sm font-bold'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-              }`}
-            >
-              <span className="truncate">ابن کثیر</span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium">
-                اردو
-              </span>
-            </button>
-
+            {/* Jalalayn */}
             <button
               type="button"
               onClick={() => handleSelectTafsir('jalalayn')}
-              className={`py-2 px-1.5 sm:px-3 text-xs sm:text-sm font-semibold rounded-lg transition-all text-center flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 ${
+              className={`py-2 px-1.5 sm:px-2.5 text-xs sm:text-sm font-semibold rounded-lg transition-all text-center flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 cursor-pointer ${
                 selectedTafsir === 'jalalayn'
                   ? 'bg-white dark:bg-brand-surfaceDark text-brand-teal dark:text-emerald-400 shadow-sm font-bold'
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
@@ -230,7 +300,7 @@ export const TafsirModal: React.FC<TafsirModalProps> = ({
           </div>
 
           {/* Translation Preview */}
-          {selectedTafsir === 'kathir_ur' && verse.romanUrdu ? (
+          {(selectedTafsir === 'kathir_roman' || selectedTafsir === 'kathir_ur') && verse.romanUrdu ? (
             <div className="p-3.5 bg-gray-50 dark:bg-brand-cardDark/50 rounded-xl border-l-4 border-brand-teal text-sm sm:text-base text-gray-700 dark:text-gray-300 italic select-text">
               "{verse.romanUrdu}"
               <span className="block text-xs not-italic text-brand-teal dark:text-emerald-400 font-semibold mt-1.5">
@@ -248,13 +318,40 @@ export const TafsirModal: React.FC<TafsirModalProps> = ({
 
           {/* Tafsir Commentary Content */}
           <div className="pt-2">
-            <div className="flex items-center justify-between mb-3 border-b border-gray-100 dark:border-brand-borderDark pb-2">
+            <div className="flex items-center justify-between mb-3 border-b border-gray-100 dark:border-brand-borderDark pb-2 flex-wrap gap-2">
               <span className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                {selectedTafsir === 'kathir_roman' && 'Tafsir Ibn Kathir (Roman Urdu Exegesis)'}
                 {selectedTafsir === 'kathir_en' && 'Tafsir Ibn Kathir (English Exegesis)'}
                 {selectedTafsir === 'kathir_ur' && 'تفسیر ابن کثیر (مولانا محمد جوناگڑھی)'}
                 {selectedTafsir === 'jalalayn' && 'Tafsir al-Jalalayn (English Summary)'}
               </span>
+              {selectedTafsir === 'kathir_roman' && (
+                <a
+                  href="https://github.com/mzaid007/tafsir-roman-urdu"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[11px] text-brand-teal dark:text-emerald-400 hover:underline inline-flex items-center gap-1 font-medium"
+                >
+                  <span>mzaid007/tafsir-roman-urdu</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              )}
             </div>
+
+            {/* Scholarly Review & LLM Transliteration Disclaimer */}
+            {selectedTafsir === 'kathir_roman' && (
+              <div className="mb-4 p-3.5 rounded-xl bg-amber-500/[0.08] dark:bg-amber-500/[0.12] border border-amber-300/60 dark:border-amber-600/30 text-amber-900 dark:text-amber-200 text-xs leading-relaxed flex items-start gap-2.5 select-text">
+                <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold block text-amber-950 dark:text-amber-100 mb-0.5">
+                    ⚠️ Scholarly Review & AI Transliteration Disclaimer
+                  </span>
+                  <span>
+                    The Roman Urdu transliteration of Tafsir Ibn Kathir has been generated by an LLM (Large Language Model) governed by linguistic rules. It <strong>may contain mistakes</strong> and <strong>still needs a formal review by a certified Islamic scholar (Alim / Mufti)</strong>. Please cross-reference with the authentic Urdu (Maulana Junagarhi) or original Arabic text for authoritative theological study.
+                  </span>
+                </div>
+              </div>
+            )}
 
             {loading ? (
               <div className="py-12 flex flex-col items-center justify-center space-y-3">
@@ -262,9 +359,41 @@ export const TafsirModal: React.FC<TafsirModalProps> = ({
                 <p className="text-xs text-gray-500">
                   {selectedTafsir === 'kathir_ur'
                     ? 'تفسیر ابن کثیر لوڈ ہو رہی ہے...'
+                    : selectedTafsir === 'kathir_roman'
+                    ? 'Tafsir Ibn Kathir (Roman Urdu) load ho rahi hai...'
                     : 'Loading Tafsir Ibn Kathir...'}
                 </p>
               </div>
+            ) : selectedTafsir === 'kathir_roman' ? (
+              kathirRomanText ? (
+                <div className="text-sm sm:text-base text-gray-800 dark:text-gray-200 select-text leading-relaxed font-sans space-y-4">
+                  {kathirRomanText.split('\n\n').map((paragraph, idx) => {
+                    const trimmed = paragraph.trim();
+                    if (!trimmed) return null;
+                    const isHeading =
+                      trimmed.length < 90 && !trimmed.endsWith('.') && !trimmed.includes(';') && !trimmed.endsWith('!');
+                    if (isHeading) {
+                      return (
+                        <h4
+                          key={idx}
+                          className="font-sans font-bold text-base sm:text-lg text-brand-teal dark:text-emerald-400 mt-4 mb-2"
+                        >
+                          {trimmed}
+                        </h4>
+                      );
+                    }
+                    return (
+                      <p key={idx} className="whitespace-pre-line leading-relaxed">
+                        {trimmed}
+                      </p>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="py-8 text-center text-sm text-gray-500 dark:text-gray-400 italic">
+                  Is aayat ke liye Tafsir Ibn Kathir (Roman Urdu) ka tafseeli bayan daryaft nahi hua.
+                </div>
+              )
             ) : selectedTafsir === 'kathir_en' ? (
               kathirEnText ? (
                 <div className="text-sm sm:text-base text-gray-800 dark:text-gray-200 select-text leading-relaxed font-serif space-y-4">

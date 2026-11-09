@@ -5,7 +5,7 @@ import { getScriptFontClass, getScriptArabicText, getScriptBismillah } from './t
 import { Header } from './components/Header';
 import { SurahListModal } from './components/SurahListModal';
 import { SettingsModal } from './components/SettingsModal';
-import { TafsirModal } from './components/TafsirModal';
+import { TafsirModal, type TafsirId } from './components/TafsirModal';
 import { ShareVerseModal } from './components/ShareVerseModal';
 import { AudioPlayer } from './components/AudioPlayer';
 import { SyncModal } from './components/SyncModal';
@@ -101,6 +101,18 @@ export default function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [tafsirVerse, setTafsirVerse] = useState<Verse | null>(null);
   const [sharingVerse, setSharingVerse] = useState<Verse | null>(null);
+  const [preferredTafsir, setPreferredTafsir] = useState<TafsirId>(() => {
+    const saved = localStorage.getItem('quran_preferred_tafsir');
+    if (saved === 'kathir_roman' || saved === 'kathir_en' || saved === 'kathir_ur' || saved === 'jalalayn') {
+      return saved as TafsirId;
+    }
+    return 'kathir_roman';
+  });
+
+  const handlePreferredTafsirChange = (t: TafsirId) => {
+    setPreferredTafsir(t);
+    localStorage.setItem('quran_preferred_tafsir', t);
+  };
 
   // Bookmarks & Copy state
   const [bookmarks, setBookmarks] = useState<{ surah: number; aya: number }[]>(() => {
@@ -843,8 +855,8 @@ export default function App() {
                         {/* Tafsir Drawer */}
                         <button
                           onClick={() => setTafsirVerse(verse)}
-                          className="p-1.5 text-gray-500 hover:text-brand-teal dark:hover:text-emerald-400 hover:bg-gray-100 dark:hover:bg-brand-cardDark rounded-lg transition flex items-center gap-1 text-xs"
-                          title="View Tafsir al-Jalalayn"
+                          className="p-1.5 text-gray-500 hover:text-brand-teal dark:hover:text-emerald-400 hover:bg-gray-100 dark:hover:bg-brand-cardDark rounded-lg transition flex items-center gap-1 text-xs cursor-pointer"
+                          title="View Tafsir commentary"
                         >
                           <BookOpen className="w-4 h-4" />
                           <span className="hidden sm:inline text-[11px] font-medium">Tafsir</span>
@@ -1059,6 +1071,8 @@ export default function App() {
         onChangeReciter={setCurrentReciter}
         syncEmail={syncEmail}
         onOpenSync={() => setIsSyncModalOpen(true)}
+        preferredTafsir={preferredTafsir}
+        onChangePreferredTafsir={handlePreferredTafsirChange}
       />
 
       <SyncModal
@@ -1087,6 +1101,7 @@ export default function App() {
         surahNumber={currentSurahNumber}
         surahName={surahData?.name || ''}
         verse={tafsirVerse}
+        activeTranslation={translation}
       />
 
       <ShareVerseModal
