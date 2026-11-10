@@ -1,73 +1,49 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
   <defs>
-    <!-- Background Gradient -->
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0f766e" />
-      <stop offset="50%" stop-color="#115e59" />
-      <stop offset="100%" stop-color="#134e4a" />
+    <linearGradient id="tealBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E978A" />
+      <stop offset="100%" stop-color="#0D645B" />
     </linearGradient>
-
-    <!-- Gold Accent Gradient -->
-    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#fef08a" />
-      <stop offset="50%" stop-color="#f59e0b" />
-      <stop offset="100%" stop-color="#d97706" />
+    <linearGradient id="goldAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE68A" />
+      <stop offset="100%" stop-color="#F59E0B" />
     </linearGradient>
-
-    <!-- Page Shading Gradient -->
-    <linearGradient id="pageGradLeft" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#f8fafc" />
-      <stop offset="100%" stop-color="#e2e8f0" />
-    </linearGradient>
-
-    <linearGradient id="pageGradRight" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#cbd5e1" />
-      <stop offset="100%" stop-color="#ffffff" />
-    </linearGradient>
-
-    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-opacity="0.3" />
-    </filter>
   </defs>
 
-  <!-- Rounded App Icon Background -->
-  <rect width="128" height="128" rx="28" fill="url(#bgGrad)" />
+  <!-- Crisp full-bleed rounded badge -->
+  <rect x="2" y="2" width="124" height="124" rx="28" fill="url(#tealBg)" />
 
-  <!-- Subtle Islamic Star Polygon Background Outline -->
-  <circle cx="64" cy="64" r="54" fill="none" stroke="#2dd4bf" stroke-width="1.5" stroke-opacity="0.25" stroke-dasharray="4 2" />
-
-  <!-- Quran Stand / Base Shadow -->
-  <path d="M34 94 C48 98 80 98 94 94 L90 99 C76 103 52 103 38 99 Z" fill="#042f2e" opacity="0.6" />
-
-  <!-- Quran Spine & Ribbon Bookmark -->
-  <path d="M64 56 L64 92 C61 95 67 95 64 92 Z" stroke="url(#goldGrad)" stroke-width="2.5" stroke-linecap="round" />
-  <path d="M64 80 Q64 98 70 102 L74 97 L78 102 Q72 96 66 80 Z" fill="url(#goldGrad)" filter="url(#shadow)" />
-
-  <!-- Left Open Pages -->
-  <path d="M64 54 C52 50 34 52 24 57 C22 58 20 60 20 63 L20 87 C20 89 22 90 24 89 C36 84 52 83 64 88 Z" 
-        fill="url(#pageGradLeft)" filter="url(#shadow)" />
-  <path d="M64 57 C53 53 36 55 26 60 L26 84 C38 79 53 79 64 84 Z" fill="#ffffff" />
-
-  <!-- Right Open Pages -->
-  <path d="M64 54 C76 50 94 52 104 57 C106 58 108 60 108 63 L108 87 C108 89 106 90 104 89 C92 84 76 83 64 88 Z" 
-        fill="url(#pageGradRight)" filter="url(#shadow)" />
-  <path d="M64 57 C75 53 92 55 102 60 L102 84 C90 79 75 79 64 84 Z" fill="#f8fafc" />
-
-  <!-- Script Calligraphy Lines Simulation -->
-  <!-- Left Page Lines -->
-  <line x1="32" y1="66" x2="56" y2="62" stroke="#0f766e" stroke-width="2" stroke-linecap="round" opacity="0.4" />
-  <line x1="30" y1="72" x2="56" y2="68" stroke="#0f766e" stroke-width="2" stroke-linecap="round" opacity="0.4" />
-  <line x1="33" y1="78" x2="56" y2="74" stroke="#0f766e" stroke-width="2" stroke-linecap="round" opacity="0.4" />
-
-  <!-- Right Page Lines -->
-  <line x1="72" y1="62" x2="96" y2="66" stroke="#0f766e" stroke-width="2" stroke-linecap="round" opacity="0.4" />
-  <line x1="72" y1="68" x2="98" y2="72" stroke="#0f766e" stroke-width="2" stroke-linecap="round" opacity="0.4" />
-  <line x1="72" y1="74" x2="95" y2="78" stroke="#0f766e" stroke-width="2" stroke-linecap="round" opacity="0.4" />
-
-  <!-- Central Crescent & Radiant Star above Quran -->
-  <g transform="translate(64, 34) scale(0.9)">
-    <path d="M0 -14 A10 10 0 1 0 10 -2 A8 8 0 1 1 0 -14 Z" fill="url(#goldGrad)" filter="url(#shadow)" />
-    <!-- 8-Point Star inside crescent -->
-    <path d="M4 -8 L5.5 -5 L8.5 -5 L6 -3 L7 0 L4.5 -2 L2 0 L3 -3 L0.5 -5 L3.5 -5 Z" fill="#fef08a" />
+  <!-- Subtle Rub el Hizb (8-point Islamic star) framing -->
+  <g stroke="url(#goldAccent)" stroke-width="3" stroke-opacity="0.32" fill="none">
+    <rect x="24" y="24" width="80" height="80" rx="8" />
+    <rect x="24" y="24" width="80" height="80" rx="8" transform="rotate(45 64 64)" />
   </g>
+
+  <!-- Top radiant 4-point star accent -->
+  <path
+    d="M64 17 L68 25 L76 29 L68 33 L64 41 L60 33 L52 29 L60 25 Z"
+    fill="url(#goldAccent)"
+  />
+
+  <!-- Bold open Mushaf pages (high-contrast for 16x16 browser tabs) -->
+  <path
+    d="M64 48 C51 41 34 41 23 46 L23 87 C34 82 51 82 64 89 Z"
+    fill="#FFFFFF"
+  />
+  <path
+    d="M64 48 C77 41 94 41 105 46 L105 87 C94 82 77 82 64 89 Z"
+    fill="#E2E8F0"
+  />
+
+  <!-- Crisp center spine -->
+  <line x1="64" y1="48" x2="64" y2="89" stroke="#0F766E" stroke-width="3.5" stroke-linecap="round" />
+
+  <!-- Warm gold book cover / Rahal cradle -->
+  <path
+    d="M19 91 C34 85 51 87 64 95 C77 87 94 85 109 91"
+    fill="none"
+    stroke="url(#goldAccent)"
+    stroke-width="6.5"
+    stroke-linecap="round"
+  />
 </svg>
