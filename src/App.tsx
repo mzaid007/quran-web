@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { RECITERS } from './types';
 import type { SurahMeta, SurahDetail, Verse, WBWWord, ScriptType, TranslationChoice, TafsirId, Reciter, LastRead, CloudSyncData, SyncConflict, SyncedSettings } from './types';
-import { getScriptFontClass, getScriptArabicText, getScriptBismillah, getWbwScriptText, getWbwWordAudioUrl } from './types';
+import { getScriptFontClass, getScriptArabicText, getScriptBismillah, getBismillahTranslation, getWbwScriptText, getWbwWordAudioUrl } from './types';
 import { Header } from './components/Header';
 import { SurahListModal } from './components/SurahListModal';
 import { SettingsModal } from './components/SettingsModal';
@@ -794,6 +794,7 @@ export default function App() {
   };
 
   const currentSurahMeta = surahs.find((s) => s.number === currentSurahNumber) || null;
+  const bismillahTranslation = getBismillahTranslation(translation);
 
   return (
     <div className="min-h-screen bg-[#FDFCF7] dark:bg-brand-surfaceDark text-gray-900 dark:text-gray-100 transition-colors duration-200 flex flex-col font-sans">
@@ -992,9 +993,11 @@ export default function App() {
                 >
                   {getScriptBismillah(script)}
                 </div>
-                <div className="text-xs sm:text-sm text-gray-400 dark:text-gray-500 italic mt-3 sm:mt-4 font-sans select-text tracking-wide">
-                  In the Name of Allah—the Most Compassionate, Most Merciful
-                </div>
+                {bismillahTranslation && (
+                  <div className="text-xs sm:text-sm text-gray-400 dark:text-gray-500 italic mt-3 sm:mt-4 font-sans select-text tracking-wide">
+                    {bismillahTranslation}
+                  </div>
+                )}
               </div>
             )}
 
