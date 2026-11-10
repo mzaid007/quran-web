@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Type, Globe, Check, Sliders, Volume2, Cloud, BookOpen } from 'lucide-react';
+import { X, Type, Globe, Check, Sliders, Volume2, Cloud, BookOpen, GraduationCap } from 'lucide-react';
 import { RECITERS } from '../types';
 import type { ScriptType, TranslationChoice, Reciter } from '../types';
 import type { TafsirId } from './TafsirModal';
@@ -13,6 +13,8 @@ interface SettingsModalProps {
   onChangeTranslation: (t: TranslationChoice) => void;
   showWBW: boolean;
   onToggleWBW: () => void;
+  tapWordsMode: boolean;
+  onToggleTapWordsMode: () => void;
   showTransliteration: boolean;
   onToggleTransliteration: () => void;
   arabicFontSize: number;
@@ -21,6 +23,7 @@ interface SettingsModalProps {
   onChangeReciter: (r: Reciter) => void;
   syncEmail?: string | null;
   onOpenSync?: () => void;
+  onOpenLettersGuide?: () => void;
   preferredTafsir?: TafsirId;
   onChangePreferredTafsir?: (t: TafsirId) => void;
 }
@@ -34,6 +37,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onChangeTranslation,
   showWBW,
   onToggleWBW,
+  tapWordsMode,
+  onToggleTapWordsMode,
   showTransliteration,
   onToggleTransliteration,
   arabicFontSize,
@@ -42,6 +47,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onChangeReciter,
   syncEmail,
   onOpenSync,
+  onOpenLettersGuide,
   preferredTafsir = 'kathir_roman',
   onChangePreferredTafsir,
 }) => {
@@ -466,9 +472,41 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 />
               </label>
               <p className="text-[11px] text-amber-800/80 dark:text-amber-300/80 bg-white/70 dark:bg-brand-surfaceDark/70 p-2.5 rounded-lg border border-amber-200/40 dark:border-amber-900/30 leading-relaxed">
-                <strong className="font-semibold text-amber-900 dark:text-amber-200">Learning Aid Notice:</strong> Word-by-word translation is in beta. It is intended as a vocabulary aid for Arabic learners. Because Arabic grammatical particles fuse directly with root words, please always refer to the complete sentence translations below for authoritative theological meaning and full context.
+                <strong className="font-semibold text-amber-900 dark:text-amber-200">Learning Aid Notice:</strong> Word-by-word translation is intended as a vocabulary & pronunciation aid for Arabic learners (tap any word to hear it, or long-hold for letter-by-letter breakdown). Always refer to full translations below for complete meaning.
               </p>
             </div>
+
+            {/* Tap-to-Pronounce in Classic View */}
+            <label className="flex items-center justify-between cursor-pointer p-1">
+              <div>
+                <div className="text-sm font-bold text-gray-900 dark:text-gray-100">
+                  Tap-to-Pronounce Words (Classic View)
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  Tap any word to hear it, or long-hold for letter breakdown even when WBW cards are off
+                </div>
+              </div>
+              <input
+                type="checkbox"
+                checked={tapWordsMode}
+                onChange={onToggleTapWordsMode}
+                className="w-5 h-5 rounded text-brand-teal focus:ring-brand-teal accent-brand-teal cursor-pointer shrink-0"
+              />
+            </label>
+
+            {onOpenLettersGuide && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onOpenLettersGuide();
+                }}
+                className="w-full p-2.5 rounded-xl border border-brand-teal/30 bg-brand-teal/10 hover:bg-brand-teal/15 text-brand-teal dark:text-emerald-400 text-xs font-bold flex items-center justify-center gap-2 transition"
+              >
+                <GraduationCap className="w-4 h-4" />
+                <span>Open Arabic Letters & Harakat Pronunciation Guide</span>
+              </button>
+            )}
 
             {/* Transliteration Switch */}
             <label className="flex items-center justify-between cursor-pointer p-1">

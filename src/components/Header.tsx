@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, Search, Settings, Moon, Sun, Volume2, List, BookmarkCheck, Cloud, Pause, HelpCircle } from 'lucide-react';
+import { BookOpen, Search, Settings, Moon, Sun, Volume2, List, BookmarkCheck, Cloud, Pause, HelpCircle, GraduationCap } from 'lucide-react';
 import type { SurahMeta, LastRead } from '../types';
 
 interface HeaderProps {
@@ -8,6 +8,7 @@ interface HeaderProps {
   onOpenSearch: () => void;
   onOpenSettings: () => void;
   onOpenWaqfSigns: () => void;
+  onOpenLettersGuide: () => void;
   darkMode: boolean;
   onToggleDarkMode: () => void;
   onPlaySurah: () => void;
@@ -25,6 +26,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSearch,
   onOpenSettings,
   onOpenWaqfSigns,
+  onOpenLettersGuide,
   darkMode,
   onToggleDarkMode,
   onPlaySurah,
@@ -115,6 +117,16 @@ export const Header: React.FC<HeaderProps> = ({
             {syncEmail && (
               <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-500 border border-white dark:border-brand-surfaceDark" />
             )}
+          </button>
+
+          {/* Arabic Letters & Harakat Guide */}
+          <button
+            onClick={onOpenLettersGuide}
+            className="p-1.5 sm:p-2 text-gray-600 dark:text-gray-300 hover:text-brand-teal dark:hover:text-emerald-400 hover:bg-gray-100 dark:hover:bg-brand-cardDark rounded-lg transition flex items-center gap-1"
+            title="Arabic Letters & Harakat Pronunciation Guide"
+          >
+            <GraduationCap className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden lg:inline text-xs font-semibold">Letters</span>
           </button>
 
           {/* Qur’anic Pause & Stop Signs Guide */}

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { RECITERS } from './types';
-import type { SurahMeta, SurahDetail, Verse, ScriptType, TranslationChoice, Reciter, LastRead, CloudSyncData, SyncConflict } from './types';
-import { getScriptFontClass, getScriptArabicText, getScriptBismillah } from './types';
+import type { SurahMeta, SurahDetail, Verse, WBWWord, ScriptType, TranslationChoice, Reciter, LastRead, CloudSyncData, SyncConflict } from './types';
+import { getScriptFontClass, getScriptArabicText, getScriptBismillah, getWbwScriptText, getWbwWordAudioUrl } from './types';
 import { Header } from './components/Header';
 import { SurahListModal } from './components/SurahListModal';
 import { SettingsModal } from './components/SettingsModal';
@@ -12,8 +12,11 @@ import { SyncModal } from './components/SyncModal';
 import { SyncConflictModal } from './components/SyncConflictModal';
 import { WaqfSignsModal } from './components/WaqfSignsModal';
 import { WaqfSignMarker } from './components/WaqfSignMarker';
+import { WordBreakdownModal } from './components/WordBreakdownModal';
+import { ArabicLettersGuideModal } from './components/ArabicLettersGuideModal';
 import { getWaqfSignByChar } from './data/waqfSigns';
-import { Play, Pause, Bookmark, BookOpen, Copy, Check, ChevronLeft, ChevronRight, BookmarkCheck, Share2 } from 'lucide-react';
+import { playPronunciationClip, playAudioSequence, stopPronunciationAudio } from './utils/pronunciationAudio';
+import { Play, Pause, Bookmark, BookOpen, Copy, Check, ChevronLeft, ChevronRight, BookmarkCheck, Share2, Volume2, Sparkles, GraduationCap } from 'lucide-react';
 
 export default function App() {
   const [surahs, setSurahs] = useState<SurahMeta[]>([]);
@@ -99,10 +102,20 @@ export default function App() {
     return saved !== null ? saved === 'true' : true;
   });
 
-  // Modals
+  // Modals & Novice Pronunciation Learning State
   const [isSurahListOpen, setIsSurahListOpen] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [isWaqfSignsModalOpen, setIsWaqfSignsModalOpen] = useState<boolean>(false);
+  const [isLettersGuideOpen, setIsLettersGuideOpen] = useState<boolean>(false);
+  const [guideInitialLetterId, setGuideInitialLetterId] = useState<string | undefined>(undefined);
+  const [breakdownTarget, setBreakdownTarget] = useState<{ surah: number; aya: number; word: WBWWord } | null>(null);
+  const [playingWordKey, setPlayingWordKey] = useState<string | null>(null);
+  const [tapWordsMode, setTapWordsMode] = useState<boolean>(() => {
+    const saved = localStorage.getItem('quran_tap_words_mode');
+    return saved === 'true';
+  });
+  const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const didLongPressRef = useRef<boolean>(false);
   const [tafsirVerse, setTafsirVerse] = useState<Verse | null>(null);
   const [sharingVerse, setSharingVerse] = useState<Verse | null>(null);
   const [preferredTafsir, setPreferredTafsir] = useState<TafsirId>(() => {
@@ -386,6 +399,10 @@ export default function App() {
   }, [showWBW]);
 
   useEffect(() => {
+    localStorage.setItem('quran_tap_words_mode', String(tapWordsMode));
+  }, [tapWordsMode]);
+
+  useEffect(() => {
     localStorage.setItem('quran_show_translit', String(showTransliteration));
   }, [showTransliteration]);
 
@@ -593,6 +610,69 @@ export default function App() {
     }
   };
 
+  // Word-by-Word Pronunciation & Long-Hold Letter Breakdown Handlers
+  const handlePlaySingleWord = (ayaNum: number, wordObj: WBWWord) => {
+    const key = `${currentSurahNumber}:${ayaNum}:${wordObj.word}`;
+    if (playingWordKey === key) {
+      stopPronunciationAudio();
+      setPlayingWordKey(null);
+      return;
+    }
+    if (isPlaying) {
+      setIsPlaying(false);
+    }
+    const url = getWbwWordAudioUrl(currentSurahNumber, ayaNum, wordObj.word);
+    playPronunciationClip(url, {
+      onStart: () => setPlayingWordKey(key),
+      onEnd: () => setPlayingWordKey(null),
+      onError: () => setPlayingWordKey(null),
+    });
+  };
+
+  const handlePlayAllWordsInVerse = (ayaNum: number, words: WBWWord[]) => {
+    if (!words.length) return;
+    if (isPlaying) {
+      setIsPlaying(false);
+    }
+    const urls = words.map((w) => getWbwWordAudioUrl(currentSurahNumber, ayaNum, w.word));
+    playAudioSequence(
+      urls,
+      (idx) => {
+        const w = words[idx];
+        if (w) setPlayingWordKey(`${currentSurahNumber}:${ayaNum}:${w.word}`);
+      },
+      () => setPlayingWordKey(null),
+      () => setPlayingWordKey(null)
+    );
+  };
+
+  const clearLongPressTimer = () => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+  };
+
+  const handleWordPointerDown = (ayaNum: number, wordObj: WBWWord) => {
+    didLongPressRef.current = false;
+    clearLongPressTimer();
+    longPressTimerRef.current = setTimeout(() => {
+      didLongPressRef.current = true;
+      stopPronunciationAudio();
+      setPlayingWordKey(null);
+      setBreakdownTarget({ surah: currentSurahNumber, aya: ayaNum, word: wordObj });
+    }, 450);
+  };
+
+  const handleWordClick = (ayaNum: number, wordObj: WBWWord) => {
+    clearLongPressTimer();
+    if (didLongPressRef.current) {
+      didLongPressRef.current = false;
+      return;
+    }
+    handlePlaySingleWord(ayaNum, wordObj);
+  };
+
   const handleBookmarkToggle = (ayaNum: number) => {
     const exists = bookmarks.some((b) => b.surah === currentSurahNumber && b.aya === ayaNum);
     let updated;
@@ -655,6 +735,10 @@ export default function App() {
         onOpenSearch={() => setIsSurahListOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenWaqfSigns={() => setIsWaqfSignsModalOpen(true)}
+        onOpenLettersGuide={() => {
+          setGuideInitialLetterId(undefined);
+          setIsLettersGuideOpen(true);
+        }}
         darkMode={darkMode}
         onToggleDarkMode={() => setDarkMode(!darkMode)}
         onPlaySurah={handleTogglePlaySurah}
@@ -706,7 +790,7 @@ export default function App() {
                 </div>
 
                 {/* Quick translation mode pill */}
-                <div className="mt-4 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                   <span>Translation:</span>
                   <span className="font-bold text-brand-teal dark:text-emerald-400">
                     {translation === 'khattab'
@@ -724,6 +808,49 @@ export default function App() {
                     className="underline hover:text-brand-teal transition text-[11px]"
                   >
                     Change
+                  </button>
+                </div>
+
+                {/* Novice Pronunciation & Learning Quick Controls */}
+                <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+                  <button
+                    onClick={() => setShowWBW(!showWBW)}
+                    className={`px-3 py-1 rounded-full text-[11px] font-bold border transition flex items-center gap-1.5 ${
+                      showWBW
+                        ? 'bg-brand-teal text-white border-brand-teal shadow-xs'
+                        : 'bg-gray-50 dark:bg-brand-surfaceDark text-gray-600 dark:text-gray-300 border-gray-200 dark:border-brand-borderDark hover:border-brand-teal/50'
+                    }`}
+                    title="Show Word-by-Word cards with tap-to-pronounce"
+                  >
+                    <Volume2 className="w-3.5 h-3.5" />
+                    <span>Word-by-Word {showWBW ? 'On' : 'Off'}</span>
+                  </button>
+
+                  {!showWBW && (
+                    <button
+                      onClick={() => setTapWordsMode(!tapWordsMode)}
+                      className={`px-3 py-1 rounded-full text-[11px] font-bold border transition flex items-center gap-1.5 ${
+                        tapWordsMode
+                          ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs'
+                          : 'bg-gray-50 dark:bg-brand-surfaceDark text-gray-600 dark:text-gray-300 border-gray-200 dark:border-brand-borderDark hover:border-brand-teal/50'
+                      }`}
+                      title="Make each word in Classic view tappable to hear & long-hold for letters"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Tap Words {tapWordsMode ? 'On' : 'Off'}</span>
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => {
+                      setGuideInitialLetterId(undefined);
+                      setIsLettersGuideOpen(true);
+                    }}
+                    className="px-3 py-1 rounded-full text-[11px] font-bold border border-brand-teal/30 bg-brand-teal/10 hover:bg-brand-teal/15 text-brand-teal dark:text-emerald-400 transition flex items-center gap-1.5"
+                    title="Open Arabic Letters & Harakat Guide"
+                  >
+                    <GraduationCap className="w-3.5 h-3.5" />
+                    <span>Letters Guide</span>
                   </button>
                 </div>
 
@@ -933,32 +1060,156 @@ export default function App() {
                     {/* Word-by-Word View */}
                     {showWBW && verse.wbw && verse.wbw.length > 0 ? (
                       <div className="mb-6 pb-2">
+                        {/* Novice Learning Hint + Play All Words Strip */}
+                        <div className="flex flex-wrap items-center justify-between gap-2 mb-2 text-[11px] text-gray-500 dark:text-gray-400">
+                          <span className="flex items-center gap-1">
+                            <Volume2 className="w-3.5 h-3.5 text-brand-teal" />
+                            <span>Tap a word to hear • Hold (or tap Letters) to spell</span>
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handlePlayAllWordsInVerse(verse.aya, verse.wbw)}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-brand-teal/10 hover:bg-brand-teal/20 text-brand-teal dark:text-emerald-400 font-bold transition"
+                            title="Play every word one by one"
+                          >
+                            <Play className="w-3 h-3" />
+                            <span>Play Words</span>
+                          </button>
+                        </div>
+
                         <div
                           className="flex flex-wrap flex-row-reverse gap-2.5 sm:gap-3 py-2 items-start justify-start"
                           dir="rtl"
                         >
-                          {verse.wbw.map((w, idx) => (
-                            <div
-                              key={idx}
-                              className="group flex flex-col items-center justify-between min-w-[50px] bg-gray-50/80 dark:bg-brand-surfaceDark/80 hover:bg-brand-teal/10 dark:hover:bg-brand-teal/20 px-3 py-2 rounded-xl border border-gray-100 dark:border-brand-borderDark transition-all duration-200"
-                            >
-                              {/* Word Arabic Text */}
-                              <span
-                                className={`${getScriptFontClass(script)} wbw-arabic text-gray-900 dark:text-gray-100 select-text`}
-                                style={{ fontSize: `${arabicFontSize}px` }}
+                          {verse.wbw.map((w, idx) => {
+                            const wKey = `${currentSurahNumber}:${verse.aya}:${w.word}`;
+                            const isWordPlaying = playingWordKey === wKey;
+                            const wordDisplayText = getWbwScriptText(w, script);
+
+                            return (
+                              <div
+                                key={idx}
+                                role="button"
+                                tabIndex={0}
+                                onPointerDown={() => handleWordPointerDown(verse.aya, w)}
+                                onPointerUp={() => clearLongPressTimer()}
+                                onPointerLeave={() => clearLongPressTimer()}
+                                onPointerCancel={() => clearLongPressTimer()}
+                                onClick={() => handleWordClick(verse.aya, w)}
+                                onContextMenu={(e) => {
+                                  e.preventDefault();
+                                  setBreakdownTarget({ surah: currentSurahNumber, aya: verse.aya, word: w });
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    handlePlaySingleWord(verse.aya, w);
+                                  }
+                                }}
+                                className={`group relative cursor-pointer select-none flex flex-col items-center justify-between min-w-[64px] px-3 py-2.5 rounded-xl border transition-all duration-200 ${
+                                  isWordPlaying
+                                    ? 'bg-brand-teal/15 dark:bg-brand-teal/25 border-brand-teal ring-2 ring-brand-teal/40 shadow-sm scale-[1.03]'
+                                    : 'bg-gray-50/80 dark:bg-brand-surfaceDark/80 hover:bg-brand-teal/10 dark:hover:bg-brand-teal/20 border-gray-100 dark:border-brand-borderDark hover:border-brand-teal/40'
+                                }`}
+                                title="Tap to pronounce • Long-hold for letter breakdown"
                               >
-                                {renderArabicWithWaqfHints(w.arabic)}
-                              </span>
-                              {/* Word Translation */}
-                              <span
-                                className="text-[11px] sm:text-xs text-gray-600 dark:text-gray-400 group-hover:text-brand-teal font-sans mt-2 text-center font-normal leading-tight"
-                                dir="ltr"
-                              >
-                                {w.translation}
-                              </span>
-                            </div>
-                          ))}
+                                {/* Top tiny actions: Sound indicator + Letters button */}
+                                <div className="w-full flex items-center justify-between gap-2 mb-0.5" dir="ltr">
+                                  <Volume2
+                                    className={`w-3 h-3 transition ${
+                                      isWordPlaying
+                                        ? 'text-brand-teal animate-pulse'
+                                        : 'text-gray-300 dark:text-gray-600 group-hover:text-brand-teal'
+                                    }`}
+                                  />
+                                  <button
+                                    type="button"
+                                    onPointerDown={(e) => e.stopPropagation()}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      stopPronunciationAudio();
+                                      setPlayingWordKey(null);
+                                      setBreakdownTarget({ surah: currentSurahNumber, aya: verse.aya, word: w });
+                                    }}
+                                    className="px-1.5 py-0.5 rounded-md text-[9px] font-bold text-gray-400 hover:text-brand-teal hover:bg-brand-teal/10 dark:hover:text-emerald-400 transition flex items-center gap-0.5"
+                                    title="Letter-by-letter breakdown"
+                                  >
+                                    <Sparkles className="w-2.5 h-2.5" />
+                                    <span>Letters</span>
+                                  </button>
+                                </div>
+
+                                {/* Word Arabic Text */}
+                                <span
+                                  className={`${getScriptFontClass(script)} wbw-arabic text-gray-900 dark:text-gray-100`}
+                                  style={{ fontSize: `${arabicFontSize}px` }}
+                                >
+                                  {renderArabicWithWaqfHints(wordDisplayText)}
+                                </span>
+
+                                {/* Word Transliteration & Translation */}
+                                <div className="mt-2 text-center" dir="ltr">
+                                  {w.translit && (
+                                    <div className="text-[10px] font-semibold text-brand-teal/80 dark:text-emerald-400/80 leading-tight mb-0.5">
+                                      {w.translit}
+                                    </div>
+                                  )}
+                                  <span className="text-[11px] sm:text-xs text-gray-600 dark:text-gray-400 group-hover:text-brand-teal font-sans font-normal leading-tight block">
+                                    {w.translation}
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
+                      </div>
+                    ) : tapWordsMode && verse.wbw && verse.wbw.length > 0 ? (
+                      /* Interactive Classic Flowing Verse (Tap Words On) */
+                      <div className="mb-6 pb-2 text-right">
+                        <div className="text-[11px] text-gray-400 dark:text-gray-500 mb-1.5 flex items-center justify-end gap-1.5">
+                          <span>Tap any word to hear • Hold for letter breakdown</span>
+                          <Sparkles className="w-3 h-3 text-brand-teal" />
+                        </div>
+                        <p
+                          className={`${getScriptFontClass(script)} text-gray-900 dark:text-gray-100 leading-loose`}
+                          style={{ fontSize: `${arabicFontSize}px` }}
+                          dir="rtl"
+                        >
+                          {verse.wbw.map((w, idx) => {
+                            const wKey = `${currentSurahNumber}:${verse.aya}:${w.word}`;
+                            const isWordPlaying = playingWordKey === wKey;
+                            const wordDisplayText = getWbwScriptText(w, script);
+
+                            return (
+                              <span key={idx}>
+                                <span
+                                  role="button"
+                                  tabIndex={0}
+                                  onPointerDown={() => handleWordPointerDown(verse.aya, w)}
+                                  onPointerUp={() => clearLongPressTimer()}
+                                  onPointerLeave={() => clearLongPressTimer()}
+                                  onPointerCancel={() => clearLongPressTimer()}
+                                  onClick={() => handleWordClick(verse.aya, w)}
+                                  onContextMenu={(e) => {
+                                    e.preventDefault();
+                                    setBreakdownTarget({ surah: currentSurahNumber, aya: verse.aya, word: w });
+                                  }}
+                                  className={`inline-block cursor-pointer select-none rounded-lg px-1 transition-colors ${
+                                    isWordPlaying
+                                      ? 'bg-brand-teal/20 text-brand-teal dark:text-emerald-300 ring-1 ring-brand-teal/40'
+                                      : 'hover:bg-brand-teal/10 hover:underline decoration-brand-teal/40 decoration-dotted underline-offset-8'
+                                  }`}
+                                  title={`${w.translit ? `${w.translit} — ` : ''}${w.translation} (Tap to hear, hold for letters)`}
+                                >
+                                  {renderArabicWithWaqfHints(wordDisplayText)}
+                                </span>{' '}
+                              </span>
+                            );
+                          })}
+                          <span className="inline-flex items-center justify-center min-w-[1.75rem] h-7 px-1.5 mx-2 text-xs text-brand-teal border border-brand-teal/40 rounded-full font-sans select-none align-middle font-bold shrink-0">
+                            {verse.aya}
+                          </span>
+                        </p>
                       </div>
                     ) : (
                       /* Classic Flowing Calligraphy Verse */
@@ -1094,6 +1345,8 @@ export default function App() {
         onChangeTranslation={setTranslation}
         showWBW={showWBW}
         onToggleWBW={() => setShowWBW(!showWBW)}
+        tapWordsMode={tapWordsMode}
+        onToggleTapWordsMode={() => setTapWordsMode(!tapWordsMode)}
         showTransliteration={showTransliteration}
         onToggleTransliteration={() => setShowTransliteration(!showTransliteration)}
         arabicFontSize={arabicFontSize}
@@ -1102,6 +1355,10 @@ export default function App() {
         onChangeReciter={setCurrentReciter}
         syncEmail={syncEmail}
         onOpenSync={() => setIsSyncModalOpen(true)}
+        onOpenLettersGuide={() => {
+          setGuideInitialLetterId(undefined);
+          setIsLettersGuideOpen(true);
+        }}
         preferredTafsir={preferredTafsir}
         onChangePreferredTafsir={handlePreferredTafsirChange}
       />
@@ -1150,6 +1407,32 @@ export default function App() {
         onClose={() => setIsWaqfSignsModalOpen(false)}
         onNavigateToAyah={handleNavigateToAyah}
       />
+
+      {breakdownTarget && (
+        <WordBreakdownModal
+          key={`${breakdownTarget.surah}:${breakdownTarget.aya}:${breakdownTarget.word.word}`}
+          isOpen
+          onClose={() => setBreakdownTarget(null)}
+          surahNumber={breakdownTarget.surah}
+          ayaNumber={breakdownTarget.aya}
+          word={breakdownTarget.word}
+          script={script}
+          onOpenLettersGuide={(letterId) => {
+            setGuideInitialLetterId(letterId);
+            setIsLettersGuideOpen(true);
+          }}
+        />
+      )}
+
+      {isLettersGuideOpen && (
+        <ArabicLettersGuideModal
+          key={guideInitialLetterId || 'default'}
+          isOpen
+          onClose={() => setIsLettersGuideOpen(false)}
+          activeScript={script}
+          initialLetterId={guideInitialLetterId}
+        />
+      )}
     </div>
   );
 }

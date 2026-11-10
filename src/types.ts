@@ -9,7 +9,20 @@ export interface SurahMeta {
 export interface WBWWord {
   word: number;
   arabic: string;
+  indopak?: string;
   translation: string;
+  translit?: string;
+}
+
+export function getWbwWordAudioUrl(surah: number, aya: number, wordPos: number): string {
+  const s = surah.toString().padStart(3, '0');
+  const a = aya.toString().padStart(3, '0');
+  const w = wordPos.toString().padStart(3, '0');
+  return `https://audio.qurancdn.com/wbw/${s}_${a}_${w}.mp3`;
+}
+
+export function getWbwScriptText(word: WBWWord, script: ScriptType): string {
+  return script === 'uthmani' ? word.arabic : (word.indopak || word.arabic);
 }
 
 export interface Verse {
