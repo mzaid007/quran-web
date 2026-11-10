@@ -13,6 +13,8 @@ export const WaqfSignMarker: React.FC<WaqfSignMarkerProps> = ({ char, onOpenModa
   const [isOpenMobile, setIsOpenMobile] = useState<boolean>(false);
   const [isHoveredDesktop, setIsHoveredDesktop] = useState<boolean>(false);
   const containerRef = useRef<HTMLSpanElement>(null);
+  const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastTouchTimeRef = useRef<number>(0);
 
   const [coords, setCoords] = useState<{
     left: number;
@@ -21,6 +23,23 @@ export const WaqfSignMarker: React.FC<WaqfSignMarkerProps> = ({ char, onOpenModa
     arrowLeft: number;
     isPlacementBelow: boolean;
   } | null>(null);
+
+  const clearHoverTimeout = useCallback(() => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+  }, []);
+
+  const closePopover = useCallback(
+    (e?: React.SyntheticEvent) => {
+      e?.stopPropagation();
+      clearHoverTimeout();
+      setIsOpenMobile(false);
+      setIsHoveredDesktop(false);
+    },
+    [clearHoverTimeout]
+  );
 
   const updatePosition = useCallback(() => {
     if (!containerRef.current) return;
@@ -86,24 +105,53 @@ export const WaqfSignMarker: React.FC<WaqfSignMarkerProps> = ({ char, onOpenModa
     };
   }, [isVisible, isOpenMobile, updatePosition]);
 
+  // Clean up timer on unmount
+  useEffect(() => {
+    return () => clearHoverTimeout();
+  }, [clearHoverTimeout]);
+
   if (!sign) {
     return <span>{char}</span>;
   }
 
+  // Only treat real mouse pointers as hover; ignore simulated mouse events from touch taps
+  const handlePointerEnter = (e: React.PointerEvent) => {
+    if (e.pointerType !== 'mouse') return;
+    if (Date.now() - lastTouchTimeRef.current < 800) return;
+    clearHoverTimeout();
+    setIsHoveredDesktop(true);
+    updatePosition();
+  };
+
+  const handlePointerLeave = (e: React.PointerEvent) => {
+    if (e.pointerType !== 'mouse') return;
+    clearHoverTimeout();
+    hoverTimeoutRef.current = setTimeout(() => {
+      setIsHoveredDesktop(false);
+    }, 120);
+  };
+
   const handleToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsOpenMobile((prev) => !prev);
+    setIsOpenMobile((prev) => {
+      const next = !prev;
+      if (!next) {
+        setIsHoveredDesktop(false);
+      }
+      return next;
+    });
+    updatePosition();
   };
 
   return (
     <span
       ref={containerRef}
       className="relative inline-flex items-center justify-center mx-1 p-0.5 -my-0.5 group cursor-pointer select-none align-middle"
-      onMouseEnter={() => {
-        setIsHoveredDesktop(true);
-        updatePosition();
+      onTouchStart={() => {
+        lastTouchTimeRef.current = Date.now();
       }}
-      onMouseLeave={() => setIsHoveredDesktop(false)}
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
       onClick={handleToggle}
       role="button"
       tabIndex={0}
@@ -113,6 +161,7 @@ export const WaqfSignMarker: React.FC<WaqfSignMarkerProps> = ({ char, onOpenModa
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           setIsOpenMobile((prev) => !prev);
+          updatePosition();
         }
       }}
     >
@@ -130,14 +179,15 @@ export const WaqfSignMarker: React.FC<WaqfSignMarkerProps> = ({ char, onOpenModa
       {/* Floating Micro-Popover / Tooltip (Portal-rendered, clamped to viewport) */}
       {isVisible && coords && typeof document !== 'undefined' && createPortal(
         <>
-          {/* Mobile backdrop for touch dismissal */}
+          {/* Mobile backdrop for immediate single-tap outside dismissal */}
           {isOpenMobile && (
             <div
-              className="fixed inset-0 z-40 bg-black/5"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsOpenMobile(false);
-              }}
+              className="fixed inset-0 z-40 bg-black/5 cursor-pointer"
+              role="button"
+              tabIndex={-1}
+              aria-label="Close hint"
+              onClick={closePopover}
+              onPointerEnter={(e) => e.stopPropagation()}
             />
           )}
 
@@ -145,6 +195,21 @@ export const WaqfSignMarker: React.FC<WaqfSignMarkerProps> = ({ char, onOpenModa
           <div
             dir="ltr"
             onClick={(e) => e.stopPropagation()}
+            onPointerEnter={(e) => {
+              e.stopPropagation();
+              if (e.pointerType === 'mouse') {
+                clearHoverTimeout();
+              }
+            }}
+            onPointerLeave={(e) => {
+              e.stopPropagation();
+              if (e.pointerType === 'mouse') {
+                clearHoverTimeout();
+                hoverTimeoutRef.current = setTimeout(() => {
+                  setIsHoveredDesktop(false);
+                }, 120);
+              }
+            }}
             style={{
               position: 'fixed',
               left: `${coords.left}px`,
@@ -181,12 +246,10 @@ export const WaqfSignMarker: React.FC<WaqfSignMarkerProps> = ({ char, onOpenModa
                 {isOpenMobile && (
                   <button
                     type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsOpenMobile(false);
-                    }}
-                    className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-brand-cardDark"
+                    onClick={closePopover}
+                    className="p-1.5 -m-0.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-brand-cardDark"
                     title="Close"
+                    aria-label="Close hint"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
@@ -204,9 +267,7 @@ export const WaqfSignMarker: React.FC<WaqfSignMarkerProps> = ({ char, onOpenModa
               <button
                 type="button"
                 onClick={(e) => {
-                  e.stopPropagation();
-                  setIsOpenMobile(false);
-                  setIsHoveredDesktop(false);
+                  closePopover(e);
                   onOpenModal();
                 }}
                 className="mt-2.5 pt-2 border-t border-gray-100 dark:border-brand-borderDark/60 w-full flex items-center justify-between text-[10px] font-semibold text-brand-teal dark:text-emerald-400 hover:opacity-80 transition group/btn"
