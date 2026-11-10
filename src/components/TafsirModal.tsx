@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { X, BookOpen, Copy, Check, Loader2, ExternalLink, AlertTriangle } from 'lucide-react';
-import type { Verse, TranslationChoice } from '../types';
+import type { Verse, TranslationChoice, TafsirId } from '../types';
 import { formatQuranText } from '../types';
+
+export type { TafsirId };
 
 interface TafsirModalProps {
   isOpen: boolean;
@@ -10,9 +12,9 @@ interface TafsirModalProps {
   surahName: string;
   verse: Verse | null;
   activeTranslation?: TranslationChoice;
+  preferredTafsir?: TafsirId;
+  onChangePreferredTafsir?: (t: TafsirId) => void;
 }
-
-export type TafsirId = 'kathir_roman' | 'kathir_en' | 'kathir_ur' | 'jalalayn';
 
 // In-memory caches for Tafsir Surah files
 const ibnKathirCacheRoman: Record<number, Array<{ ayah: number; text: string; surah?: number }>> = {};
@@ -26,8 +28,11 @@ export const TafsirModal: React.FC<TafsirModalProps> = ({
   surahName,
   verse,
   activeTranslation,
+  preferredTafsir,
+  onChangePreferredTafsir,
 }) => {
   const [selectedTafsir, setSelectedTafsir] = useState<TafsirId>(() => {
+    if (preferredTafsir) return preferredTafsir;
     const saved = localStorage.getItem('quran_preferred_tafsir');
     if (saved === 'kathir_roman' || saved === 'kathir_ur' || saved === 'jalalayn' || saved === 'kathir_en') {
       return saved as TafsirId;
@@ -44,9 +49,13 @@ export const TafsirModal: React.FC<TafsirModalProps> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
 
-  // Sync preference or Roman Urdu default when modal opens
+  // Sync preference or Roman Urdu default when modal opens or preferredTafsir changes
   useEffect(() => {
     if (isOpen) {
+      if (preferredTafsir) {
+        setSelectedTafsir(preferredTafsir);
+        return;
+      }
       const saved = localStorage.getItem('quran_preferred_tafsir');
       if (saved === 'kathir_roman' || saved === 'kathir_ur' || saved === 'jalalayn' || saved === 'kathir_en') {
         setSelectedTafsir(saved as TafsirId);
@@ -54,7 +63,7 @@ export const TafsirModal: React.FC<TafsirModalProps> = ({
         setSelectedTafsir('kathir_roman');
       }
     }
-  }, [isOpen, activeTranslation]);
+  }, [isOpen, activeTranslation, preferredTafsir]);
 
   // Fetch Tafsir Ibn Kathir (Roman Urdu)
   useEffect(() => {
@@ -145,7 +154,11 @@ export const TafsirModal: React.FC<TafsirModalProps> = ({
 
   const handleSelectTafsir = (t: TafsirId) => {
     setSelectedTafsir(t);
-    localStorage.setItem('quran_preferred_tafsir', t);
+    if (onChangePreferredTafsir) {
+      onChangePreferredTafsir(t);
+    } else {
+      localStorage.setItem('quran_preferred_tafsir', t);
+    }
   };
 
   const handleCopyTafsir = () => {

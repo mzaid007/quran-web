@@ -83,6 +83,8 @@ export function getScriptBismillah(script: ScriptType): string {
 }
 export type TranslationChoice = 'khattab' | 'saheeh' | 'jalalayn' | 'romanUrdu' | 'none';
 
+export type TafsirId = 'kathir_roman' | 'kathir_en' | 'kathir_ur' | 'jalalayn';
+
 export interface LastRead {
   surah: number;
   surahName: string;
@@ -107,11 +109,13 @@ export interface SyncedSettings {
   script: ScriptType;
   translation: TranslationChoice;
   showWBW: boolean;
+  tapWordsMode?: boolean;
   showTransliteration: boolean;
   arabicFontSize: number;
   darkMode: boolean;
   reciterId: string;
   autoScroll: boolean;
+  preferredTafsir?: TafsirId;
 }
 
 export interface CloudSyncData {

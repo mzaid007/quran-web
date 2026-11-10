@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { RECITERS } from './types';
-import type { SurahMeta, SurahDetail, Verse, WBWWord, ScriptType, TranslationChoice, Reciter, LastRead, CloudSyncData, SyncConflict } from './types';
+import type { SurahMeta, SurahDetail, Verse, WBWWord, ScriptType, TranslationChoice, TafsirId, Reciter, LastRead, CloudSyncData, SyncConflict, SyncedSettings } from './types';
 import { getScriptFontClass, getScriptArabicText, getScriptBismillah, getWbwScriptText, getWbwWordAudioUrl } from './types';
 import { Header } from './components/Header';
 import { SurahListModal } from './components/SurahListModal';
 import { SettingsModal } from './components/SettingsModal';
-import { TafsirModal, type TafsirId } from './components/TafsirModal';
+import { TafsirModal } from './components/TafsirModal';
 import { ShareVerseModal } from './components/ShareVerseModal';
 import { AudioPlayer } from './components/AudioPlayer';
 import { SyncModal } from './components/SyncModal';
@@ -17,6 +17,29 @@ import { ArabicLettersGuideModal } from './components/ArabicLettersGuideModal';
 import { getWaqfSignByChar } from './data/waqfSigns';
 import { playPronunciationClip, playAudioSequence, stopPronunciationAudio } from './utils/pronunciationAudio';
 import { Play, Pause, Bookmark, BookOpen, Copy, Check, ChevronLeft, ChevronRight, BookmarkCheck, Share2, Volume2, Sparkles, GraduationCap } from 'lucide-react';
+
+const VALID_TAFSIRS: TafsirId[] = ['kathir_roman', 'kathir_en', 'kathir_ur', 'jalalayn'];
+
+function ensureDefaultsMigratedV5() {
+  if (!localStorage.getItem('quran_defaults_migrated_v5')) {
+    localStorage.setItem('quran_defaults_migrated_v5', 'true');
+    localStorage.setItem('quran_script', 'indopak-majeed');
+    localStorage.setItem('quran_translation', 'romanUrdu');
+    localStorage.setItem('quran_show_wbw', 'false');
+  }
+}
+
+function getSyncSnapshot(data: {
+  lastRead: LastRead | null;
+  bookmarks: { surah: number; aya: number }[];
+  settings: SyncedSettings;
+}): string {
+  return JSON.stringify({
+    lastRead: data.lastRead,
+    bookmarks: data.bookmarks,
+    settings: data.settings,
+  });
+}
 
 export default function App() {
   const [surahs, setSurahs] = useState<SurahMeta[]>([]);
@@ -43,22 +66,12 @@ export default function App() {
 
   // Settings with LocalStorage Persistence (IndoPak Majeed well-spaced script & Roman Urdu translation as defaults, WBW disabled by default)
   const [script, setScript] = useState<ScriptType>(() => {
-    const migrated = localStorage.getItem('quran_defaults_migrated_v5');
-    if (!migrated) {
-      localStorage.setItem('quran_defaults_migrated_v5', 'true');
-      localStorage.setItem('quran_script', 'indopak-majeed');
-      localStorage.setItem('quran_translation', 'romanUrdu');
-      localStorage.setItem('quran_show_wbw', 'false');
-      return 'indopak-majeed';
-    }
+    ensureDefaultsMigratedV5();
     const saved = localStorage.getItem('quran_script');
     return saved === 'uthmani' || saved === 'indopak' || saved === 'indopak-saleem' || saved === 'indopak-majeed' ? saved : 'indopak-majeed';
   });
   const [translation, setTranslation] = useState<TranslationChoice>(() => {
-    const migrated = localStorage.getItem('quran_defaults_migrated_v4');
-    if (!migrated) {
-      return 'romanUrdu';
-    }
+    ensureDefaultsMigratedV5();
     const saved = localStorage.getItem('quran_translation');
     if (saved === 'khattab' || saved === 'saheeh' || saved === 'jalalayn' || saved === 'romanUrdu' || saved === 'none') {
       return saved;
@@ -66,10 +79,7 @@ export default function App() {
     return 'romanUrdu';
   });
   const [showWBW, setShowWBW] = useState<boolean>(() => {
-    const migrated = localStorage.getItem('quran_defaults_migrated_v4');
-    if (!migrated) {
-      return false;
-    }
+    ensureDefaultsMigratedV5();
     const saved = localStorage.getItem('quran_show_wbw');
     return saved !== null ? saved === 'true' : false;
   });
@@ -200,8 +210,10 @@ export default function App() {
   const [isSyncModalOpen, setIsSyncModalOpen] = useState<boolean>(false);
   const [syncConflict, setSyncConflict] = useState<SyncConflict | null>(null);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
+  const [isFetchingCloudOnLoad, setIsFetchingCloudOnLoad] = useState<boolean>(false);
   const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
-  const autoSyncTimerRef = useRef<any>(null);
+  const autoSyncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastSyncedSnapshotRef = useRef<string | null>(null);
 
   const buildLocalSyncData = (): CloudSyncData => {
     return {
@@ -212,16 +224,87 @@ export default function App() {
         script,
         translation,
         showWBW,
+        tapWordsMode,
         showTransliteration,
         arabicFontSize,
         darkMode,
         reciterId: currentReciter.id,
         autoScroll,
+        preferredTafsir,
       },
     };
   };
 
+  const pushSyncToCloud = async (email: string, data: CloudSyncData) => {
+    const payloadLastRead = data.lastRead || {
+      surah: currentSurahNumber,
+      surahName: surahData?.name || 'Al-Faatiha',
+      aya: 1,
+      timestamp: Date.now(),
+    };
+    const res = await fetch('/api/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        lastRead: payloadLastRead,
+        bookmarks: data.bookmarks,
+        settings: data.settings,
+      }),
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || 'Failed to sync with Neon.');
+
+    const serverUpdatedAt = json.data?.updatedAt
+      ? new Date(json.data.updatedAt).getTime()
+      : Date.now();
+    localStorage.setItem('quran_local_modified_at', String(serverUpdatedAt));
+    lastSyncedSnapshotRef.current = getSyncSnapshot({
+      lastRead: data.lastRead,
+      bookmarks: data.bookmarks,
+      settings: data.settings,
+    });
+    setLastSyncedAt(new Date());
+    return json;
+  };
+
   const applyCloudData = (data: CloudSyncData) => {
+    const s = data.settings;
+    const nextLastRead = data.lastRead ?? lastRead;
+    const nextBookmarks = Array.isArray(data.bookmarks) ? data.bookmarks : bookmarks;
+    const nextScript = s?.script || script;
+    const nextTranslation = s?.translation || translation;
+    const nextShowWBW = typeof s?.showWBW === 'boolean' ? s.showWBW : showWBW;
+    const nextTapWordsMode = typeof s?.tapWordsMode === 'boolean' ? s.tapWordsMode : tapWordsMode;
+    const nextShowTranslit = typeof s?.showTransliteration === 'boolean' ? s.showTransliteration : showTransliteration;
+    const nextFontSize = typeof s?.arabicFontSize === 'number' ? s.arabicFontSize : arabicFontSize;
+    const nextDarkMode = typeof s?.darkMode === 'boolean' ? s.darkMode : darkMode;
+    const nextReciter = s?.reciterId ? (RECITERS.find((r) => r.id === s.reciterId) || currentReciter) : currentReciter;
+    const nextAutoScroll = typeof s?.autoScroll === 'boolean' ? s.autoScroll : autoScroll;
+    const nextPreferredTafsir = s?.preferredTafsir && VALID_TAFSIRS.includes(s.preferredTafsir)
+      ? s.preferredTafsir
+      : preferredTafsir;
+
+    lastSyncedSnapshotRef.current = getSyncSnapshot({
+      lastRead: nextLastRead,
+      bookmarks: nextBookmarks,
+      settings: {
+        script: nextScript,
+        translation: nextTranslation,
+        showWBW: nextShowWBW,
+        tapWordsMode: nextTapWordsMode,
+        showTransliteration: nextShowTranslit,
+        arabicFontSize: nextFontSize,
+        darkMode: nextDarkMode,
+        reciterId: nextReciter.id,
+        autoScroll: nextAutoScroll,
+        preferredTafsir: nextPreferredTafsir,
+      },
+    });
+
+    const cloudUpdatedAt = data.updatedAt ? new Date(data.updatedAt).getTime() : Date.now();
+    localStorage.setItem('quran_local_modified_at', String(cloudUpdatedAt));
+
     if (data.lastRead) {
       setLastRead(data.lastRead);
       localStorage.setItem('quran_last_read', JSON.stringify(data.lastRead));
@@ -238,19 +321,19 @@ export default function App() {
       setBookmarks(data.bookmarks);
       localStorage.setItem('quran_bookmarks', JSON.stringify(data.bookmarks));
     }
-    if (data.settings) {
-      const s = data.settings;
-      if (s.script) setScript(s.script);
-      if (s.translation) setTranslation(s.translation);
-      if (typeof s.showWBW === 'boolean') setShowWBW(s.showWBW);
-      if (typeof s.showTransliteration === 'boolean') setShowTransliteration(s.showTransliteration);
-      if (typeof s.arabicFontSize === 'number') setArabicFontSize(s.arabicFontSize);
-      if (typeof s.darkMode === 'boolean') setDarkMode(s.darkMode);
-      if (s.reciterId) {
-        const found = RECITERS.find((r) => r.id === s.reciterId);
-        if (found) setCurrentReciter(found);
+    if (s) {
+      if (s.script) setScript(nextScript);
+      if (s.translation) setTranslation(nextTranslation);
+      if (typeof s.showWBW === 'boolean') setShowWBW(nextShowWBW);
+      if (typeof s.tapWordsMode === 'boolean') setTapWordsMode(nextTapWordsMode);
+      if (typeof s.showTransliteration === 'boolean') setShowTransliteration(nextShowTranslit);
+      if (typeof s.arabicFontSize === 'number') setArabicFontSize(nextFontSize);
+      if (typeof s.darkMode === 'boolean') setDarkMode(nextDarkMode);
+      if (s.reciterId) setCurrentReciter(nextReciter);
+      if (typeof s.autoScroll === 'boolean') setAutoScroll(nextAutoScroll);
+      if (s.preferredTafsir && VALID_TAFSIRS.includes(s.preferredTafsir)) {
+        handlePreferredTafsirChange(nextPreferredTafsir);
       }
-      if (typeof s.autoScroll === 'boolean') setAutoScroll(s.autoScroll);
     }
     setLastSyncedAt(new Date());
   };
@@ -274,6 +357,7 @@ export default function App() {
             cloudData.lastRead.aya !== localData.lastRead.aya);
 
         if (hasConflict) {
+          if (autoSyncTimerRef.current) clearTimeout(autoSyncTimerRef.current);
           setSyncEmail(email);
           localStorage.setItem('quran_sync_email', email);
           setSyncConflict({ cloud: cloudData, local: { ...localData, email } });
@@ -287,22 +371,9 @@ export default function App() {
       } else {
         // First time email registered: push current local state to Neon
         const localData = buildLocalSyncData();
-        const saveRes = await fetch('/api/sync', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email,
-            lastRead: localData.lastRead || { surah: 1, surahName: 'Al-Faatiha', aya: 1, timestamp: Date.now() },
-            bookmarks: localData.bookmarks,
-            settings: localData.settings,
-          }),
-        });
-        const saveJson = await saveRes.json();
-        if (!saveRes.ok) throw new Error(saveJson.error || 'Failed to initialize Neon save.');
-
+        await pushSyncToCloud(email, localData);
         setSyncEmail(email);
         localStorage.setItem('quran_sync_email', email);
-        setLastSyncedAt(new Date());
       }
       setIsSyncModalOpen(false);
     } finally {
@@ -321,19 +392,7 @@ export default function App() {
     setIsSyncing(true);
     try {
       const localData = buildLocalSyncData();
-      const res = await fetch('/api/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: syncConflict.cloud.email,
-          lastRead: localData.lastRead || { surah: 1, surahName: 'Al-Faatiha', aya: 1, timestamp: Date.now() },
-          bookmarks: localData.bookmarks,
-          settings: localData.settings,
-        }),
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Failed to override cloud save.');
-      setLastSyncedAt(new Date());
+      await pushSyncToCloud(syncConflict.cloud.email, localData);
       setSyncConflict(null);
     } catch (e: any) {
       alert(`Error overriding cloud: ${e.message}`);
@@ -347,19 +406,7 @@ export default function App() {
     setIsSyncing(true);
     try {
       const localData = buildLocalSyncData();
-      const res = await fetch('/api/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: syncEmail,
-          lastRead: localData.lastRead || { surah: 1, surahName: 'Al-Faatiha', aya: 1, timestamp: Date.now() },
-          bookmarks: localData.bookmarks,
-          settings: localData.settings,
-        }),
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Failed to sync with Neon.');
-      setLastSyncedAt(new Date());
+      await pushSyncToCloud(syncEmail, localData);
     } catch (e: any) {
       alert(`Sync failed: ${e.message}`);
     } finally {
@@ -368,6 +415,8 @@ export default function App() {
   };
 
   const handleDisconnectSync = () => {
+    if (autoSyncTimerRef.current) clearTimeout(autoSyncTimerRef.current);
+    lastSyncedSnapshotRef.current = null;
     setSyncEmail(null);
     localStorage.removeItem('quran_sync_email');
     setLastSyncedAt(null);
@@ -434,65 +483,81 @@ export default function App() {
   // Initial cloud check on mount if an email is linked
   useEffect(() => {
     if (!syncEmail) return;
+    let cancelled = false;
+    setIsFetchingCloudOnLoad(true);
     const fetchOnLoad = async () => {
       try {
         const res = await fetch(`/api/sync?email=${encodeURIComponent(syncEmail)}`);
-        if (!res.ok) return;
+        if (!res.ok || cancelled) return;
         const json = await res.json();
+        if (cancelled) return;
         if (json.exists && json.data) {
           const cloudData: CloudSyncData = json.data;
           const localData = buildLocalSyncData();
 
           const cloudTime = cloudData.updatedAt ? new Date(cloudData.updatedAt).getTime() : 0;
-          const localTime = localData.lastRead?.timestamp || 0;
+          const localReadTime = localData.lastRead?.timestamp || 0;
+          const localModifiedAt = Number(localStorage.getItem('quran_local_modified_at') || '0');
+          const effectiveLocalTime = Math.max(localReadTime, localModifiedAt);
 
-          // If cloud has a different reading progress
-          if (
+          const lastReadDiffers = Boolean(
             cloudData.lastRead &&
             (!localData.lastRead ||
               cloudData.lastRead.surah !== localData.lastRead.surah ||
               cloudData.lastRead.aya !== localData.lastRead.aya)
-          ) {
+          );
+
+          if (lastReadDiffers) {
             // Guard: If this local device was also actively modified, open Conflict Guard Modal
-            if (localTime > 0 && Math.abs(cloudTime - localTime) > 60000) {
+            if (localReadTime > 0 && Math.abs(cloudTime - localReadTime) > 60000) {
+              if (autoSyncTimerRef.current) clearTimeout(autoSyncTimerRef.current);
               setSyncConflict({ cloud: cloudData, local: localData });
             } else {
               // Otherwise seamlessly resume from cloud
               applyCloudData(cloudData);
             }
+          } else if (cloudTime > effectiveLocalTime) {
+            // Pull newer settings/bookmarks even when lastRead is unchanged
+            applyCloudData(cloudData);
           }
         }
       } catch {
         // silent fail on network error / offline
+      } finally {
+        if (!cancelled) {
+          setIsFetchingCloudOnLoad(false);
+        }
       }
     };
     fetchOnLoad();
+    return () => {
+      cancelled = true;
+    };
   }, [syncEmail]);
 
   // Debounced auto-sync to Neon when reading progress or settings change
   useEffect(() => {
-    if (!syncEmail) return;
+    const localData = buildLocalSyncData();
+    const currentSnapshot = getSyncSnapshot(localData);
+
+    // Record initial local baseline so mounting does not trigger a redundant POST
+    if (lastSyncedSnapshotRef.current === null) {
+      lastSyncedSnapshotRef.current = currentSnapshot;
+      return;
+    }
+
+    if (currentSnapshot !== lastSyncedSnapshotRef.current) {
+      localStorage.setItem('quran_local_modified_at', String(Date.now()));
+    }
+
+    if (!syncEmail || syncConflict || isFetchingCloudOnLoad) return;
+    if (currentSnapshot === lastSyncedSnapshotRef.current) return;
+
     if (autoSyncTimerRef.current) clearTimeout(autoSyncTimerRef.current);
 
     autoSyncTimerRef.current = setTimeout(async () => {
       try {
-        const localData = buildLocalSyncData();
-        await fetch('/api/sync', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: syncEmail,
-            lastRead: localData.lastRead || {
-              surah: currentSurahNumber,
-              surahName: surahData?.name || '',
-              aya: 1,
-              timestamp: Date.now(),
-            },
-            bookmarks: localData.bookmarks,
-            settings: localData.settings,
-          }),
-        });
-        setLastSyncedAt(new Date());
+        await pushSyncToCloud(syncEmail, localData);
       } catch {
         // offline
       }
@@ -503,16 +568,20 @@ export default function App() {
     };
   }, [
     syncEmail,
+    syncConflict,
+    isFetchingCloudOnLoad,
     lastRead,
     bookmarks,
     script,
     translation,
     showWBW,
+    tapWordsMode,
     showTransliteration,
     arabicFontSize,
     darkMode,
     currentReciter,
     autoScroll,
+    preferredTafsir,
   ]);
 
   // Handle browser back/forward buttons
@@ -1390,6 +1459,8 @@ export default function App() {
         surahName={surahData?.name || ''}
         verse={tafsirVerse}
         activeTranslation={translation}
+        preferredTafsir={preferredTafsir}
+        onChangePreferredTafsir={handlePreferredTafsirChange}
       />
 
       <ShareVerseModal
