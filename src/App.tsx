@@ -190,7 +190,7 @@ export default function App() {
     if (!text) return null;
     const parts = text.split(/([\u06D6-\u06DC\u0615\u06DE\u06E9])/);
     return parts.map((part, index) => {
-      if (getWaqfSignByChar(part)) {
+      if (index % 2 === 1 && getWaqfSignByChar(part)) {
         return (
           <WaqfSignMarker
             key={index}

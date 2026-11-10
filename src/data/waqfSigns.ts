@@ -435,46 +435,16 @@ export const WAQF_SIGNS: WaqfSign[] = [
   },
 ];
 
-// Fast lookup map for any Quranic character encountered in text
+// Fast lookup map for dedicated Unicode Quranic pause/annotation characters in text.
+// Only match true Unicode annotation marks so ordinary Arabic words (e.g. "لا" / "لَا")
+// are never misinterpreted as waqf pause symbols.
+const WAQF_CHAR_PATTERN = /^[\u06D6-\u06DD\u0615\u06DE\u06E9]$/;
+
 export const WAQF_MAP: Record<string, WaqfSign> = {};
 for (const sign of WAQF_SIGNS) {
-  if (sign.symbol) {
+  if (sign.symbol && WAQF_CHAR_PATTERN.test(sign.symbol)) {
     WAQF_MAP[sign.symbol] = sign;
   }
-}
-
-// Aliases for user searches and cross-tradition characters
-const laaSign = WAQF_SIGNS.find((s) => s.id === 'laa');
-if (laaSign) {
-  WAQF_MAP['لا'] = laaSign;
-  WAQF_MAP['لَا'] = laaSign;
-  WAQF_MAP['\u06D9'] = laaSign;
-}
-
-const waqfAwlaSign = WAQF_SIGNS.find((s) => s.id === 'waqf_awla');
-if (waqfAwlaSign) {
-  WAQF_MAP['ق'] = waqfAwlaSign;
-  WAQF_MAP['قلى'] = waqfAwlaSign;
-  WAQF_MAP['\u06D7'] = waqfAwlaSign;
-}
-
-const lazimSign = WAQF_SIGNS.find((s) => s.id === 'lazim');
-if (lazimSign) {
-  WAQF_MAP['م'] = lazimSign;
-  WAQF_MAP['مـ'] = lazimSign;
-  WAQF_MAP['\u06D8'] = lazimSign;
-}
-
-const jaizSign = WAQF_SIGNS.find((s) => s.id === 'jaiz');
-if (jaizSign) {
-  WAQF_MAP['ج'] = jaizSign;
-  WAQF_MAP['\u06DA'] = jaizSign;
-}
-
-const mutlaqSign = WAQF_SIGNS.find((s) => s.id === 'mutlaq');
-if (mutlaqSign) {
-  WAQF_MAP['ط'] = mutlaqSign;
-  WAQF_MAP['\u0615'] = mutlaqSign;
 }
 
 // Regex matching any stop or navigational symbol in verse text
