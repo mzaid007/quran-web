@@ -1,7 +1,7 @@
 import React from 'react';
-import { X, Type, Globe, Check, Sliders, Volume2, Cloud, BookOpen, GraduationCap, Maximize2, Minimize2, Expand } from 'lucide-react';
+import { X, Type, Globe, Check, Sliders, Volume2, Cloud, BookOpen, GraduationCap, Maximize2, Minimize2, Expand, Palette } from 'lucide-react';
 import { RECITERS } from '../types';
-import type { ScriptType, TranslationChoice, Reciter, ReadingWidth } from '../types';
+import type { ScriptType, TranslationChoice, Reciter, ReadingWidth, SecondaryTranslationChoice } from '../types';
 import type { TafsirId } from './TafsirModal';
 
 interface SettingsModalProps {
@@ -11,12 +11,16 @@ interface SettingsModalProps {
   onChangeScript: (s: ScriptType) => void;
   translation: TranslationChoice;
   onChangeTranslation: (t: TranslationChoice) => void;
+  secondaryTranslation?: SecondaryTranslationChoice;
+  onChangeSecondaryTranslation?: (st: SecondaryTranslationChoice) => void;
   showWBW: boolean;
   onToggleWBW: () => void;
   tapWordsMode: boolean;
   onToggleTapWordsMode: () => void;
   showTransliteration: boolean;
   onToggleTransliteration: () => void;
+  showTajweed?: boolean;
+  onToggleTajweed?: () => void;
   arabicFontSize: number;
   onChangeArabicFontSize: (size: number) => void;
   currentReciter: Reciter;
@@ -37,12 +41,16 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onChangeScript,
   translation,
   onChangeTranslation,
+  secondaryTranslation = 'none',
+  onChangeSecondaryTranslation,
   showWBW,
   onToggleWBW,
   tapWordsMode,
   onToggleTapWordsMode,
   showTransliteration,
   onToggleTransliteration,
+  showTajweed = false,
+  onToggleTajweed,
   arabicFontSize,
   onChangeArabicFontSize,
   currentReciter,
@@ -383,6 +391,44 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
           </div>
 
+          {/* Secondary Translation (Side-by-Side Dual View) */}
+          {onChangeSecondaryTranslation && (
+            <div className="pt-2 border-t border-gray-100 dark:border-brand-borderDark">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-bold text-gray-800 dark:text-gray-200 flex items-center gap-1.5">
+                  <Globe className="w-4 h-4 text-brand-teal" />
+                  Secondary Translation (Side-by-Side Dual View)
+                </span>
+                <span className="text-[11px] font-semibold text-brand-teal">
+                  Optional
+                </span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                {[
+                  { id: 'none', label: 'None (Disabled)' },
+                  { id: 'khattab', label: 'The Clear Quran' },
+                  { id: 'saheeh', label: 'Saheeh Int.' },
+                  { id: 'romanUrdu', label: 'Maududi (Roman)' },
+                  { id: 'jalalayn', label: 'Tafsir Jalalayn' },
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => onChangeSecondaryTranslation(item.id as SecondaryTranslationChoice)}
+                    className={`p-2 rounded-xl border text-center transition flex items-center justify-between gap-1 ${
+                      secondaryTranslation === item.id
+                        ? 'border-brand-teal bg-brand-teal/15 font-bold text-brand-teal dark:text-emerald-400 ring-1 ring-brand-teal'
+                        : 'border-gray-200 dark:border-brand-borderDark text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-brand-cardDark'
+                    }`}
+                  >
+                    <span className="truncate">{item.label}</span>
+                    {secondaryTranslation === item.id && <Check className="w-3.5 h-3.5 shrink-0" />}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Tafsir Commentary Source */}
           {onChangePreferredTafsir && (
             <div className="pt-2 border-t border-gray-100 dark:border-brand-borderDark">
@@ -586,6 +632,27 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 className="w-5 h-5 rounded text-brand-teal focus:ring-brand-teal accent-brand-teal cursor-pointer"
               />
             </label>
+
+            {/* Dynamic Tajweed Rules Highlighting */}
+            {onToggleTajweed && (
+              <label className="flex items-center justify-between cursor-pointer p-1">
+                <div>
+                  <div className="text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center gap-1.5">
+                    <Palette className="w-4 h-4 text-brand-teal" />
+                    <span>Dynamic Tajweed Coloring</span>
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    Color-codes Ghunnah, Qalqalah, Iqlab, Idgham, and Madd
+                  </div>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={showTajweed}
+                  onChange={onToggleTajweed}
+                  className="w-5 h-5 rounded text-brand-teal focus:ring-brand-teal accent-brand-teal cursor-pointer shrink-0"
+                />
+              </label>
+            )}
           </div>
 
           {/* 5. Reciter Selector */}

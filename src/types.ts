@@ -43,6 +43,8 @@ export interface SurahDetail extends SurahMeta {
 }
 
 export type ScriptType = 'uthmani' | 'indopak' | 'indopak-saleem' | 'indopak-majeed';
+export type ReadingViewMode = 'flow' | 'wbw' | 'mushaf';
+export type SecondaryTranslationChoice = 'none' | 'saheeh' | 'khattab' | 'jalalayn' | 'romanUrdu';
 
 export function getScriptFontClass(script: ScriptType): string {
   switch (script) {
@@ -135,6 +137,10 @@ export interface SyncedSettings {
   autoScroll: boolean;
   preferredTafsir?: TafsirId;
   readingWidth?: ReadingWidth;
+  readingViewMode?: ReadingViewMode;
+  secondaryTranslation?: SecondaryTranslationChoice;
+  showTajweed?: boolean;
+  hifzMode?: boolean;
 }
 
 export interface CloudSyncData {

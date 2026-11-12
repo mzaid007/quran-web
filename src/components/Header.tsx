@@ -1,11 +1,11 @@
 import React from 'react';
-import { BookOpen, Search, Settings, Moon, Sun, Volume2, List, BookmarkCheck, Cloud, Pause, HelpCircle, GraduationCap, Maximize2, Minimize2, Expand } from 'lucide-react';
-import type { SurahMeta, LastRead, ReadingWidth } from '../types';
+import { BookOpen, Search, Settings, Moon, Sun, Volume2, List, BookmarkCheck, Cloud, Pause, HelpCircle, GraduationCap, Maximize2, Minimize2, Expand, Eye, EyeOff, BookMarked } from 'lucide-react';
+import type { SurahMeta, LastRead, ReadingWidth, ReadingViewMode } from '../types';
 
 interface HeaderProps {
   currentSurah: SurahMeta | null;
   onOpenSurahList: () => void;
-  onOpenSearch: () => void;
+  onOpenGlobalSearch: () => void;
   onOpenSettings: () => void;
   onOpenWaqfSigns: () => void;
   onOpenLettersGuide: () => void;
@@ -20,12 +20,16 @@ interface HeaderProps {
   isSyncing: boolean;
   readingWidth: ReadingWidth;
   onCycleReadingWidth: () => void;
+  hifzMode: boolean;
+  onToggleHifzMode: () => void;
+  readingViewMode: ReadingViewMode;
+  onChangeReadingViewMode: (mode: ReadingViewMode) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   currentSurah,
   onOpenSurahList,
-  onOpenSearch,
+  onOpenGlobalSearch,
   onOpenSettings,
   onOpenWaqfSigns,
   onOpenLettersGuide,
@@ -40,6 +44,10 @@ export const Header: React.FC<HeaderProps> = ({
   isSyncing,
   readingWidth,
   onCycleReadingWidth,
+  hifzMode,
+  onToggleHifzMode,
+  readingViewMode,
+  onChangeReadingViewMode,
 }) => {
   const getHeaderWidthClass = (width: ReadingWidth) => {
     switch (width) {
@@ -110,13 +118,42 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
 
-          {/* Search Surahs */}
+          {/* Full Text & Root Search */}
           <button
-            onClick={onOpenSearch}
-            className="p-1.5 sm:p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-brand-cardDark rounded-lg transition"
-            title="Search Surahs"
+            onClick={onOpenGlobalSearch}
+            className="p-1.5 sm:p-2 text-gray-600 dark:text-gray-300 hover:text-brand-teal dark:hover:text-emerald-400 hover:bg-gray-100 dark:hover:bg-brand-cardDark rounded-lg transition flex items-center gap-1"
+            title="Search Arabic & English or Explore Root Words"
           >
-            <Search className="w-4 h-4 sm:w-5 sm:h-5" />
+            <Search className="w-4 h-4 sm:w-5 sm:h-5 text-brand-teal dark:text-emerald-400" />
+            <span className="hidden md:inline text-xs font-semibold">Search</span>
+          </button>
+
+          {/* Reading Mode Switcher (Flow vs Medina Mushaf Page) */}
+          <button
+            onClick={() => onChangeReadingViewMode(readingViewMode === 'mushaf' ? 'flow' : 'mushaf')}
+            className={`p-1.5 sm:p-2 rounded-lg transition flex items-center gap-1 text-xs font-semibold ${
+              readingViewMode === 'mushaf'
+                ? 'bg-brand-teal text-white shadow-sm'
+                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-brand-cardDark'
+            }`}
+            title={readingViewMode === 'mushaf' ? 'Switch to Continuous Flow View' : 'Switch to Medina 604-Page Mushaf View'}
+          >
+            <BookMarked className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden lg:inline">{readingViewMode === 'mushaf' ? 'Page 604' : 'Page View'}</span>
+          </button>
+
+          {/* Hifz Memorization Recall Masking */}
+          <button
+            onClick={onToggleHifzMode}
+            className={`p-1.5 sm:p-2 rounded-lg transition flex items-center gap-1 text-xs font-semibold ${
+              hifzMode
+                ? 'bg-amber-500 text-white shadow-sm ring-1 ring-amber-400'
+                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-brand-cardDark'
+            }`}
+            title={hifzMode ? 'Hifz Mode ON: Words are blurred. Tap word/verse to test recall. (Click to disable)' : 'Hifz Memorization Mode: Blur words to test memory'}
+          >
+            {hifzMode ? <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" /> : <Eye className="w-4 h-4 sm:w-5 sm:h-5" />}
+            <span className="hidden md:inline">Hifz</span>
           </button>
 
           {/* Multi-Device Cloud Sync */}

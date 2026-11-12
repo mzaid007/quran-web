@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { RECITERS } from './types';
-import type { SurahMeta, SurahDetail, Verse, WBWWord, ScriptType, TranslationChoice, TafsirId, Reciter, LastRead, CloudSyncData, SyncConflict, SyncedSettings, ReadingWidth } from './types';
+import type { SurahMeta, SurahDetail, Verse, WBWWord, ScriptType, TranslationChoice, TafsirId, Reciter, LastRead, CloudSyncData, SyncConflict, SyncedSettings, ReadingWidth, ReadingViewMode, SecondaryTranslationChoice } from './types';
 import { getScriptFontClass, getScriptArabicText, getScriptBismillah, getBismillahTranslation, getWbwScriptText, getWbwWordAudioUrl } from './types';
 import { Header } from './components/Header';
 import { SurahListModal } from './components/SurahListModal';
@@ -14,9 +14,13 @@ import { WaqfSignsModal } from './components/WaqfSignsModal';
 import { WaqfSignMarker } from './components/WaqfSignMarker';
 import { WordBreakdownModal } from './components/WordBreakdownModal';
 import { ArabicLettersGuideModal } from './components/ArabicLettersGuideModal';
+import { InstallAppBanner } from './components/InstallAppBanner';
+import { GlobalSearchModal } from './components/GlobalSearchModal';
+import { MushafPageView } from './components/MushafPageView';
+import { parseTajweedWord, TAJWEED_STYLES } from './utils/tajweed';
 import { getWaqfSignByChar } from './data/waqfSigns';
 import { playPronunciationClip, playAudioSequence, stopPronunciationAudio } from './utils/pronunciationAudio';
-import { Play, Pause, Bookmark, BookOpen, Copy, Check, ChevronLeft, ChevronRight, BookmarkCheck, Share2, Volume2, Sparkles, GraduationCap } from 'lucide-react';
+import { Play, Pause, Bookmark, BookOpen, Copy, Check, ChevronLeft, ChevronRight, BookmarkCheck, Share2, Volume2, Sparkles, GraduationCap, EyeOff } from 'lucide-react';
 
 const VALID_TAFSIRS: TafsirId[] = ['kathir_roman', 'kathir_en', 'kathir_ur', 'jalalayn'];
 
@@ -117,6 +121,115 @@ export default function App() {
     const saved = localStorage.getItem('quran_reading_width');
     return saved === 'standard' || saved === 'wide' || saved === 'full' ? saved : 'wide';
   });
+
+  // Reading Mode (Flow, WBW, Medina Mushaf Page View)
+  const [readingViewMode, setReadingViewMode] = useState<ReadingViewMode>(() => {
+    const saved = localStorage.getItem('quran_reading_view_mode');
+    return saved === 'flow' || saved === 'wbw' || saved === 'mushaf' ? saved : 'flow';
+  });
+
+  // Secondary Translation for Side-by-Side Dual View
+  const [secondaryTranslation, setSecondaryTranslation] = useState<SecondaryTranslationChoice>(() => {
+    const saved = localStorage.getItem('quran_secondary_translation');
+    if (saved === 'khattab' || saved === 'saheeh' || saved === 'jalalayn' || saved === 'romanUrdu' || saved === 'none') {
+      return saved as SecondaryTranslationChoice;
+    }
+    return 'none';
+  });
+
+  // Dynamic Tajweed Highlighting
+  const [showTajweed, setShowTajweed] = useState<boolean>(() => {
+    return localStorage.getItem('quran_show_tajweed') === 'true';
+  });
+
+  // Hifz Memorization Recall Masking
+  const [hifzMode, setHifzMode] = useState<boolean>(() => {
+    return localStorage.getItem('quran_hifz_mode') === 'true';
+  });
+  const [unmaskedAyahs, setUnmaskedAyahs] = useState<Set<number>>(new Set());
+
+  // Global Search Modal State
+  const [isGlobalSearchOpen, setIsGlobalSearchOpen] = useState<boolean>(false);
+
+  const handleReadingViewModeChange = (mode: ReadingViewMode) => {
+    setReadingViewMode(mode);
+    localStorage.setItem('quran_reading_view_mode', mode);
+  };
+
+  const handleSecondaryTranslationChange = (st: SecondaryTranslationChoice) => {
+    setSecondaryTranslation(st);
+    localStorage.setItem('quran_secondary_translation', st);
+  };
+
+  const handleToggleTajweed = () => {
+    setShowTajweed((prev) => {
+      const next = !prev;
+      localStorage.setItem('quran_show_tajweed', String(next));
+      return next;
+    });
+  };
+
+  const handleToggleHifzMode = () => {
+    setHifzMode((prev) => {
+      const next = !prev;
+      localStorage.setItem('quran_hifz_mode', String(next));
+      if (!next) {
+        setUnmaskedAyahs(new Set());
+      }
+      return next;
+    });
+  };
+
+  const toggleUnmaskAya = (aya: number) => {
+    setUnmaskedAyahs((prev) => {
+      const next = new Set(prev);
+      if (next.has(aya)) {
+        next.delete(aya);
+      } else {
+        next.add(aya);
+      }
+      return next;
+    });
+  };
+
+  const handleRevealAllHifz = () => {
+    if (!surahData) return;
+    if (unmaskedAyahs.size >= surahData.verses.length) {
+      setUnmaskedAyahs(new Set());
+    } else {
+      setUnmaskedAyahs(new Set(surahData.verses.map((v) => v.aya)));
+    }
+  };
+
+  const getSecondaryTranslationText = (verse: Verse, choice: SecondaryTranslationChoice): string => {
+    switch (choice) {
+      case 'khattab':
+        return verse.khattab || verse.saheeh;
+      case 'saheeh':
+        return verse.saheeh;
+      case 'romanUrdu':
+        return verse.romanUrdu || '';
+      case 'jalalayn':
+        return verse.jalalayn;
+      default:
+        return '';
+    }
+  };
+
+  const getSecondaryTranslationLabel = (choice: SecondaryTranslationChoice): string => {
+    switch (choice) {
+      case 'khattab':
+        return 'The Clear Quran (Dr. Mustafa Khattab)';
+      case 'saheeh':
+        return 'Saheeh International';
+      case 'romanUrdu':
+        return 'Roman Urdu (Maududi)';
+      case 'jalalayn':
+        return 'Tafsir al-Jalalayn';
+      default:
+        return '';
+    }
+  };
 
   const handleCycleReadingWidth = () => {
     setReadingWidth((prev) => {
@@ -229,6 +342,43 @@ export default function App() {
       }
       return <span key={index}>{part}</span>;
     });
+  };
+
+  const renderWordWithTajweedAndWaqf = (text: string) => {
+    if (!text) return null;
+    if (!showTajweed) {
+      return renderArabicWithWaqfHints(text);
+    }
+    const segments = parseTajweedWord(text);
+    return segments.map((seg, sIdx) => {
+      const style = TAJWEED_STYLES[seg.rule];
+      if (seg.rule === 'normal' || !style || !style.colorClass) {
+        return <span key={sIdx}>{renderArabicWithWaqfHints(seg.text)}</span>;
+      }
+      return (
+        <span
+          key={sIdx}
+          className={style.colorClass}
+          title={style.label}
+        >
+          {renderArabicWithWaqfHints(seg.text)}
+        </span>
+      );
+    });
+  };
+
+  const renderFullVerseTajweedAndWaqf = (verseText: string) => {
+    if (!verseText) return null;
+    if (!showTajweed) {
+      return renderArabicWithWaqfHints(verseText);
+    }
+    const words = verseText.split(' ');
+    return words.map((w, idx) => (
+      <span key={idx}>
+        {renderWordWithTajweedAndWaqf(w)}
+        {idx < words.length - 1 ? ' ' : ''}
+      </span>
+    ));
   };
 
   // Cloud Sync State (Neon DB)
@@ -843,7 +993,7 @@ export default function App() {
       <Header
         currentSurah={currentSurahMeta}
         onOpenSurahList={() => setIsSurahListOpen(true)}
-        onOpenSearch={() => setIsSurahListOpen(true)}
+        onOpenGlobalSearch={() => setIsGlobalSearchOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenWaqfSigns={() => setIsWaqfSignsModalOpen(true)}
         onOpenLettersGuide={() => {
@@ -861,6 +1011,10 @@ export default function App() {
         isSyncing={isSyncing}
         readingWidth={readingWidth}
         onCycleReadingWidth={handleCycleReadingWidth}
+        hifzMode={hifzMode}
+        onToggleHifzMode={handleToggleHifzMode}
+        readingViewMode={readingViewMode}
+        onChangeReadingViewMode={handleReadingViewModeChange}
       />
 
       {/* Main Container */}
@@ -870,8 +1024,57 @@ export default function App() {
             <div className="w-10 h-10 border-4 border-brand-teal border-t-transparent rounded-full animate-spin"></div>
             <p className="text-sm text-gray-500 dark:text-gray-400">Loading Holy Qur'an...</p>
           </div>
+        ) : readingViewMode === 'mushaf' ? (
+          <MushafPageView
+            initialPage={1}
+            script={script}
+            arabicFontSize={arabicFontSize}
+            onSelectAya={(s, a) => {
+              setCurrentSurahNumber(s);
+              setTargetScrollAya(a);
+              handleReadingViewModeChange('flow');
+            }}
+            onPlayAya={(s, a) => {
+              if (s !== currentSurahNumber) {
+                setCurrentSurahNumber(s);
+              }
+              handlePlaySingleAya(a);
+            }}
+            onOpenSurahList={() => setIsSurahListOpen(true)}
+          />
         ) : surahData ? (
           <div>
+            {/* Hifz Memorization Recall Mode Banner */}
+            {hifzMode && (
+              <div className="mb-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex flex-wrap items-center justify-between gap-3 text-amber-900 dark:text-amber-200">
+                <div className="flex items-center gap-3">
+                  <EyeOff className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" />
+                  <div>
+                    <p className="font-bold text-sm">Hifz Memorization Mode Active</p>
+                    <p className="text-xs text-amber-700/80 dark:text-amber-300/80">
+                      Arabic verses are masked to test your memory. Tap any verse to unmask / reveal.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleRevealAllHifz}
+                    className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-xs transition"
+                  >
+                    {unmaskedAyahs.size >= (surahData?.verses.length || 0) ? 'Mask All' : 'Reveal All'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleToggleHifzMode}
+                    className="px-3 py-1.5 rounded-xl border border-amber-500/40 hover:bg-amber-500/10 text-xs font-semibold transition"
+                  >
+                    Exit Hifz
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Surah Header Card */}
             <div className="relative overflow-hidden bg-white dark:bg-brand-cardDark rounded-3xl p-6 sm:p-8 mb-8 border border-gray-200/80 dark:border-brand-borderDark shadow-sm text-center">
               {/* Subtle background arabesque glow */}
@@ -1053,6 +1256,7 @@ export default function App() {
                 );
                 const isLastRead = lastRead?.surah === currentSurahNumber && lastRead?.aya === verse.aya;
                 const arabicText = getScriptArabicText(verse, script);
+                const isMaskedInHifz = hifzMode && !unmaskedAyahs.has(verse.aya);
 
                 return (
                   <div
@@ -1193,8 +1397,13 @@ export default function App() {
                         </div>
 
                         <div
-                          className="flex flex-wrap flex-row-reverse gap-2.5 sm:gap-3 py-2 items-start justify-start"
+                          className={`flex flex-wrap flex-row-reverse gap-2.5 sm:gap-3 py-2 items-start justify-start ${
+                            isMaskedInHifz ? 'filter blur-[7px] select-none hover:blur-none transition-all duration-300 cursor-pointer' : ''
+                          }`}
                           dir="rtl"
+                          onClick={() => {
+                            if (hifzMode) toggleUnmaskAya(verse.aya);
+                          }}
                         >
                           {verse.wbw.map((w, idx) => {
                             const wKey = `${currentSurahNumber}:${verse.aya}:${w.word}`;
@@ -1259,7 +1468,7 @@ export default function App() {
                                   className={`${getScriptFontClass(script)} wbw-arabic text-gray-900 dark:text-gray-100`}
                                   style={{ fontSize: `${arabicFontSize}px` }}
                                 >
-                                  {renderArabicWithWaqfHints(wordDisplayText)}
+                                  {renderWordWithTajweedAndWaqf(wordDisplayText)}
                                 </span>
 
                                 {/* Word Transliteration & Translation */}
@@ -1286,9 +1495,14 @@ export default function App() {
                           <Sparkles className="w-3 h-3 text-brand-teal" />
                         </div>
                         <p
-                          className={`${getScriptFontClass(script)} text-gray-900 dark:text-gray-100 leading-loose`}
+                          className={`${getScriptFontClass(script)} text-gray-900 dark:text-gray-100 leading-loose ${
+                            isMaskedInHifz ? 'filter blur-[7px] select-none hover:blur-none transition-all duration-300 cursor-pointer' : ''
+                          }`}
                           style={{ fontSize: `${arabicFontSize}px` }}
                           dir="rtl"
+                          onClick={() => {
+                            if (hifzMode) toggleUnmaskAya(verse.aya);
+                          }}
                         >
                           {verse.wbw.map((w, idx) => {
                             const wKey = `${currentSurahNumber}:${verse.aya}:${w.word}`;
@@ -1316,7 +1530,7 @@ export default function App() {
                                   }`}
                                   title={`${w.translit ? `${w.translit} — ` : ''}${w.translation} (Tap to hear, hold for letters)`}
                                 >
-                                  {renderArabicWithWaqfHints(wordDisplayText)}
+                                  {renderWordWithTajweedAndWaqf(wordDisplayText)}
                                 </span>{' '}
                               </span>
                             );
@@ -1330,10 +1544,15 @@ export default function App() {
                       /* Classic Flowing Calligraphy Verse */
                       <div className="mb-6 pb-2 text-right select-text">
                         <p
-                          className={`${getScriptFontClass(script)} text-gray-900 dark:text-gray-100`}
+                          className={`${getScriptFontClass(script)} text-gray-900 dark:text-gray-100 ${
+                            isMaskedInHifz ? 'filter blur-[7px] select-none hover:blur-none transition-all duration-300 cursor-pointer' : ''
+                          }`}
                           style={{ fontSize: `${arabicFontSize}px` }}
+                          onClick={() => {
+                            if (hifzMode) toggleUnmaskAya(verse.aya);
+                          }}
                         >
-                          {renderArabicWithWaqfHints(arabicText)}
+                          {renderFullVerseTajweedAndWaqf(arabicText)}
                           <span className="inline-flex items-center justify-center min-w-[1.75rem] h-7 px-1.5 mx-2 text-xs text-brand-teal border border-brand-teal/40 rounded-full font-sans select-none align-middle font-bold shrink-0">
                             {verse.aya}
                           </span>
@@ -1386,6 +1605,18 @@ export default function App() {
                             </span>
                           </div>
                         )}
+
+                        {/* Secondary Translation if enabled */}
+                        {secondaryTranslation !== 'none' && (
+                          <div className="mt-3 pt-3 border-t border-gray-100 dark:border-brand-borderDark/40 text-xs sm:text-sm text-gray-700 dark:text-gray-300 font-sans select-text">
+                            <div>
+                              <span className="italic">{getSecondaryTranslationText(verse, secondaryTranslation)}</span>
+                              <span className="block text-[10px] text-gray-400 dark:text-gray-500 font-medium mt-0.5">
+                                — {getSecondaryTranslationLabel(secondaryTranslation)} (Secondary Translation)
+                              </span>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -1429,6 +1660,10 @@ export default function App() {
           onTogglePlay={() => setIsPlaying(!isPlaying)}
           onNextAya={handleNextAya}
           onPrevAya={handlePrevAya}
+          onSelectAya={(aya) => {
+            setPlayingAya(aya);
+            setTargetScrollAya(aya);
+          }}
           onClose={() => {
             setIsPlaying(false);
             setPlayingAya(null);
@@ -1458,12 +1693,16 @@ export default function App() {
         onChangeScript={setScript}
         translation={translation}
         onChangeTranslation={setTranslation}
+        secondaryTranslation={secondaryTranslation}
+        onChangeSecondaryTranslation={handleSecondaryTranslationChange}
         showWBW={showWBW}
         onToggleWBW={() => setShowWBW(!showWBW)}
         tapWordsMode={tapWordsMode}
         onToggleTapWordsMode={() => setTapWordsMode(!tapWordsMode)}
         showTransliteration={showTransliteration}
         onToggleTransliteration={() => setShowTransliteration(!showTransliteration)}
+        showTajweed={showTajweed}
+        onToggleTajweed={handleToggleTajweed}
         arabicFontSize={arabicFontSize}
         onChangeArabicFontSize={setArabicFontSize}
         currentReciter={currentReciter}
@@ -1552,6 +1791,20 @@ export default function App() {
           initialLetterId={guideInitialLetterId}
         />
       )}
+
+      {/* Offline PWA Install Banner */}
+      <InstallAppBanner />
+
+      {/* Global Arabic & Translation Search Modal */}
+      <GlobalSearchModal
+        isOpen={isGlobalSearchOpen}
+        onClose={() => setIsGlobalSearchOpen(false)}
+        surahs={surahs}
+        onSelectAya={(s, a) => {
+          setCurrentSurahNumber(s);
+          setTargetScrollAya(a);
+        }}
+      />
     </div>
   );
 }
