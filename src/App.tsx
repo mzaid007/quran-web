@@ -214,7 +214,9 @@ export default function App() {
 
   const renderArabicWithWaqfHints = (text: string) => {
     if (!text) return null;
-    const parts = text.split(/([\u06D6-\u06DC\u0615\u06DE\u06E9])/);
+    // Only true pause signs: \u0615 (Tah), \u06D6 (Sad-Lam), \u06D7 (Qaf-Lam), \u06D8 (Meem), \u06D9 (Laa/Zain), \u06DA (Jeem), \u06DB (3 dots), \u06DE (Rub el Hizb), \u06E9 (Sajdah)
+    // Exclude \u06DC (Small Seen) and \u06E2 (Iqlab Meem) as they are intraword Tajweed markers
+    const parts = text.split(/([\u06D6-\u06DB\u0615\u06DE\u06E9])/);
     return parts.map((part, index) => {
       if (index % 2 === 1 && getWaqfSignByChar(part)) {
         return (
