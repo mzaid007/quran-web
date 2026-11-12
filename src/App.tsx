@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { RECITERS } from './types';
-import type { SurahMeta, SurahDetail, Verse, WBWWord, ScriptType, TranslationChoice, TafsirId, Reciter, LastRead, CloudSyncData, SyncConflict, SyncedSettings } from './types';
+import type { SurahMeta, SurahDetail, Verse, WBWWord, ScriptType, TranslationChoice, TafsirId, Reciter, LastRead, CloudSyncData, SyncConflict, SyncedSettings, ReadingWidth } from './types';
 import { getScriptFontClass, getScriptArabicText, getScriptBismillah, getBismillahTranslation, getWbwScriptText, getWbwWordAudioUrl } from './types';
 import { Header } from './components/Header';
 import { SurahListModal } from './components/SurahListModal';
@@ -111,6 +111,32 @@ export default function App() {
     const saved = localStorage.getItem('quran_auto_scroll');
     return saved !== null ? saved === 'true' : true;
   });
+
+  // Reading Container Width (Standard: 896px, Wide: 1280px, Full: fluid 96%)
+  const [readingWidth, setReadingWidth] = useState<ReadingWidth>(() => {
+    const saved = localStorage.getItem('quran_reading_width');
+    return saved === 'standard' || saved === 'wide' || saved === 'full' ? saved : 'wide';
+  });
+
+  const handleCycleReadingWidth = () => {
+    setReadingWidth((prev) => {
+      if (prev === 'standard') return 'wide';
+      if (prev === 'wide') return 'full';
+      return 'standard';
+    });
+  };
+
+  const getContainerWidthClass = (width: ReadingWidth) => {
+    switch (width) {
+      case 'full':
+        return 'max-w-[96%]';
+      case 'wide':
+        return 'max-w-7xl';
+      case 'standard':
+      default:
+        return 'max-w-4xl';
+    }
+  };
 
   // Modals & Novice Pronunciation Learning State
   const [isSurahListOpen, setIsSurahListOpen] = useState<boolean>(false);
@@ -231,6 +257,7 @@ export default function App() {
         reciterId: currentReciter.id,
         autoScroll,
         preferredTafsir,
+        readingWidth,
       },
     };
   };
@@ -284,6 +311,9 @@ export default function App() {
     const nextPreferredTafsir = s?.preferredTafsir && VALID_TAFSIRS.includes(s.preferredTafsir)
       ? s.preferredTafsir
       : preferredTafsir;
+    const nextReadingWidth = (s?.readingWidth === 'standard' || s?.readingWidth === 'wide' || s?.readingWidth === 'full')
+      ? s.readingWidth
+      : readingWidth;
 
     lastSyncedSnapshotRef.current = getSyncSnapshot({
       lastRead: nextLastRead,
@@ -299,6 +329,7 @@ export default function App() {
         reciterId: nextReciter.id,
         autoScroll: nextAutoScroll,
         preferredTafsir: nextPreferredTafsir,
+        readingWidth: nextReadingWidth,
       },
     });
 
@@ -333,6 +364,10 @@ export default function App() {
       if (typeof s.autoScroll === 'boolean') setAutoScroll(nextAutoScroll);
       if (s.preferredTafsir && VALID_TAFSIRS.includes(s.preferredTafsir)) {
         handlePreferredTafsirChange(nextPreferredTafsir);
+      }
+      if (s.readingWidth) {
+        setReadingWidth(nextReadingWidth);
+        localStorage.setItem('quran_reading_width', nextReadingWidth);
       }
     }
     setLastSyncedAt(new Date());
@@ -462,6 +497,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('quran_reciter_id', currentReciter.id);
   }, [currentReciter]);
+
+  useEffect(() => {
+    localStorage.setItem('quran_reading_width', readingWidth);
+  }, [readingWidth]);
 
   useEffect(() => {
     localStorage.setItem('quran_auto_scroll', String(autoScroll));
@@ -818,10 +857,12 @@ export default function App() {
         syncEmail={syncEmail}
         onOpenSync={() => setIsSyncModalOpen(true)}
         isSyncing={isSyncing}
+        readingWidth={readingWidth}
+        onCycleReadingWidth={handleCycleReadingWidth}
       />
 
       {/* Main Container */}
-      <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-6 sm:py-8 pb-32">
+      <main className={`flex-1 ${getContainerWidthClass(readingWidth)} w-full mx-auto px-4 py-6 sm:py-8 pb-32 transition-all duration-300`}>
         {loading ? (
           <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-3">
             <div className="w-10 h-10 border-4 border-brand-teal border-t-transparent rounded-full animate-spin"></div>
@@ -1433,6 +1474,8 @@ export default function App() {
         }}
         preferredTafsir={preferredTafsir}
         onChangePreferredTafsir={handlePreferredTafsirChange}
+        readingWidth={readingWidth}
+        onChangeReadingWidth={setReadingWidth}
       />
 
       <SyncModal

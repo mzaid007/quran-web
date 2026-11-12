@@ -1,6 +1,6 @@
 import React from 'react';
-import { BookOpen, Search, Settings, Moon, Sun, Volume2, List, BookmarkCheck, Cloud, Pause, HelpCircle, GraduationCap } from 'lucide-react';
-import type { SurahMeta, LastRead } from '../types';
+import { BookOpen, Search, Settings, Moon, Sun, Volume2, List, BookmarkCheck, Cloud, Pause, HelpCircle, GraduationCap, Maximize2, Minimize2, Expand } from 'lucide-react';
+import type { SurahMeta, LastRead, ReadingWidth } from '../types';
 
 interface HeaderProps {
   currentSurah: SurahMeta | null;
@@ -18,6 +18,8 @@ interface HeaderProps {
   syncEmail: string | null;
   onOpenSync: () => void;
   isSyncing: boolean;
+  readingWidth: ReadingWidth;
+  onCycleReadingWidth: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -36,10 +38,24 @@ export const Header: React.FC<HeaderProps> = ({
   syncEmail,
   onOpenSync,
   isSyncing,
+  readingWidth,
+  onCycleReadingWidth,
 }) => {
+  const getHeaderWidthClass = (width: ReadingWidth) => {
+    switch (width) {
+      case 'full':
+        return 'max-w-[96%]';
+      case 'wide':
+        return 'max-w-7xl';
+      case 'standard':
+      default:
+        return 'max-w-5xl';
+    }
+  };
+
   return (
     <header className="sticky top-0 z-40 bg-white/95 dark:bg-brand-surfaceDark/95 backdrop-blur-md border-b border-gray-200 dark:border-brand-borderDark transition-colors">
-      <div className="max-w-5xl mx-auto px-3 sm:px-4 h-14 sm:h-16 flex items-center justify-between gap-2 overflow-hidden">
+      <div className={`${getHeaderWidthClass(readingWidth)} mx-auto px-3 sm:px-4 h-14 sm:h-16 flex items-center justify-between gap-2 transition-all duration-300`}>
         {/* Left: App Logo & Current Surah Navigation */}
         <div className="flex items-center space-x-2 shrink-0">
           <button
@@ -146,6 +162,30 @@ export const Header: React.FC<HeaderProps> = ({
             title="Reading & Font Settings"
           >
             <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
+          </button>
+
+          {/* Reading Width Toggle (Standard / Wide / Full) */}
+          <button
+            onClick={onCycleReadingWidth}
+            className="hidden sm:inline-flex items-center gap-1.5 p-1.5 sm:p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-brand-cardDark rounded-lg transition"
+            title={`Reading Width: ${
+              readingWidth === 'full'
+                ? 'Full Width (Click for Standard)'
+                : readingWidth === 'wide'
+                ? 'Wide (1280px) (Click for Full Width)'
+                : 'Standard (896px) (Click for Wide)'
+            }`}
+          >
+            {readingWidth === 'full' ? (
+              <Minimize2 className="w-4 h-4 sm:w-5 sm:h-5 text-brand-teal dark:text-emerald-400" />
+            ) : readingWidth === 'wide' ? (
+              <Maximize2 className="w-4 h-4 sm:w-5 sm:h-5 text-brand-teal dark:text-emerald-400" />
+            ) : (
+              <Expand className="w-4 h-4 sm:w-5 sm:h-5" />
+            )}
+            <span className="hidden xl:inline text-xs font-semibold">
+              {readingWidth === 'full' ? 'Full' : readingWidth === 'wide' ? 'Wide' : 'Standard'}
+            </span>
           </button>
 
           {/* Dark / Light Mode Switch */}

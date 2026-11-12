@@ -101,6 +101,8 @@ export function getBismillahTranslation(translation: TranslationChoice): string 
 
 export type TafsirId = 'kathir_roman' | 'kathir_en' | 'kathir_ur' | 'jalalayn';
 
+export type ReadingWidth = 'standard' | 'wide' | 'full';
+
 export interface LastRead {
   surah: number;
   surahName: string;
@@ -132,6 +134,7 @@ export interface SyncedSettings {
   reciterId: string;
   autoScroll: boolean;
   preferredTafsir?: TafsirId;
+  readingWidth?: ReadingWidth;
 }
 
 export interface CloudSyncData {

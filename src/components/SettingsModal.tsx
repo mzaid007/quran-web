@@ -1,7 +1,7 @@
 import React from 'react';
-import { X, Type, Globe, Check, Sliders, Volume2, Cloud, BookOpen, GraduationCap } from 'lucide-react';
+import { X, Type, Globe, Check, Sliders, Volume2, Cloud, BookOpen, GraduationCap, Maximize2, Minimize2, Expand } from 'lucide-react';
 import { RECITERS } from '../types';
-import type { ScriptType, TranslationChoice, Reciter } from '../types';
+import type { ScriptType, TranslationChoice, Reciter, ReadingWidth } from '../types';
 import type { TafsirId } from './TafsirModal';
 
 interface SettingsModalProps {
@@ -26,6 +26,8 @@ interface SettingsModalProps {
   onOpenLettersGuide?: () => void;
   preferredTafsir?: TafsirId;
   onChangePreferredTafsir?: (t: TafsirId) => void;
+  readingWidth: ReadingWidth;
+  onChangeReadingWidth: (w: ReadingWidth) => void;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -50,6 +52,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onOpenLettersGuide,
   preferredTafsir = 'kathir_roman',
   onChangePreferredTafsir,
+  readingWidth,
+  onChangeReadingWidth,
 }) => {
   if (!isOpen) return null;
 
@@ -201,6 +205,63 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               onChange={(e) => onChangeArabicFontSize(Number(e.target.value))}
               className="w-full h-2 bg-gray-200 dark:bg-brand-cardDark rounded-lg appearance-none cursor-pointer accent-brand-teal"
             />
+          </div>
+
+          {/* Reading Width (Widescreen & Landscape) */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+                <Maximize2 className="w-4 h-4 text-brand-teal" />
+                Reading Width
+              </span>
+              <span className="text-xs font-bold text-brand-teal dark:text-emerald-400">
+                {readingWidth === 'standard' ? 'Standard (896px)' : readingWidth === 'wide' ? 'Wide (1280px)' : 'Full Width (Fluid)'}
+              </span>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => onChangeReadingWidth('standard')}
+                className={`p-2.5 rounded-xl border text-center transition flex flex-col items-center justify-center gap-1 ${
+                  readingWidth === 'standard'
+                    ? 'border-brand-teal bg-brand-teal/10 dark:bg-brand-teal/20 ring-1 ring-brand-teal font-bold text-brand-teal dark:text-emerald-400'
+                    : 'border-gray-200 dark:border-brand-borderDark hover:bg-gray-50 dark:hover:bg-brand-cardDark text-gray-700 dark:text-gray-300'
+                }`}
+              >
+                <Minimize2 className="w-4 h-4" />
+                <span className="text-xs">Standard</span>
+                <span className="text-[10px] text-gray-400 font-normal">896px</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onChangeReadingWidth('wide')}
+                className={`p-2.5 rounded-xl border text-center transition flex flex-col items-center justify-center gap-1 ${
+                  readingWidth === 'wide'
+                    ? 'border-brand-teal bg-brand-teal/10 dark:bg-brand-teal/20 ring-1 ring-brand-teal font-bold text-brand-teal dark:text-emerald-400'
+                    : 'border-gray-200 dark:border-brand-borderDark hover:bg-gray-50 dark:hover:bg-brand-cardDark text-gray-700 dark:text-gray-300'
+                }`}
+              >
+                <Expand className="w-4 h-4" />
+                <span className="text-xs">Wide</span>
+                <span className="text-[10px] text-gray-400 font-normal">1280px</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onChangeReadingWidth('full')}
+                className={`p-2.5 rounded-xl border text-center transition flex flex-col items-center justify-center gap-1 ${
+                  readingWidth === 'full'
+                    ? 'border-brand-teal bg-brand-teal/10 dark:bg-brand-teal/20 ring-1 ring-brand-teal font-bold text-brand-teal dark:text-emerald-400'
+                    : 'border-gray-200 dark:border-brand-borderDark hover:bg-gray-50 dark:hover:bg-brand-cardDark text-gray-700 dark:text-gray-300'
+                }`}
+              >
+                <Maximize2 className="w-4 h-4" />
+                <span className="text-xs">Full Width</span>
+                <span className="text-[10px] text-gray-400 font-normal">Fluid</span>
+              </button>
+            </div>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-2">
+              Prevents long verses from breaking across lines on laptops, desktop 1080p+ monitors, and mobile landscape.
+            </p>
           </div>
 
           {/* 3. Translation Options */}
