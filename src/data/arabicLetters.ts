@@ -20,6 +20,13 @@ export interface ArabicLetterInfo {
     final: string;
   };
   scriptNote?: string;
+  quranExample?: {
+    surah: number;
+    aya: number;
+    word: number;
+    label: string;
+    translit: string;
+  };
 }
 
 export interface HarakahSignInfo {
@@ -56,6 +63,7 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     connectsLeft: false,
     forms: { isolated: 'ا', initial: 'ا', medial: 'ـا', final: 'ـا' },
     scriptNote: 'In Uthmani, connecting Alif appears as ٱ (Hamzatul Wasl) with a small Saad head on top.',
+    quranExample: { surah: 112, aya: 1, word: 4, label: 'أَحَدٌ (Aḥad)', translit: 'aḥadun' },
   },
   {
     id: 'baa',
@@ -70,6 +78,7 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     makhraj: 'Both lips pressing together cleanly (wet inner part of the lips).',
     connectsLeft: true,
     forms: { isolated: 'ب', initial: 'بـ', medial: 'ـبـ', final: 'ـب' },
+    quranExample: { surah: 1, aya: 1, word: 1, label: 'بِسْمِ (Bismi)', translit: 'bismi' },
   },
   {
     id: 'taa',
@@ -85,13 +94,14 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     connectsLeft: true,
     forms: { isolated: 'ت', initial: 'تـ', medial: 'ـتـ', final: 'ـت' },
     scriptNote: 'At the end of nouns it also appears as ة (Taa Marbutah), read as "t" when continuing or "h" when pausing.',
+    quranExample: { surah: 109, aya: 2, word: 2, label: 'تَعْبُدُونَ (Taʿbudūn)', translit: 'taʿbudūna' },
   },
   {
     id: 'thaa',
     order: 4,
     char: 'ث',
     nameArabic: 'ثَاء',
-    nameEnglish: 'Thaa',
+    nameEnglish: 'Thaa (Thāʾ)',
     sound: 'th (as in "think")',
     phoneticBase: 'th',
     audioFile: '/audio/letters/thaa.mp3',
@@ -99,6 +109,7 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     makhraj: 'Tip of the tongue gently touching the bottom edge of the upper front teeth (never a "s" sound).',
     connectsLeft: true,
     forms: { isolated: 'ث', initial: 'ثـ', medial: 'ـثـ', final: 'ـث' },
+    quranExample: { surah: 102, aya: 8, word: 1, label: 'ثُمَّ (Thumma)', translit: 'thumma' },
   },
   {
     id: 'jeem',
@@ -113,13 +124,14 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     makhraj: 'Middle of the tongue pressing firmly against the middle of the hard palate.',
     connectsLeft: true,
     forms: { isolated: 'ج', initial: 'جـ', medial: 'ـجـ', final: 'ـج' },
+    quranExample: { surah: 110, aya: 2, word: 3, label: 'أَفْوَاجًا (Afwājan)', translit: 'afwājan' },
   },
   {
     id: 'hhaa',
     order: 6,
     char: 'ح',
     nameArabic: 'حَاء',
-    nameEnglish: 'Hhaa',
+    nameEnglish: 'Haa (Ḥāʾ)',
     sound: 'ḥ (sharp throat h)',
     phoneticBase: 'ḥ',
     audioFile: '/audio/letters/hhaa.mp3',
@@ -127,6 +139,7 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     makhraj: 'Middle of the throat — a crisp, breathy, clear "h" from deeper in the throat than English "h".',
     connectsLeft: true,
     forms: { isolated: 'ح', initial: 'حـ', medial: 'ـحـ', final: 'ـح' },
+    quranExample: { surah: 1, aya: 1, word: 3, label: 'ٱلرَّحْمَـٰنِ (Ar-Raḥmān)', translit: 'ar-raḥmāni' },
   },
   {
     id: 'khaa',
@@ -141,6 +154,7 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     makhraj: 'Uppermost throat (near the uvula) with light friction and a full/heavy mouth resonance.',
     connectsLeft: true,
     forms: { isolated: 'خ', initial: 'خـ', medial: 'ـخـ', final: 'ـخ' },
+    quranExample: { surah: 113, aya: 2, word: 2, label: 'خَلَقَ (Khalaq)', translit: 'khalaqa' },
   },
   {
     id: 'daal',
@@ -155,13 +169,14 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     makhraj: 'Tip of the tongue touching the roots of the upper front teeth.',
     connectsLeft: false,
     forms: { isolated: 'د', initial: 'د', medial: 'ـد', final: 'ـد' },
+    quranExample: { surah: 112, aya: 3, word: 2, label: 'يَلِدْ (Yalid)', translit: 'yalid' },
   },
   {
     id: 'dhaal',
     order: 9,
     char: 'ذ',
     nameArabic: 'ذَال',
-    nameEnglish: 'Dhaal',
+    nameEnglish: 'Dhaal (Dhāl)',
     sound: 'dh (as in "this")',
     phoneticBase: 'dh',
     audioFile: '/audio/letters/dhaal.mp3',
@@ -169,6 +184,7 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     makhraj: 'Tip of the tongue gently touching the edge of the upper front teeth (voiced "th", never "z").',
     connectsLeft: false,
     forms: { isolated: 'ذ', initial: 'ذ', medial: 'ـذ', final: 'ـذ' },
+    quranExample: { surah: 2, aya: 2, word: 1, label: 'ذَٰلِكَ (Dhālika)', translit: 'dhālika' },
   },
   {
     id: 'raa',
@@ -183,6 +199,7 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     makhraj: 'Top edge of the tongue tip tapping the upper gums just behind the front teeth (heavy with Fatha/Damma, light with Kasra).',
     connectsLeft: false,
     forms: { isolated: 'ر', initial: 'ر', medial: 'ـر', final: 'ـر' },
+    quranExample: { surah: 1, aya: 2, word: 3, label: 'رَبِّ (Rabbi)', translit: 'rabbi' },
   },
   {
     id: 'zaay',
@@ -197,6 +214,7 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     makhraj: 'Tip of the tongue near the lower teeth plates with a clean buzzing whistle.',
     connectsLeft: false,
     forms: { isolated: 'ز', initial: 'ز', medial: 'ـز', final: 'ـز' },
+    quranExample: { surah: 99, aya: 1, word: 2, label: 'زِلْزَالَهَا (Zilzālahā)', translit: 'zilzālahā' },
   },
   {
     id: 'seen',
@@ -211,6 +229,7 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     makhraj: 'Tip of the tongue near the lower teeth plates with a light, crisp whistle.',
     connectsLeft: true,
     forms: { isolated: 'س', initial: 'سـ', medial: 'ـسـ', final: 'ـس' },
+    quranExample: { surah: 114, aya: 1, word: 3, label: 'ٱلنَّاسِ (An-Nās)', translit: 'an-nāsi' },
   },
   {
     id: 'sheen',
@@ -225,13 +244,14 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     makhraj: 'Middle of the tongue raised toward the hard palate, letting air spread across the mouth.',
     connectsLeft: true,
     forms: { isolated: 'ش', initial: 'شـ', medial: 'ـشـ', final: 'ـش' },
+    quranExample: { surah: 113, aya: 2, word: 1, label: 'مِن شَرِّ (Min Sharri)', translit: 'min sharri' },
   },
   {
     id: 'saad',
     order: 14,
     char: 'ص',
     nameArabic: 'صَاد',
-    nameEnglish: 'Saad',
+    nameEnglish: 'Saad (Ṣād)',
     sound: 'ṣ (heavy s)',
     phoneticBase: 'ṣ',
     audioFile: '/audio/letters/saad.mp3',
@@ -239,13 +259,14 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     makhraj: 'Same tip position as Seen, but the back of the tongue rises for a deep, heavy, echoing sound.',
     connectsLeft: true,
     forms: { isolated: 'ص', initial: 'صـ', medial: 'ـصـ', final: 'ـص' },
+    quranExample: { surah: 112, aya: 2, word: 2, label: 'ٱلصَّمَدُ (Aṣ-Ṣamad)', translit: 'aṣ-ṣamadu' },
   },
   {
     id: 'daad',
     order: 15,
     char: 'ض',
     nameArabic: 'ضَاد',
-    nameEnglish: 'Daad',
+    nameEnglish: 'Daad (Ḍād)',
     sound: 'ḍ (heavy d)',
     phoneticBase: 'ḍ',
     audioFile: '/audio/letters/daad.mp3',
@@ -253,13 +274,14 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     makhraj: 'Side edge of the tongue pressing against the upper molars (never a "z" sound).',
     connectsLeft: true,
     forms: { isolated: 'ض', initial: 'ضـ', medial: 'ـضـ', final: 'ـض' },
+    quranExample: { surah: 1, aya: 7, word: 9, label: 'ٱلضَّآلِّينَ (Aḍ-Ḍāllīn)', translit: 'aḍ-ḍāllīn' },
   },
   {
     id: 'ttaa',
     order: 16,
     char: 'ط',
     nameArabic: 'طَاء',
-    nameEnglish: 'Ttaa',
+    nameEnglish: 'Taa (Ṭāʾ)',
     sound: 'ṭ (heavy t)',
     phoneticBase: 'ṭ',
     audioFile: '/audio/letters/ttaa.mp3',
@@ -267,13 +289,14 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     makhraj: 'Tongue tip on the upper gum line with the back of the tongue raised (strong, heavy, non-breathy T).',
     connectsLeft: true,
     forms: { isolated: 'ط', initial: 'طـ', medial: 'ـطـ', final: 'ـط' },
+    quranExample: { surah: 106, aya: 4, word: 2, label: 'أَطْعَمَهُم (Aṭʿamahum)', translit: 'aṭʿamahum' },
   },
   {
     id: 'dhaa',
     order: 17,
     char: 'ظ',
     nameArabic: 'ظَاء',
-    nameEnglish: 'Dhaa',
+    nameEnglish: 'Dhaa (Ẓāʾ)',
     sound: 'ẓ (heavy dh)',
     phoneticBase: 'ẓ',
     audioFile: '/audio/letters/dhaa.mp3',
@@ -281,6 +304,7 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     makhraj: 'Tongue tip at the upper teeth edge (like Dhaal) with the back of the tongue raised (never "z").',
     connectsLeft: true,
     forms: { isolated: 'ظ', initial: 'ظـ', medial: 'ـظـ', final: 'ـظ' },
+    quranExample: { surah: 4, aya: 10, word: 4, label: 'ظُلْمًا (Ẓulman)', translit: 'ẓulman' },
   },
   {
     id: 'ayn',
@@ -295,6 +319,7 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     makhraj: 'Middle of the throat — gently constricting the epiglottis (same place as Hhaa, voiced).',
     connectsLeft: true,
     forms: { isolated: 'ع', initial: 'عـ', medial: 'ـعـ', final: 'ـع' },
+    quranExample: { surah: 113, aya: 1, word: 2, label: 'أَعُوذُ (Aʿūdhu)', translit: 'aʿūdhu' },
   },
   {
     id: 'ghayn',
@@ -309,6 +334,7 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     makhraj: 'Uppermost part of the throat with a smooth, full-mouth vibration (like a soft French "r").',
     connectsLeft: true,
     forms: { isolated: 'غ', initial: 'غـ', medial: 'ـغـ', final: 'ـغ' },
+    quranExample: { surah: 113, aya: 3, word: 2, label: 'غَاسِقٍ (Ghāsiqin)', translit: 'ghāsiqin' },
   },
   {
     id: 'faa',
@@ -323,6 +349,7 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     makhraj: 'Edges of the upper front teeth resting lightly on the wet inner part of the lower lip.',
     connectsLeft: true,
     forms: { isolated: 'ف', initial: 'فـ', medial: 'ـفـ', final: 'ـف' },
+    quranExample: { surah: 105, aya: 1, word: 2, label: 'فَعَلَ (Faʿala)', translit: 'faʿala' },
   },
   {
     id: 'qaaf',
@@ -337,6 +364,7 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     makhraj: 'Deepest back of the tongue touching the soft palate/uvula for a resonant, heavy "q".',
     connectsLeft: true,
     forms: { isolated: 'ق', initial: 'قـ', medial: 'ـقـ', final: 'ـق' },
+    quranExample: { surah: 112, aya: 1, word: 1, label: 'قُلْ (Qul)', translit: 'qul' },
   },
   {
     id: 'kaaf',
@@ -353,6 +381,7 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     connectsLeft: true,
     forms: { isolated: 'ك', initial: 'كـ', medial: 'ـكـ', final: 'ـك' },
     scriptNote: 'In IndoPak script, initial/medial/isolated Kaaf often appears in its swash form (ک / ڪ) without the small inner hamza-like mark.',
+    quranExample: { surah: 109, aya: 1, word: 2, label: 'ٱلْكَـٰفِرُونَ (Al-Kāfirūn)', translit: 'al-kāfirūna' },
   },
   {
     id: 'laam',
@@ -367,6 +396,7 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     makhraj: 'Front edge of the tongue touching the upper gums behind the front teeth (heavy only in the word "Allah" after Fatha/Damma).',
     connectsLeft: true,
     forms: { isolated: 'ل', initial: 'لـ', medial: 'ـلـ', final: 'ـل' },
+    quranExample: { surah: 112, aya: 1, word: 2, label: 'ٱللَّهُ (Allāh)', translit: 'allāh' },
   },
   {
     id: 'meem',
@@ -381,6 +411,7 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     makhraj: 'Both lips closing gently while sound flows through the nasal passage (Ghunnah).',
     connectsLeft: true,
     forms: { isolated: 'م', initial: 'مـ', medial: 'ـمـ', final: 'ـم' },
+    quranExample: { surah: 1, aya: 1, word: 1, label: 'بِسْمِ (Bismi)', translit: 'bismi' },
   },
   {
     id: 'noon',
@@ -395,6 +426,7 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     makhraj: 'Tip of the tongue touching the upper gums with nasal resonance.',
     connectsLeft: true,
     forms: { isolated: 'ن', initial: 'نـ', medial: 'ـنـ', final: 'ـن' },
+    quranExample: { surah: 114, aya: 1, word: 3, label: 'ٱلنَّاسِ (An-Nās)', translit: 'an-nāsi' },
   },
   {
     id: 'haa',
@@ -411,6 +443,7 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     connectsLeft: true,
     forms: { isolated: 'ه', initial: 'هـ', medial: 'ـهـ', final: 'ـه' },
     scriptNote: 'In IndoPak Nastaliq, medial and isolated Haa can appear in curved/hook forms (ہ / ـہـ / ـھـ) whereas Uthmani uses the double-loop shape (ـهـ).',
+    quranExample: { surah: 112, aya: 1, word: 2, label: 'هُوَ (Huwa)', translit: 'huwa' },
   },
   {
     id: 'waaw',
@@ -425,6 +458,7 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     makhraj: 'Rounding both lips forward without closing them completely (or elongating Damma as "ū").',
     connectsLeft: false,
     forms: { isolated: 'و', initial: 'و', medial: 'ـو', final: 'ـو' },
+    quranExample: { surah: 112, aya: 4, word: 1, label: 'وَلَمْ (Wa-lam)', translit: 'wa-lam' },
   },
   {
     id: 'yaa',
@@ -441,6 +475,7 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     connectsLeft: true,
     forms: { isolated: 'ي', initial: 'يـ', medial: 'ـيـ', final: 'ـي' },
     scriptNote: 'In IndoPak script, final Yaa (ی) is often written WITHOUT the two bottom dots — do not confuse it with Alif Maqsurah (ى) when it carries Kasra/harakat!',
+    quranExample: { surah: 108, aya: 1, word: 2, label: 'أَعْطَيْنَـٰكَ (Aʿṭaynāka)', translit: 'aʿṭaynāka' },
   },
   {
     id: 'hamzah',
@@ -455,6 +490,7 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     makhraj: 'Deepest part of the throat (clean glottal catch, like the break in "uh-oh"). Can sit alone (ء) or on Alif (أ / إ), Waaw (ؤ), or Yaa (ئ).',
     connectsLeft: false,
     forms: { isolated: 'ء', initial: 'أ / إ', medial: 'ـؤ / ـئـ', final: 'ء / ـأ / ـئ' },
+    quranExample: { surah: 112, aya: 1, word: 4, label: 'أَحَدٌ (Aḥad)', translit: 'aḥadun' },
   },
   {
     id: 'laam_alif',
@@ -469,6 +505,7 @@ export const ARABIC_LETTERS: ArabicLetterInfo[] = [
     makhraj: 'Ligature combining Laam (ل) followed by Alif (ا) — always written together as one crossed glyph.',
     connectsLeft: false,
     forms: { isolated: 'لا', initial: 'لا', medial: 'ـلا', final: 'ـلا' },
+    quranExample: { surah: 109, aya: 2, word: 1, label: 'لَا (Lā)', translit: 'lā' },
   },
 ];
 

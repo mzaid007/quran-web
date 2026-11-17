@@ -244,17 +244,42 @@ export const ArabicLettersGuideModal: React.FC<ArabicLettersGuideModalProps> = (
                       <div className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">
                         Sound: <strong className="text-gray-900 dark:text-gray-100">{selectedLetter.sound}</strong>
                       </div>
-                      <button
-                        onClick={() => handlePlayLetterAudio(selectedLetter, `detail-${selectedLetter.id}`)}
-                        className={`mt-2.5 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition shadow-sm ${
-                          playingKey === `detail-${selectedLetter.id}`
-                            ? 'bg-brand-teal text-white ring-2 ring-brand-teal/40'
-                            : 'bg-brand-teal hover:bg-brand-tealDark text-white'
-                        }`}
-                      >
-                        <Volume2 className="w-3.5 h-3.5" />
-                        <span>Hear Letter Name</span>
-                      </button>
+                      <div className="flex items-center gap-2 mt-2.5 flex-wrap">
+                        <button
+                          onClick={() => handlePlayLetterAudio(selectedLetter, `detail-${selectedLetter.id}`)}
+                          className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition shadow-sm ${
+                            playingKey === `detail-${selectedLetter.id}`
+                              ? 'bg-brand-teal text-white ring-2 ring-brand-teal/40'
+                              : 'bg-brand-teal hover:bg-brand-tealDark text-white'
+                          }`}
+                        >
+                          <Volume2 className="w-3.5 h-3.5" />
+                          <span>Hear Letter Name</span>
+                        </button>
+                        {selectedLetter.quranExample && (
+                          <button
+                            onClick={() =>
+                              handlePlayQuranExample(
+                                selectedLetter.quranExample!.surah,
+                                selectedLetter.quranExample!.aya,
+                                selectedLetter.quranExample!.word,
+                                `quran-${selectedLetter.id}`
+                              )
+                            }
+                            className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition shadow-sm border ${
+                              playingKey === `quran-${selectedLetter.id}`
+                                ? 'bg-emerald-600 text-white border-emerald-600 ring-2 ring-emerald-500/40'
+                                : 'bg-white dark:bg-brand-surfaceDark border-brand-teal/40 text-brand-teal dark:text-emerald-400 hover:bg-brand-teal/10'
+                            }`}
+                            title={`Hear authentic Qari recitation of "${selectedLetter.quranExample.label}" in the Qur'an`}
+                          >
+                            <Volume2 className="w-3.5 h-3.5" />
+                            <span>
+                              Hear in Qur’an: <strong className="font-serif font-normal">{selectedLetter.quranExample.label}</strong>
+                            </span>
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
 
