@@ -55,6 +55,12 @@ export default function App() {
         const num = parseInt(surahParam, 10);
         if (!isNaN(num) && num >= 1 && num <= 114) return num;
       }
+      // Prioritize last read surah so users can resume immediately
+      const savedLastRead = localStorage.getItem('quran_last_read');
+      if (savedLastRead) {
+        const parsed = JSON.parse(savedLastRead);
+        if (parsed?.surah >= 1 && parsed?.surah <= 114) return parsed.surah;
+      }
       const saved = localStorage.getItem('quran_current_surah');
       if (saved) {
         const num = parseInt(saved, 10);
@@ -301,24 +307,63 @@ export default function App() {
       return null;
     }
   });
-  const [targetScrollAya, setTargetScrollAya] = useState<number | null>(null);
+
+  const [targetScrollAya, setTargetScrollAya] = useState<number | null>(() => {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const ayaParam = urlParams.get('aya');
+      if (ayaParam) {
+        const num = parseInt(ayaParam, 10);
+        if (!isNaN(num) && num >= 1) return num;
+      }
+
+      const surahParam = urlParams.get('surah');
+      const savedLastRead = localStorage.getItem('quran_last_read');
+      if (savedLastRead) {
+        const parsed: LastRead = JSON.parse(savedLastRead);
+        if (parsed && typeof parsed.aya === 'number') {
+          // If surah param was specified, only target if matches. Otherwise resume last read!
+          if (!surahParam || parseInt(surahParam, 10) === parsed.surah) {
+            return parsed.aya;
+          }
+        }
+      }
+    } catch {
+      // fallback
+    }
+    return null;
+  });
 
   // Verse refs for auto-scrolling
   const verseRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
+  const scrollToAyaElement = (ayaNum: number, highlight = true) => {
+    let attempts = 0;
+    const maxAttempts = 25;
+    const checkAndScroll = () => {
+      const el = verseRefs.current[ayaNum];
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (highlight) {
+          setHighlightedAya(ayaNum);
+          setTimeout(() => setHighlightedAya(null), 2500);
+        }
+      } else if (attempts < maxAttempts) {
+        attempts++;
+        setTimeout(checkAndScroll, 80);
+      }
+    };
+    setTimeout(checkAndScroll, 50);
+  };
+
   const handleJumpToAya = (ayaNum: number) => {
     if (!surahData || ayaNum < 1 || ayaNum > surahData.totalVerses) return;
-    const el = verseRefs.current[ayaNum];
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      setHighlightedAya(ayaNum);
-      setTimeout(() => setHighlightedAya(null), 2500);
-    }
+    scrollToAyaElement(ayaNum, true);
   };
 
   const handleNavigateToAyah = (surahNum: number, ayaNum: number) => {
     if (surahNum === currentSurahNumber) {
-      handleJumpToAya(ayaNum);
+      scrollToAyaElement(ayaNum, true);
     } else {
       setTargetScrollAya(ayaNum);
       setCurrentSurahNumber(surahNum);
@@ -499,9 +544,7 @@ export default function App() {
         setTargetScrollAya(data.lastRead.aya);
         setCurrentSurahNumber(data.lastRead.surah);
       } else {
-        setTimeout(() => {
-          handleJumpToAya(data.lastRead!.aya);
-        }, 300);
+        scrollToAyaElement(data.lastRead.aya, true);
       }
     }
     if (Array.isArray(data.bookmarks)) {
@@ -703,12 +746,12 @@ export default function App() {
           );
 
           if (lastReadDiffers) {
-            // Guard: If this local device was also actively modified, open Conflict Guard Modal
-            if (localReadTime > 0 && Math.abs(cloudTime - localReadTime) > 60000) {
+            // Guard: If local reading was actively modified AFTER cloud, open Conflict Guard Modal
+            if (localReadTime > cloudTime && (localReadTime - cloudTime) > 60000) {
               if (autoSyncTimerRef.current) clearTimeout(autoSyncTimerRef.current);
               setSyncConflict({ cloud: cloudData, local: localData });
             } else {
-              // Otherwise seamlessly resume from cloud
+              // Otherwise seamlessly resume from newer cloud reading
               applyCloudData(cloudData);
             }
           } else if (cloudTime > effectiveLocalTime) {
@@ -817,13 +860,8 @@ export default function App() {
       .then((data: SurahDetail) => {
         setSurahData(data);
         setLoading(false);
-        if (targetScrollAya) {
-          setTimeout(() => {
-            verseRefs.current[targetScrollAya]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            setTargetScrollAya(null);
-          }, 350);
-        } else {
-          // Scroll to top on regular new surah
+        // Only scroll to top if there is no pending target ayah
+        if (!targetScrollAya) {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       })
@@ -831,7 +869,16 @@ export default function App() {
         console.error('Failed to load surah details:', err);
         setLoading(false);
       });
-  }, [currentSurahNumber, targetScrollAya]);
+  }, [currentSurahNumber]);
+
+  // Handle auto-scroll to target ayah when surah finishes loading or targetScrollAya is set
+  useEffect(() => {
+    if (targetScrollAya && surahData && surahData.number === currentSurahNumber) {
+      const aya = targetScrollAya;
+      setTargetScrollAya(null);
+      scrollToAyaElement(aya, true);
+    }
+  }, [targetScrollAya, surahData, currentSurahNumber]);
 
   // Handle auto-scroll when audio advances
   useEffect(() => {
@@ -967,7 +1014,7 @@ export default function App() {
       setTargetScrollAya(lastRead.aya);
       setCurrentSurahNumber(lastRead.surah);
     } else {
-      verseRefs.current[lastRead.aya]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      scrollToAyaElement(lastRead.aya, true);
     }
   };
 
