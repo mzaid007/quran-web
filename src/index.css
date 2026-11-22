@@ -64,8 +64,8 @@
   line-height: 2.3;
   letter-spacing: 0;
   word-spacing: 3.5px;
-  overflow-wrap: break-word;
-  word-break: break-word;
+  overflow-wrap: normal;
+  word-break: normal;
   padding-bottom: 0.25em;
 }
 
@@ -76,8 +76,8 @@
   line-height: 2.4;
   letter-spacing: 0;
   word-spacing: 3px;
-  overflow-wrap: break-word;
-  word-break: break-word;
+  overflow-wrap: normal;
+  word-break: normal;
   padding-bottom: 0.25em;
 }
 
@@ -88,8 +88,8 @@
   line-height: 2.5;
   letter-spacing: 0;
   word-spacing: 3px;
-  overflow-wrap: break-word;
-  word-break: break-word;
+  overflow-wrap: normal;
+  word-break: normal;
   padding-bottom: 0.3em;
 }
 
@@ -100,8 +100,8 @@
   line-height: 2.5;
   letter-spacing: 0;
   word-spacing: 4px;
-  overflow-wrap: break-word;
-  word-break: break-word;
+  overflow-wrap: normal;
+  word-break: normal;
   padding-bottom: 0.35em;
 }
 
@@ -118,6 +118,7 @@
 .wbw-arabic {
   line-height: 1.8 !important;
   display: inline-block;
+  white-space: nowrap;
   padding-bottom: 0.25em;
   padding-top: 0.1em;
 }

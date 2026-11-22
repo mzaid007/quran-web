@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Fragment } from 'react';
 import { RECITERS } from './types';
 import type { SurahMeta, SurahDetail, Verse, WBWWord, ScriptType, TranslationChoice, TafsirId, Reciter, LastRead, CloudSyncData, SyncConflict, SyncedSettings, ReadingWidth, ReadingViewMode, SecondaryTranslationChoice } from './types';
 import { getScriptFontClass, getScriptArabicText, getScriptBismillah, getBismillahTranslation, getWbwScriptText, getWbwWordAudioUrl } from './types';
@@ -329,6 +329,9 @@ export default function App() {
     if (!text) return null;
     // Only true pause signs: \u0615 (Tah), \u06D6 (Sad-Lam), \u06D7 (Qaf-Lam), \u06D8 (Meem), \u06D9 (Laa/Zain), \u06DA (Jeem), \u06DB (3 dots), \u06DE (Rub el Hizb), \u06E9 (Sajdah)
     // Exclude \u06DC (Small Seen) and \u06E2 (Iqlab Meem) as they are intraword Tajweed markers
+    if (!/[\u06D6-\u06DB\u0615\u06DE\u06E9]/.test(text)) {
+      return text;
+    }
     const parts = text.split(/([\u06D6-\u06DB\u0615\u06DE\u06E9])/);
     return parts.map((part, index) => {
       if (index % 2 === 1 && getWaqfSignByChar(part)) {
@@ -340,7 +343,7 @@ export default function App() {
           />
         );
       }
-      return <span key={index}>{part}</span>;
+      return part ? <span key={index}>{part}</span> : null;
     });
   };
 
@@ -353,13 +356,14 @@ export default function App() {
     return segments.map((seg, sIdx) => {
       const style = TAJWEED_STYLES[seg.rule];
       if (seg.rule === 'normal' || !style || !style.colorClass) {
-        return <span key={sIdx}>{renderArabicWithWaqfHints(seg.text)}</span>;
+        return <Fragment key={sIdx}>{renderArabicWithWaqfHints(seg.text)}</Fragment>;
       }
       return (
         <span
           key={sIdx}
-          className={style.colorClass}
+          className={`${style.colorClass} select-text`}
           title={style.label}
+          style={{ fontWeight: 'inherit', letterSpacing: 'normal' }}
         >
           {renderArabicWithWaqfHints(seg.text)}
         </span>
@@ -374,7 +378,7 @@ export default function App() {
     }
     const words = verseText.split(' ');
     return words.map((w, idx) => (
-      <span key={idx}>
+      <span key={idx} className="inline-block whitespace-nowrap">
         {renderWordWithTajweedAndWaqf(w)}
         {idx < words.length - 1 ? ' ' : ''}
       </span>
@@ -1523,7 +1527,7 @@ export default function App() {
                                     e.preventDefault();
                                     setBreakdownTarget({ surah: currentSurahNumber, aya: verse.aya, word: w });
                                   }}
-                                  className={`inline-block cursor-pointer select-none rounded-lg px-1 transition-colors ${
+                                  className={`inline-block whitespace-nowrap cursor-pointer select-none rounded-lg px-1 transition-colors ${
                                     isWordPlaying
                                       ? 'bg-brand-teal/20 text-brand-teal dark:text-emerald-300 ring-1 ring-brand-teal/40'
                                       : 'hover:bg-brand-teal/10 hover:underline decoration-brand-teal/40 decoration-dotted underline-offset-8'
