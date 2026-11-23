@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, Search, Settings, Moon, Sun, Volume2, List, BookmarkCheck, Cloud, Pause, HelpCircle, GraduationCap, Maximize2, Minimize2, Expand, Eye, EyeOff, BookMarked } from 'lucide-react';
+import { BookOpen, Search, Settings, Moon, Sun, Volume2, List, BookmarkCheck, Cloud, Pause, HelpCircle, GraduationCap, Maximize2, Minimize2, Expand, Eye, EyeOff, BookMarked, Info } from 'lucide-react';
 import type { SurahMeta, LastRead, ReadingWidth, ReadingViewMode } from '../types';
 
 interface HeaderProps {
@@ -9,6 +9,7 @@ interface HeaderProps {
   onOpenSettings: () => void;
   onOpenWaqfSigns: () => void;
   onOpenLettersGuide: () => void;
+  onOpenAbout: () => void;
   darkMode: boolean;
   onToggleDarkMode: () => void;
   onPlaySurah: () => void;
@@ -33,6 +34,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSettings,
   onOpenWaqfSigns,
   onOpenLettersGuide,
+  onOpenAbout,
   darkMode,
   onToggleDarkMode,
   onPlaySurah,
@@ -191,6 +193,16 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5" />
             <span className="hidden lg:inline text-xs font-semibold">Stop Signs</span>
+          </button>
+
+          {/* About The Holy Qur'an Reader */}
+          <button
+            onClick={onOpenAbout}
+            className="p-1.5 sm:p-2 text-gray-600 dark:text-gray-300 hover:text-brand-teal dark:hover:text-emerald-400 hover:bg-gray-100 dark:hover:bg-brand-cardDark rounded-lg transition flex items-center gap-1"
+            title="About The Holy Qur'an Reader & Developer Feedback"
+          >
+            <Info className="w-4 h-4 sm:w-5 sm:h-5 text-brand-teal dark:text-emerald-400" />
+            <span className="hidden xl:inline text-xs font-semibold">About</span>
           </button>
 
           {/* Display & Reading Settings */}
@@ -374,6 +386,16 @@ export const Header: React.FC<HeaderProps> = ({
               <Expand className="w-3.5 h-3.5" />
             )}
             <span>{readingWidth === 'full' ? 'Full' : readingWidth === 'wide' ? 'Wide' : 'Standard'}</span>
+          </button>
+
+          {/* About & Feedback */}
+          <button
+            onClick={onOpenAbout}
+            className="px-2.5 py-1 rounded-lg text-xs font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-brand-cardDark border border-gray-200/80 dark:border-brand-borderDark hover:text-brand-teal dark:hover:text-emerald-400 transition flex items-center gap-1.5 shrink-0 shadow-xs active:scale-95"
+            title="About The Holy Qur'an Reader & Developer Feedback"
+          >
+            <Info className="w-3.5 h-3.5 text-brand-teal dark:text-emerald-400" />
+            <span>About</span>
           </button>
         </div>
       </div>

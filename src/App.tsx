@@ -17,6 +17,7 @@ import { ArabicLettersGuideModal } from './components/ArabicLettersGuideModal';
 import { InstallAppBanner } from './components/InstallAppBanner';
 import { GlobalSearchModal } from './components/GlobalSearchModal';
 import { MushafPageView } from './components/MushafPageView';
+import { AboutModal } from './components/AboutModal';
 import { parseTajweedWord, TAJWEED_STYLES } from './utils/tajweed';
 import { getWaqfSignByChar } from './data/waqfSigns';
 import { playPronunciationClip, playAudioSequence, stopPronunciationAudio } from './utils/pronunciationAudio';
@@ -261,6 +262,7 @@ export default function App() {
   const [isSurahListOpen, setIsSurahListOpen] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [isWaqfSignsModalOpen, setIsWaqfSignsModalOpen] = useState<boolean>(false);
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState<boolean>(false);
   const [isLettersGuideOpen, setIsLettersGuideOpen] = useState<boolean>(false);
   const [guideInitialLetterId, setGuideInitialLetterId] = useState<string | undefined>(undefined);
   const [breakdownTarget, setBreakdownTarget] = useState<{ surah: number; aya: number; word: WBWWord } | null>(null);
@@ -1047,6 +1049,7 @@ export default function App() {
         onOpenGlobalSearch={() => setIsGlobalSearchOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenWaqfSigns={() => setIsWaqfSignsModalOpen(true)}
+        onOpenAbout={() => setIsAboutModalOpen(true)}
         onOpenLettersGuide={() => {
           setGuideInitialLetterId(undefined);
           setIsLettersGuideOpen(true);
@@ -1764,6 +1767,7 @@ export default function App() {
           setGuideInitialLetterId(undefined);
           setIsLettersGuideOpen(true);
         }}
+        onOpenAbout={() => setIsAboutModalOpen(true)}
         preferredTafsir={preferredTafsir}
         onChangePreferredTafsir={handlePreferredTafsirChange}
         readingWidth={readingWidth}
@@ -1815,6 +1819,11 @@ export default function App() {
         isOpen={isWaqfSignsModalOpen}
         onClose={() => setIsWaqfSignsModalOpen(false)}
         onNavigateToAyah={handleNavigateToAyah}
+      />
+
+      <AboutModal
+        isOpen={isAboutModalOpen}
+        onClose={() => setIsAboutModalOpen(false)}
       />
 
       {breakdownTarget && (

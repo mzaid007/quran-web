@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Type, Globe, Check, Sliders, Volume2, Cloud, BookOpen, GraduationCap, Maximize2, Minimize2, Expand, Palette } from 'lucide-react';
+import { X, Type, Globe, Check, Sliders, Volume2, Cloud, BookOpen, GraduationCap, Maximize2, Minimize2, Expand, Palette, Info } from 'lucide-react';
 import { RECITERS } from '../types';
 import type { ScriptType, TranslationChoice, Reciter, ReadingWidth, SecondaryTranslationChoice } from '../types';
 import type { TafsirId } from './TafsirModal';
@@ -28,6 +28,7 @@ interface SettingsModalProps {
   syncEmail?: string | null;
   onOpenSync?: () => void;
   onOpenLettersGuide?: () => void;
+  onOpenAbout?: () => void;
   preferredTafsir?: TafsirId;
   onChangePreferredTafsir?: (t: TafsirId) => void;
   readingWidth: ReadingWidth;
@@ -58,6 +59,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   syncEmail,
   onOpenSync,
   onOpenLettersGuide,
+  onOpenAbout,
   preferredTafsir = 'kathir_roman',
   onChangePreferredTafsir,
   readingWidth,
@@ -715,6 +717,36 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   </div>
                 </div>
                 <Cloud className="w-4 h-4 text-brand-teal ml-2 flex-shrink-0" />
+              </button>
+            </div>
+          )}
+
+          {/* 7. About The Holy Qur'an Reader */}
+          {onOpenAbout && (
+            <div className="pt-2 border-t border-gray-100 dark:border-brand-borderDark">
+              <button
+                onClick={() => {
+                  onClose();
+                  onOpenAbout();
+                }}
+                className="w-full p-3 rounded-xl border border-gray-200 dark:border-brand-borderDark hover:bg-gray-50 dark:hover:bg-brand-cardDark text-left transition flex items-center justify-between group"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-brand-teal/10 dark:bg-brand-teal/20 text-brand-teal dark:text-emerald-400 flex items-center justify-center shrink-0">
+                    <Info className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-gray-800 dark:text-gray-200 group-hover:text-brand-teal dark:group-hover:text-emerald-400 transition">
+                      About The Holy Qur'an
+                    </div>
+                    <div className="text-[11px] text-gray-500 dark:text-gray-400">
+                      Mission, features, attributions &amp; developer feedback
+                    </div>
+                  </div>
+                </div>
+                <span className="text-xs font-semibold text-brand-teal dark:text-emerald-400">
+                  View →
+                </span>
               </button>
             </div>
           )}
