@@ -1,10 +1,11 @@
 import React from 'react';
-import { BookOpen, Search, Settings, Moon, Sun, Volume2, List, BookmarkCheck, Cloud, Pause, HelpCircle, GraduationCap, Maximize2, Minimize2, Expand, Eye, EyeOff, BookMarked, Info } from 'lucide-react';
+import { BookOpen, Search, Settings, Moon, Sun, Volume2, List, BookmarkCheck, Cloud, Pause, HelpCircle, GraduationCap, Maximize2, Minimize2, Expand, Eye, EyeOff, BookMarked, Info, Compass } from 'lucide-react';
 import type { SurahMeta, LastRead, ReadingWidth, ReadingViewMode } from '../types';
 
 interface HeaderProps {
   currentSurah: SurahMeta | null;
   onOpenSurahList: () => void;
+  onOpenJumpTo?: () => void;
   onOpenGlobalSearch: () => void;
   onOpenSettings: () => void;
   onOpenWaqfSigns: () => void;
@@ -30,6 +31,7 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   currentSurah,
   onOpenSurahList,
+  onOpenJumpTo,
   onOpenGlobalSearch,
   onOpenSettings,
   onOpenWaqfSigns,
@@ -67,12 +69,12 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="sticky top-0 z-40 bg-white/95 dark:bg-brand-surfaceDark/95 backdrop-blur-md border-b border-gray-200 dark:border-brand-borderDark transition-colors">
       {/* Row 1: Primary Navigation & Core Quick Controls */}
       <div className={`${getHeaderWidthClass(readingWidth)} mx-auto px-3 sm:px-4 h-14 sm:h-16 flex items-center justify-between gap-2 transition-all duration-300`}>
-        {/* Left: App Logo & Current Surah Navigation */}
-        <div className="flex items-center space-x-2 shrink min-w-0">
+        {/* Left: App Logo & Current Surah Navigation & Go To Button */}
+        <div className="flex items-center space-x-1.5 sm:space-x-2 shrink min-w-0">
           <button
             onClick={onOpenSurahList}
             className="flex items-center space-x-2 text-brand-teal dark:text-emerald-400 font-semibold hover:opacity-80 transition p-1 sm:p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-brand-cardDark min-w-0"
-            title="Open Surah List"
+            title="Open Surah List (Browse Surahs, Juz & Bookmarks)"
           >
             <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-brand-teal/10 dark:bg-brand-teal/20 flex items-center justify-center shrink-0">
               <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-brand-teal dark:text-emerald-400" />
@@ -82,13 +84,25 @@ export const Header: React.FC<HeaderProps> = ({
                 {currentSurah ? `Surah ${currentSurah.number} / 114` : "Al Qur'an"}
               </div>
               <div className="text-xs sm:text-sm font-bold text-gray-800 dark:text-gray-100 leading-tight flex items-center gap-1 min-w-0">
-                <span className="truncate max-w-[130px] xs:max-w-[180px] sm:max-w-[220px]">
+                <span className="truncate max-w-[110px] xs:max-w-[160px] sm:max-w-[200px]">
                   {currentSurah ? currentSurah.name : 'Select Surah'}
                 </span>
                 <List className="w-3 h-3 opacity-60 shrink-0" />
               </div>
             </div>
           </button>
+
+          {/* Go to / Jump Button */}
+          {onOpenJumpTo && (
+            <button
+              onClick={onOpenJumpTo}
+              className="flex items-center space-x-1 px-2 py-1.5 sm:px-2.5 sm:py-1.5 rounded-lg bg-brand-teal/10 hover:bg-brand-teal/20 text-brand-teal dark:text-emerald-400 border border-brand-teal/25 transition text-xs font-semibold shrink-0"
+              title="Go to / Jump to Ayah"
+            >
+              <Compass className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand-teal dark:text-emerald-400 shrink-0" />
+              <span className="hidden sm:inline">Go to</span>
+            </button>
+          )}
         </div>
 
         {/* Right Desktop: Complete Toolbar (sm: and larger) */}

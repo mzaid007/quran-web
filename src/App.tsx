@@ -260,6 +260,7 @@ export default function App() {
 
   // Modals & Novice Pronunciation Learning State
   const [isSurahListOpen, setIsSurahListOpen] = useState<boolean>(false);
+  const [surahListInitialSurah, setSurahListInitialSurah] = useState<number | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [isWaqfSignsModalOpen, setIsWaqfSignsModalOpen] = useState<boolean>(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState<boolean>(false);
@@ -370,6 +371,16 @@ export default function App() {
       setTargetScrollAya(ayaNum);
       setCurrentSurahNumber(surahNum);
     }
+  };
+
+  const handleOpenSurahList = () => {
+    setSurahListInitialSurah(null);
+    setIsSurahListOpen(true);
+  };
+
+  const handleOpenJumpTo = () => {
+    setSurahListInitialSurah(currentSurahNumber);
+    setIsSurahListOpen(true);
   };
 
   const renderArabicWithWaqfHints = (text: string) => {
@@ -1045,7 +1056,8 @@ export default function App() {
       {/* Top App Header (Option 2: Clean Minimal Top Navigation) */}
       <Header
         currentSurah={currentSurahMeta}
-        onOpenSurahList={() => setIsSurahListOpen(true)}
+        onOpenSurahList={handleOpenSurahList}
+        onOpenJumpTo={handleOpenJumpTo}
         onOpenGlobalSearch={() => setIsGlobalSearchOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenWaqfSigns={() => setIsWaqfSignsModalOpen(true)}
@@ -1731,13 +1743,18 @@ export default function App() {
       {/* Modals */}
       <SurahListModal
         isOpen={isSurahListOpen}
-        onClose={() => setIsSurahListOpen(false)}
+        onClose={() => {
+          setIsSurahListOpen(false);
+          setSurahListInitialSurah(null);
+        }}
         surahs={surahs}
         currentSurahNumber={currentSurahNumber}
         onSelectSurah={(num) => setCurrentSurahNumber(num)}
+        onSelectAyah={(s, a) => handleNavigateToAyah(s, a)}
         bookmarks={bookmarks}
         lastRead={lastRead}
         onResumeLastRead={handleResumeLastRead}
+        initialSurahForAyah={surahListInitialSurah}
       />
 
       <SettingsModal
