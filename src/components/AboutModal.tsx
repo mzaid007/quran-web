@@ -167,7 +167,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
               </div>
               <div>
                 <span className="font-bold text-gray-900 dark:text-gray-100 block mb-0.5">Translations &amp; Exegesis</span>
-                <span className="text-gray-500 dark:text-gray-400">Dr. Mustafa Khattab (The Clear Quran), Saheeh International, Tafheem-ul-Quran (Roman Urdu &amp; Urdu by Syed Abul A'la Maududi), Ibn Kathir, and Al-Jalalayn.</span>
+                <span className="text-gray-500 dark:text-gray-400">The Noble Qur'an (Dr. Muhammad Muhsin Khan &amp; Dr. Muhammad Taqi-ud-Din Al-Hilali, Darussalam), Dr. Mustafa Khattab (The Clear Quran), Saheeh International, Tafheem-ul-Quran (Roman Urdu &amp; Urdu by Syed Abul A'la Maududi), Ibn Kathir, and Al-Jalalayn.</span>
               </div>
               <div>
                 <span className="font-bold text-gray-900 dark:text-gray-100 block mb-0.5">Calligraphic Typefaces</span>

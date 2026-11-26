@@ -68,10 +68,11 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
               const normIndo = normalizeArabic(v.indopak);
               const saheehLow = (v.saheeh || '').toLowerCase();
               const khattabLow = (v.khattab || '').toLowerCase();
+              const hilaliLow = (v.hilaliKhan || '').toLowerCase();
               const translitLow = (v.transliteration || '').toLowerCase();
 
               const matchArabic = normArabicQ && (normUth.includes(normArabicQ) || normIndo.includes(normArabicQ));
-              const matchEnglish = saheehLow.includes(cleanQ) || khattabLow.includes(cleanQ) || translitLow.includes(cleanQ);
+              const matchEnglish = saheehLow.includes(cleanQ) || khattabLow.includes(cleanQ) || hilaliLow.includes(cleanQ) || translitLow.includes(cleanQ);
 
               if (matchArabic || matchEnglish) {
                 hits.push({

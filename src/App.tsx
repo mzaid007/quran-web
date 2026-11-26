@@ -84,7 +84,7 @@ export default function App() {
   const [translation, setTranslation] = useState<TranslationChoice>(() => {
     ensureDefaultsMigratedV5();
     const saved = localStorage.getItem('quran_translation');
-    if (saved === 'khattab' || saved === 'saheeh' || saved === 'jalalayn' || saved === 'romanUrdu' || saved === 'none') {
+    if (saved === 'hilaliKhan' || saved === 'khattab' || saved === 'saheeh' || saved === 'jalalayn' || saved === 'romanUrdu' || saved === 'none') {
       return saved;
     }
     return 'romanUrdu';
@@ -138,7 +138,7 @@ export default function App() {
   // Secondary Translation for Side-by-Side Dual View
   const [secondaryTranslation, setSecondaryTranslation] = useState<SecondaryTranslationChoice>(() => {
     const saved = localStorage.getItem('quran_secondary_translation');
-    if (saved === 'khattab' || saved === 'saheeh' || saved === 'jalalayn' || saved === 'romanUrdu' || saved === 'none') {
+    if (saved === 'hilaliKhan' || saved === 'khattab' || saved === 'saheeh' || saved === 'jalalayn' || saved === 'romanUrdu' || saved === 'none') {
       return saved as SecondaryTranslationChoice;
     }
     return 'none';
@@ -210,6 +210,8 @@ export default function App() {
 
   const getSecondaryTranslationText = (verse: Verse, choice: SecondaryTranslationChoice): string => {
     switch (choice) {
+      case 'hilaliKhan':
+        return verse.hilaliKhan || verse.saheeh || '';
       case 'khattab':
         return verse.khattab || verse.saheeh;
       case 'saheeh':
@@ -225,6 +227,8 @@ export default function App() {
 
   const getSecondaryTranslationLabel = (choice: SecondaryTranslationChoice): string => {
     switch (choice) {
+      case 'hilaliKhan':
+        return "The Noble Qur'an (Dr. Muhsin Khan & Dr. Al-Hilali)";
       case 'khattab':
         return 'The Clear Quran (Dr. Mustafa Khattab)';
       case 'saheeh':
@@ -463,6 +467,10 @@ export default function App() {
       settings: {
         script,
         translation,
+        secondaryTranslation,
+        readingViewMode,
+        showTajweed,
+        hifzMode,
         showWBW,
         tapWordsMode,
         showTransliteration,
@@ -528,6 +536,10 @@ export default function App() {
     const nextReadingWidth = (s?.readingWidth === 'standard' || s?.readingWidth === 'wide' || s?.readingWidth === 'full')
       ? s.readingWidth
       : readingWidth;
+    const nextSecondaryTranslation = s?.secondaryTranslation || secondaryTranslation;
+    const nextReadingViewMode = s?.readingViewMode || readingViewMode;
+    const nextShowTajweed = typeof s?.showTajweed === 'boolean' ? s.showTajweed : showTajweed;
+    const nextHifzMode = typeof s?.hifzMode === 'boolean' ? s.hifzMode : hifzMode;
 
     lastSyncedSnapshotRef.current = getSyncSnapshot({
       lastRead: nextLastRead,
@@ -535,6 +547,10 @@ export default function App() {
       settings: {
         script: nextScript,
         translation: nextTranslation,
+        secondaryTranslation: nextSecondaryTranslation,
+        readingViewMode: nextReadingViewMode,
+        showTajweed: nextShowTajweed,
+        hifzMode: nextHifzMode,
         showWBW: nextShowWBW,
         tapWordsMode: nextTapWordsMode,
         showTransliteration: nextShowTranslit,
@@ -580,6 +596,22 @@ export default function App() {
       if (s.readingWidth) {
         setReadingWidth(nextReadingWidth);
         localStorage.setItem('quran_reading_width', nextReadingWidth);
+      }
+      if (s.secondaryTranslation) {
+        setSecondaryTranslation(nextSecondaryTranslation);
+        localStorage.setItem('quran_secondary_translation', nextSecondaryTranslation);
+      }
+      if (s.readingViewMode) {
+        setReadingViewMode(nextReadingViewMode);
+        localStorage.setItem('quran_reading_view_mode', nextReadingViewMode);
+      }
+      if (typeof s.showTajweed === 'boolean') {
+        setShowTajweed(nextShowTajweed);
+        localStorage.setItem('quran_show_tajweed', String(nextShowTajweed));
+      }
+      if (typeof s.hifzMode === 'boolean') {
+        setHifzMode(nextHifzMode);
+        localStorage.setItem('quran_hifz_mode', String(nextHifzMode));
       }
     }
     setLastSyncedAt(new Date());
@@ -652,7 +684,25 @@ export default function App() {
     if (!syncEmail) return;
     setIsSyncing(true);
     try {
+      const res = await fetch(`/api/sync?email=${encodeURIComponent(syncEmail)}`);
       const localData = buildLocalSyncData();
+      if (res.ok) {
+        const json = await res.json();
+        if (json.exists && json.data) {
+          const cloudData: CloudSyncData = json.data;
+          const cloudTime = cloudData.updatedAt ? new Date(cloudData.updatedAt).getTime() : 0;
+          const localReadTime = localData.lastRead?.timestamp || 0;
+          const localModifiedAt = Number(localStorage.getItem('quran_local_modified_at') || '0');
+          const effectiveLocalTime = Math.max(localReadTime, localModifiedAt);
+
+          // If cloud has newer updates, pull them down
+          if (cloudTime > effectiveLocalTime) {
+            applyCloudData(cloudData);
+            return;
+          }
+        }
+      }
+      // If local is newer or no cloud record yet, push local to cloud
       await pushSyncToCloud(syncEmail, localData);
     } catch (e: any) {
       alert(`Sync failed: ${e.message}`);
@@ -713,6 +763,22 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('quran_reading_width', readingWidth);
   }, [readingWidth]);
+
+  useEffect(() => {
+    localStorage.setItem('quran_secondary_translation', secondaryTranslation);
+  }, [secondaryTranslation]);
+
+  useEffect(() => {
+    localStorage.setItem('quran_reading_view_mode', readingViewMode);
+  }, [readingViewMode]);
+
+  useEffect(() => {
+    localStorage.setItem('quran_show_tajweed', String(showTajweed));
+  }, [showTajweed]);
+
+  useEffect(() => {
+    localStorage.setItem('quran_hifz_mode', String(hifzMode));
+  }, [hifzMode]);
 
   useEffect(() => {
     localStorage.setItem('quran_auto_scroll', String(autoScroll));
@@ -781,10 +847,21 @@ export default function App() {
       }
     };
     fetchOnLoad();
+
+    const handleWindowFocus = () => {
+      if (document.visibilityState === 'visible' && !syncConflict) {
+        fetchOnLoad();
+      }
+    };
+    window.addEventListener('focus', handleWindowFocus);
+    document.addEventListener('visibilitychange', handleWindowFocus);
+
     return () => {
       cancelled = true;
+      window.removeEventListener('focus', handleWindowFocus);
+      document.removeEventListener('visibilitychange', handleWindowFocus);
     };
-  }, [syncEmail]);
+  }, [syncEmail, syncConflict]);
 
   // Debounced auto-sync to Neon when reading progress or settings change
   useEffect(() => {
@@ -825,6 +902,10 @@ export default function App() {
     bookmarks,
     script,
     translation,
+    secondaryTranslation,
+    readingViewMode,
+    showTajweed,
+    hifzMode,
     showWBW,
     tapWordsMode,
     showTransliteration,
@@ -833,6 +914,7 @@ export default function App() {
     currentReciter,
     autoScroll,
     preferredTafsir,
+    readingWidth,
   ]);
 
   // Handle browser back/forward buttons
@@ -1034,7 +1116,9 @@ export default function App() {
   const handleCopyVerse = (verse: Verse) => {
     const arabicText = getScriptArabicText(verse, script);
     const transText =
-      translation === 'khattab'
+      translation === 'hilaliKhan'
+        ? (verse.hilaliKhan || verse.saheeh)
+        : translation === 'khattab'
         ? verse.khattab
         : translation === 'romanUrdu'
         ? (verse.romanUrdu || verse.khattab)
@@ -1175,7 +1259,9 @@ export default function App() {
                 <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                   <span>Translation:</span>
                   <span className="font-bold text-brand-teal dark:text-emerald-400">
-                    {translation === 'khattab'
+                    {translation === 'hilaliKhan'
+                      ? "The Noble Qur'an (Dr. Muhsin Khan & Dr. Al-Hilali)"
+                      : translation === 'khattab'
                       ? 'The Clear Quran (Dr. Mustafa Khattab)'
                       : translation === 'romanUrdu'
                       ? 'Roman Urdu (Maududi)'
@@ -1637,6 +1723,14 @@ export default function App() {
                     {/* Translation */}
                     {translation !== 'none' && (
                       <div className="pt-4 sm:pt-5 text-sm sm:text-base text-gray-800 dark:text-gray-200 leading-relaxed font-sans select-text border-t border-gray-100 dark:border-brand-borderDark/60">
+                        {translation === 'hilaliKhan' && (
+                          <div>
+                            <span>{verse.hilaliKhan || verse.saheeh}</span>
+                            <span className="block text-[10px] text-brand-teal dark:text-emerald-400 font-semibold mt-1">
+                              — The Noble Qur'an (Dr. Muhammad Muhsin Khan &amp; Dr. Al-Hilali)
+                            </span>
+                          </div>
+                        )}
                         {translation === 'khattab' && (
                           <div>
                             <span>{verse.khattab || verse.saheeh}</span>

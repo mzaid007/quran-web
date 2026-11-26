@@ -46,7 +46,10 @@ export const ShareVerseModal: React.FC<ShareVerseModalProps> = ({
   // Resolve translation text and attribution
   let transText = '';
   let transAuthor = '';
-  if (selectedTranslation === 'romanUrdu') {
+  if (selectedTranslation === 'hilaliKhan') {
+    transText = verse.hilaliKhan || verse.saheeh || '';
+    transAuthor = "The Noble Qur'an (Dr. Muhsin Khan & Dr. Al-Hilali)";
+  } else if (selectedTranslation === 'romanUrdu') {
     transText = verse.romanUrdu || '';
     transAuthor = 'Tafheem-ul-Quran (Syed Abul A\'la Maududi - Roman Urdu)';
   } else if (selectedTranslation === 'khattab') {
@@ -308,6 +311,19 @@ export const ShareVerseModal: React.FC<ShareVerseModalProps> = ({
                 >
                   <span className="font-semibold">Roman Urdu</span>
                   <span className="text-[10px] text-gray-400 dark:text-gray-500 font-normal">Tafheem-ul-Quran</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedTranslation('hilaliKhan')}
+                  className={`py-2 px-3 text-xs rounded-xl border text-left transition flex flex-col ${
+                    selectedTranslation === 'hilaliKhan'
+                      ? 'border-brand-teal bg-brand-teal/5 dark:bg-brand-teal/15 text-brand-teal dark:text-emerald-400 font-bold'
+                      : 'border-gray-200 dark:border-brand-borderDark text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-brand-cardDark'
+                  }`}
+                >
+                  <span className="font-semibold">The Noble Quran</span>
+                  <span className="text-[10px] text-gray-400 dark:text-gray-500 font-normal">Khan &amp; Al-Hilali</span>
                 </button>
 
                 <button

@@ -311,6 +311,34 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 {translation === 'romanUrdu' && <Check className="w-4 h-4 text-brand-teal flex-shrink-0" />}
               </button>
 
+              {/* The Noble Qur'an - Dr. Muhammad Muhsin Khan & Dr. Al-Hilali */}
+              <button
+                onClick={() => onChangeTranslation('hilaliKhan')}
+                className={`w-full p-3 rounded-xl border text-left transition flex items-center justify-between ${
+                  translation === 'hilaliKhan'
+                    ? 'border-brand-teal bg-brand-teal/10 dark:bg-brand-teal/20'
+                    : 'border-gray-200 dark:border-brand-borderDark hover:bg-gray-50 dark:hover:bg-brand-cardDark'
+                }`}
+              >
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
+                      The Noble Qur'an
+                    </span>
+                    <span className="px-1.5 py-0.5 text-[10px] font-bold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded">
+                      Darussalam
+                    </span>
+                    <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                      Dr. Muhsin Khan &amp; Dr. Al-Hilali
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                    Authoritative English translation with explanatory context from Bukhari &amp; classical Tafsir
+                  </div>
+                </div>
+                {translation === 'hilaliKhan' && <Check className="w-4 h-4 text-brand-teal flex-shrink-0" />}
+              </button>
+
               {/* The Clear Quran - Dr. Mustafa Khattab */}
               <button
                 onClick={() => onChangeTranslation('khattab')}
@@ -408,6 +436,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
                 {[
                   { id: 'none', label: 'None (Disabled)' },
+                  { id: 'hilaliKhan', label: 'The Noble Quran' },
                   { id: 'khattab', label: 'The Clear Quran' },
                   { id: 'saheeh', label: 'Saheeh Int.' },
                   { id: 'romanUrdu', label: 'Maududi (Roman)' },

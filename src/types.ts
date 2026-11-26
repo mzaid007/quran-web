@@ -32,6 +32,7 @@ export interface Verse {
   transliteration: string;
   saheeh: string;
   khattab: string;
+  hilaliKhan?: string;
   jalalayn: string;
   romanUrdu?: string;
   wbw: WBWWord[];
@@ -44,7 +45,7 @@ export interface SurahDetail extends SurahMeta {
 
 export type ScriptType = 'uthmani' | 'indopak' | 'indopak-saleem' | 'indopak-majeed';
 export type ReadingViewMode = 'flow' | 'wbw' | 'mushaf';
-export type SecondaryTranslationChoice = 'none' | 'saheeh' | 'khattab' | 'jalalayn' | 'romanUrdu';
+export type SecondaryTranslationChoice = 'none' | 'hilaliKhan' | 'khattab' | 'saheeh' | 'jalalayn' | 'romanUrdu';
 
 export function getScriptFontClass(script: ScriptType): string {
   switch (script) {
@@ -83,13 +84,15 @@ export function getScriptBismillah(script: ScriptType): string {
     ? 'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ'
     : 'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ';
 }
-export type TranslationChoice = 'khattab' | 'saheeh' | 'jalalayn' | 'romanUrdu' | 'none';
+export type TranslationChoice = 'hilaliKhan' | 'khattab' | 'saheeh' | 'jalalayn' | 'romanUrdu' | 'none';
 
 /** Returns the Bismillah header translation matching the active translation setting, or null when hidden. */
 export function getBismillahTranslation(translation: TranslationChoice): string | null {
   switch (translation) {
     case 'romanUrdu':
       return 'Shuru Allah ke naam se jo Rehman o Raheem (bada meherbaan, nihayat reham wala) hai';
+    case 'hilaliKhan':
+      return 'In the Name of Allah, the Most Beneficent, the Most Merciful.';
     case 'saheeh':
       return 'In the name of Allah, the Entirely Merciful, the Especially Merciful.';
     case 'none':
